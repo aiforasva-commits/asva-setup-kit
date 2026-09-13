@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASVA - National Overview</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - National Overview" />
+  <meta property="og:description" content="A national overview of how every UK MP has been graded on AI safety." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/overview" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - National Overview" />
+  <meta name="twitter:description" content="A national overview of how every UK MP has been graded on AI safety." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="A national overview of how every UK MP has been graded on AI safety." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/overview" />
+  <meta name="turbo-cache-control" content="no-cache">
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-map">
+
+<!-- ── Navigation ──────────────────────────────────────────────── -->
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<!-- ── Page content ─────────────────────────────────────────────── -->
+<div class="page-wrap">
+  <div class="page-header">
+    <h1>National Overview</h1>
+    <p class="subtitle">UK constituencies shown as equal-area hexagons.</p>
+
+    <div class="controls">
+      <div class="toggle-group">
+        <button class="active" id="btn-grade">MP View</button>
+        <button id="btn-member">Member View</button>
+      </div>
+      <div class="map-search-wrapper">
+        <input type="search" id="search-box" placeholder="Find MP or constituency" autocomplete="off" />
+        <div id="map-search-dropdown"></div>
+      </div>
+    </div>
+
+    <!-- Mobile-only selected-constituency details. Sits directly below the search
+         bar and fills when a constituency is picked on the map or via search. On
+         desktop this is hidden and the side info-card is used instead. -->
+    <div class="map-info-mobile" id="info-card-mobile" aria-live="polite">
+      <h3 id="mi-name">Constituency</h3>
+      <div class="info-row">
+        <span class="info-label">Current MP</span>
+        <span class="info-value" id="mi-mp">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">ASVA Grade</span>
+        <span class="info-value" id="mi-grade">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Majority</span>
+        <span class="info-value" id="mi-majority">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">ASVA Members</span>
+        <span class="info-value" id="mi-members">—</span>
+      </div>
+      <a class="scorecard-link" id="mi-scorecard" href="scorecard.html">View on Scorecard →</a>
+    </div>
+  </div>
+
+  <div class="map-layout">
+    <div class="map-container">
+      <div id="map-status" class="status-msg">Loading map data…</div>
+      <svg id="hex-svg" viewBox="0 0 600 850" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
+      <div class="map-zoom" id="map-zoom" hidden>
+        <button type="button" id="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+        <button type="button" id="zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+        <button type="button" id="zoom-reset" aria-label="Reset zoom" title="Reset zoom">⌂</button>
+      </div>
+      <div class="map-underbar">
+        <div class="cb-group" id="cb-group">
+          <button type="button" id="btn-cb" class="cb-toggle" aria-pressed="false" title="Use a colour-blind-friendly grade palette (blue–orange instead of green–red)">Colour-blind mode</button>
+          <button type="button" id="btn-cb-by" class="cb-toggle cb-sub" aria-pressed="false" tabindex="-1" aria-hidden="true" title="Switch to a palette tuned for blue–yellow deficiency (tritanopia): green–magenta instead of blue–orange">Blue–yellow deficiency</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="legend" id="legend"></div>
+      <div class="info-card" id="info-card">
+        <p class="placeholder">Hover or click a constituency to see details</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tooltip ──────────────────────────────────────────────────── -->
+<div id="tooltip"></div>
+
+<script>
+(function(){
+// ── Party names (shown in tooltips) ───────────────────────────────
+const PARTY_NAMES = {
+  'Lab':     'Labour',
+  'Con':     'Conservative',
+  'LD':      'Liberal Democrats',
+  'SNP':     'SNP',
+  'PC':      'Plaid Cymru',
+  'Green':   'Green',
+  'Reform':  'Reform UK',
+  'RUK':     'Reform UK',
+  'DUP':     'DUP',
+  'SF':      'Sinn Féin',
+  'SDLP':    'SDLP',
+  'UUP':     'UUP',
+  'Alliance':'Alliance',
+  'APNI':    'Alliance',
+  'Ind':     'Independent',
+  'Spk':     'Speaker',
+};
+
+// ── Grade colours ─────────────────────────────────────────────────
+const GRADE_BG = {
+  'A': '#2D5A3D', 'B': '#4CAF73', 'C': '#A8D5B0',
+  'D': '#F2A0A0', 'E': '#D94040', 'F': '#8B1A1A', 'DNR': '#F0D080', '?': '#cccccc',
+};
+const GRADE_DISPLAY = { '?': 'TBC', 'DNR': '?' };
+const GRADE_DARK_TEXT = new Set(['C', 'D', 'DNR', '?']);
+
+// Colour-blind-safe palette: the SAME good→bad gradient, but ramped blue (good)
+// → orange (bad) instead of green→red, so grades stay distinguishable with
+// red-green colour vision deficiency. Each grade's lightness matches its GRADE_BG
+// counterpart, so the existing dark/white badge-text rule (GRADE_DARK_TEXT) keeps
+// readable contrast in either palette. DNR (yellow) and ? (grey) are already
+// CVD-distinct, so they carry over unchanged.
+const GRADE_BG_CB = {
+  'A': '#08519C', 'B': '#3182BD', 'C': '#C6DBEF',
+  'D': '#FDD0A2', 'E': '#E6550D', 'F': '#A63603', 'DNR': '#F0D080', '?': '#cccccc',
+};
+
+// Blue–yellow (tritan) palette: the blue–orange ramp above sits on the very
+// axis a blue–yellow deficiency confuses, so tritan viewers need a different
+// one. This ramps green (good) → magenta (bad), a diverging scheme that stays
+// distinct on the intact red–green channel. Lightness again matches GRADE_BG so
+// the GRADE_DARK_TEXT badge-text rule keeps readable contrast. DNR (yellow) and
+// ? (grey) carry over unchanged.
+const GRADE_BG_CB_BY = {
+  'A': '#276419', 'B': '#7FBC41', 'C': '#E6F5D0',
+  'D': '#FDE0EF', 'E': '#C51B7D', 'F': '#8E0152', 'DNR': '#F0D080', '?': '#cccccc',
+};
+
+// Colour-blind toggles, persisted so a visitor's choice sticks across visits.
+// `colourblind` switches on the CVD-friendly palette; `cbBlueYellow` then picks
+// the blue–yellow (tritan) variant instead of the default red–green one.
+let colourblind = false;
+let cbBlueYellow = false;
+try { colourblind = localStorage.getItem('asva-map-cb') === '1'; } catch {}
+try { cbBlueYellow = localStorage.getItem('asva-map-by') === '1'; } catch {}
+
+function gradePalette() {
+  if (!colourblind) return GRADE_BG;
+  return cbBlueYellow ? GRADE_BG_CB_BY : GRADE_BG_CB;
+}
+function gradeColour(grade) { return gradePalette()[grade] || '#cccccc'; }
+
+// In the blue–yellow palette every coloured grade gets a thin black outline so
+// none stands out against the others; only the grey "Not Scored" (?) tiles and
+// any ungraded (grey fallback) tiles are left plain. DNR (No Response) is
+// coloured, so it does get the outline.
+const OUTLINE_GRADES = new Set(['A', 'B', 'C', 'D', 'E', 'F', 'DNR']);
+function gradeGetsOutline(grade) {
+  return colourblind && cbBlueYellow && view === 'grade' && OUTLINE_GRADES.has(grade);
+}
+
+// ── Member-view: 5 dynamic equal-width buckets ────────────────────
+const BUCKET_COLOURS = ['#e0e0e0', '#b8d4f4', '#6b9de0', '#2d5fc0', '#1a1a9e'];
+
+// Number of non-zero buckets — at most 4, but never more than maxCount, so
+// small member counts don't produce empty or inverted legend ranges.
+function bucketCount(maxCount) {
+  return Math.max(1, Math.min(4, maxCount));
+}
+
+function getMemberBucket(count, maxCount) {
+  if (count <= 0 || maxCount <= 0) return 0;
+  const n = bucketCount(maxCount);
+  for (let b = 1; b <= n; b++) {
+    if (count <= Math.floor(b * maxCount / n)) return b;
+  }
+  return n;
+}
+
+// Colour for bucket b of n: use the top n shades of the palette so the busiest
+// constituency always gets the darkest colour, even when fewer than 4 buckets
+// are in use (i.e. when the max member count is small).
+function bucketColour(b, n) {
+  return BUCKET_COLOURS[BUCKET_COLOURS.length - 1 - n + b];
+}
+
+function memberColour(count, maxCount) {
+  const b = getMemberBucket(count, maxCount);
+  return b === 0 ? BUCKET_COLOURS[0] : bucketColour(b, bucketCount(maxCount));
+}
+
+function memberBucketRanges(maxCount) {
+  // Returns {colour, lo, hi} for each reachable non-zero bucket, with integer
+  // boundaries covering 1…maxCount and no empty or inverted ranges.
+  const n = bucketCount(maxCount);
+  const ranges = [];
+  for (let b = 1; b <= n; b++) {
+    ranges.push({
+      colour: bucketColour(b, n),
+      lo: Math.floor((b - 1) * maxCount / n) + 1,
+      hi: Math.floor(b * maxCount / n),
+    });
+  }
+  return ranges;
+}
+
+// ── State ─────────────────────────────────────────────────────────
+let hexData      = [];
+let candidatesDB = {}; // keyed by exact constituency name, from data.json
+let view         = 'grade';
+let maxMembers   = 0;
+let selectedGss  = null;
+let searchQuery  = '';
+let latestMemberGss = null;  // constituency of the most recent signup (member view only)
+
+function normName(s) {
+  return (s || '')
+    .toLowerCase()
+    .replace(/[àáâãäå]/g, 'a').replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i').replace(/[òóôõö]/g, 'o')
+    .replace(/[ùúûü]/g, 'u').replace(/[ŵ]/g, 'w').replace(/[ŷ]/g, 'y')
+    .replace(/[''`]/g, "'").replace(/&/g, 'and')
+    .replace(/[^a-z0-9 ']/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function stripHonorifics(s) {
+  return (s || '')
+    .replace(/^(The\s+)?(Rt\.?\s+Hon\.?\s+)?(Sir|Dame|Dr\.?|Mr\.?|Mrs\.?|Ms\.?|Miss|Prof(?:essor)?)\s+/i, '')
+    .trim();
+}
+
+// Repairs UTF-8-decoded-as-Latin-1 mojibake (e.g. "DÃ¡ire" → "Dáire") in case a
+// name reaches us already corrupted. Idempotent: a correctly-encoded name only
+// contains bytes that don't re-decode as valid UTF-8, so it's returned as-is.
+function fixMojibake(s) {
+  if (!s) return s;
+  for (let i = 0; i < s.length; i++) if (s.charCodeAt(i) > 0xFF) return s;
+  if (!/[\u0080-\u00FF]/.test(s)) return s;
+  try {
+    return new TextDecoder('utf-8', { fatal: true })
+      .decode(Uint8Array.from(s, c => c.charCodeAt(0)));
+  } catch {
+    return s;
+  }
+}
+
+
+
+// ── Load data.json + live member counts ───────────────────────────
+async function init() {
+  try {
+    const [dataRes, countsRes, ratingsRes, latestRes] = await Promise.all([
+      fetch('/data.json'),
+      fetch('/api/member-counts').catch(() => null),
+      fetch('/api/current-ratings', { cache: 'no-store' }).catch(() => null),
+      fetch('/api/latest-member', { cache: 'no-store' }).catch(() => null),
+    ]);
+    if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
+
+    const data = await dataRes.json();
+    hexData      = (data.hexMap || []).filter(h => h.pts);
+    candidatesDB = data.candidates || {};
+
+    // Safety net for accented names that reach us mis-encoded (e.g. "DÃ¡ire" for
+    // "Dáire"). Idempotent, so it's a no-op once the data is clean.
+    for (const h of hexData) if (h.mpName) h.mpName = fixMojibake(h.mpName);
+
+    // Overlay confirmed ratings (keyed by constituency) onto the hex grade, so
+    // the map reflects the same live grades as the scorecard. Isolated so a bad
+    // response can't fail the map — it just falls back to the built-in grade.
+    if (ratingsRes && ratingsRes.ok) {
+      try {
+        const { ratings } = await ratingsRes.json();
+        for (const h of hexData) {
+          if (ratings && ratings[h.name]) h.asvaGrade = ratings[h.name].grade;
+        }
+      } catch (e) {
+        console.warn('current-ratings parse error:', e);
+      }
+    }
+
+    // Merge live member counts (keyed by exact constituency name). Parsing is
+    // isolated so a bad or non-JSON counts response can't fail the whole map.
+    if (countsRes && countsRes.ok) {
+      try {
+        const counts = await countsRes.json();
+        for (const h of hexData) {
+          h.members = counts[h.name] || 0;
+        }
+      } catch (e) {
+        console.warn('member-counts parse error:', e);
+      }
+    } else if (countsRes) {
+      console.warn('member-counts API error:', countsRes.status);
+    }
+
+    maxMembers = Math.max(...hexData.map(h => h.members || 0), 1);
+
+    // Most recent signup — matched to its hex so member view can celebrate it.
+    // Isolated so a bad response just leaves the map un-animated.
+    if (latestRes && latestRes.ok) {
+      try {
+        const { constituency } = await latestRes.json();
+        if (constituency) {
+          const match = hexData.find(h => h.name === constituency);
+          if (match) latestMemberGss = match.gss;
+        }
+      } catch (e) {
+        console.warn('latest-member parse error:', e);
+      }
+    }
+
+    // Handle ?constituency= deep-link
+    const urlCon = new URLSearchParams(location.search).get('constituency');
+    if (urlCon) {
+      document.getElementById('search-box').value = urlCon;
+      searchQuery = urlCon.toLowerCase();
+      const match = hexData.find(h => h.name.toLowerCase() === searchQuery);
+      if (match) selectedGss = match.gss;
+    }
+
+    renderMap();
+    document.getElementById('map-status').style.display = 'none';
+    document.getElementById('hex-svg').style.display   = 'block';
+    document.getElementById('map-zoom').hidden         = false;
+
+    if (selectedGss) {
+      const sel = hexData.find(h => h.gss === selectedGss);
+      if (sel) renderInfoCard(sel);
+    }
+
+  } catch (e) {
+    document.getElementById('map-status').textContent =
+      'Failed to load map data. Please try refreshing.';
+  }
+}
+
+// ── Render SVG ────────────────────────────────────────────────────
+function renderMap() {
+  const svg = document.getElementById('hex-svg');
+  svg.innerHTML = '';
+
+  const filtered = searchQuery
+    ? hexData.filter(h => matchesSearch(h, searchQuery))
+    : null;
+
+  // In member view, celebrate the most recent signup: its tile gently expands
+  // and a looping up-chevron rises above it (see .latest-member CSS). Only shown
+  // when the tile is actually visible under the current search filter.
+  const latestHex = (view === 'member' && latestMemberGss)
+    ? hexData.find(h => h.gss === latestMemberGss)
+    : null;
+  const showLatest = latestHex && (!filtered || filtered.includes(latestHex));
+
+  let latestPoly = null;
+  // Outlined hexes are drawn after the plain ones, and highlighted hexes after
+  // those again (see below), so their edges aren't overpainted.
+  const outlinedPolys = [];
+  const highlightedPolys = [];
+
+  for (const h of hexData) {
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    poly.setAttribute('points', h.pts);
+    poly.setAttribute('fill', cellColour(h));
+    poly.dataset.gss = h.gss;
+
+    // In the blue–yellow palette every coloured grade gets a thin black outline
+    // (only grey ?/ungraded tiles stay plain), so no grade stands out.
+    const outline = gradeGetsOutline(h.asvaGrade);
+    if (outline) poly.classList.add('cb-grade-outline');
+
+    let highlighted = false;
+    if (filtered) {
+      if (filtered.includes(h)) { poly.classList.add('highlighted'); highlighted = true; }
+      else                        poly.classList.add('dimmed');
+    }
+    if (selectedGss === h.gss) { poly.classList.add('highlighted'); highlighted = true; }
+
+    poly.addEventListener('mouseenter', e => showTooltip(e, h));
+    poly.addEventListener('mousemove',  e => moveTooltip(e));
+    poly.addEventListener('mouseleave', hideTooltip);
+    poly.addEventListener('click',      () => selectConstituency(h));
+
+    // Draw the celebrated tile last so its gentle expansion sits above its
+    // neighbours instead of being clipped underneath them.
+    if (showLatest && h === latestHex) { poly.classList.add('latest-member'); latestPoly = poly; continue; }
+    // A hex's stroke is centred on its shared edges, so a neighbour drawn later
+    // paints over it. Draw plain hexes first, then outlined ones (so their black
+    // edges sit on top of neighbours' white strokes), then highlighted ones last
+    // of all (so their yellow selection ring isn't nibbled by a neighbour's
+    // black outline).
+    if (highlighted)   { highlightedPolys.push(poly); continue; }
+    if (outline)       { outlinedPolys.push(poly);    continue; }
+    svg.appendChild(poly);
+  }
+
+  for (const poly of outlinedPolys)    svg.appendChild(poly);
+  for (const poly of highlightedPolys) svg.appendChild(poly);
+
+  if (showLatest) appendLatestHalo(svg, latestHex);   // glow, behind the tile
+  if (latestPoly) svg.appendChild(latestPoly);
+  if (showLatest) appendLatestChevron(svg, latestHex);
+
+  renderLegend();
+}
+
+// Centre of a hex from its "x,y x,y …" points (the centroid of a regular
+// hexagon is the mean of its vertices).
+function hexCentre(pts) {
+  const nums = pts.trim().split(/[\s,]+/).map(Number);
+  let sx = 0, sy = 0, n = 0;
+  for (let i = 0; i + 1 < nums.length; i += 2) { sx += nums[i]; sy += nums[i + 1]; n++; }
+  return n ? { x: sx / n, y: sy / n } : { x: 0, y: 0 };
+}
+
+// Draws a soft breathing glow just behind the most-recent-signup tile: a copy
+// of the hex, filled in accent red and blurred, animated by the .latest-halo
+// CSS. A one-off <defs> blur filter is ensured on the SVG. Behind the tile,
+// pointer-events off, so it never affects hit-testing.
+function appendLatestHalo(svg, h) {
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  if (!svg.querySelector('#latestGlow')) {
+    const defs = document.createElementNS(SVGNS, 'defs');
+    const filter = document.createElementNS(SVGNS, 'filter');
+    filter.setAttribute('id', 'latestGlow');
+    // Room around the shape so the blur isn't clipped by the filter region.
+    filter.setAttribute('x', '-60%'); filter.setAttribute('y', '-60%');
+    filter.setAttribute('width', '220%'); filter.setAttribute('height', '220%');
+    const blur = document.createElementNS(SVGNS, 'feGaussianBlur');
+    blur.setAttribute('stdDeviation', '2.4');
+    filter.appendChild(blur);
+    defs.appendChild(filter);
+    svg.appendChild(defs);
+  }
+  const halo = document.createElementNS(SVGNS, 'polygon');
+  halo.setAttribute('points', h.pts);
+  halo.setAttribute('class', 'latest-halo');
+  svg.appendChild(halo);
+}
+
+// Draws the looping up-chevron over the most-recent-signup tile. Appended last
+// so it sits above every hex; pointer-events are off so it never blocks clicks.
+// This is an exact enlargement of the legend key's chevron (see latestSwatch):
+// the legend draws it over HEX_PTS — a 15-unit-wide hex, centre (8,9) — as
+// M 4.6 10.4 L 8 6.4 L 11.4 10.4, i.e. relative to the tile centre apex
+// (0,-2.6), base corners (±3.4,+1.4), stroke 1.5. We scale those numbers
+// uniformly by this tile's own width so the marker keeps the legend's exact
+// shape, upper placement and stroke proportion at the map's scale.
+function appendLatestChevron(svg, h) {
+  const c = hexCentre(h.pts);
+  const nums = h.pts.trim().split(/[\s,]+/).map(Number);
+  let minX = Infinity, maxX = -Infinity;
+  for (let i = 0; i + 1 < nums.length; i += 2) {
+    if (nums[i] < minX) minX = nums[i];
+    if (nums[i] > maxX) maxX = nums[i];
+  }
+  const s = (maxX - minX) / 15;   // legend reference hex is 15 units wide
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('class', 'latest-chevron');
+  g.setAttribute('transform', `translate(${c.x} ${c.y})`);
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d',
+    `M ${-3.4 * s} ${1.4 * s} L 0 ${-2.6 * s} L ${3.4 * s} ${1.4 * s}`);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke-width', 1.5 * s);
+  g.appendChild(path);
+  svg.appendChild(g);
+}
+
+function cellColour(h) {
+  if (view === 'member') return memberColour(h.members || 0, maxMembers);
+  return gradeColour(h.asvaGrade);
+}
+
+// ── Legend ────────────────────────────────────────────────────────
+const HEX_PTS = '15.5,9 11.75,15.5 4.25,15.5 0.5,9 4.25,2.5 11.75,2.5';
+
+function hexSwatch(colour, dashed, large, outline) {
+  const w = large ? 36 : 20, h = large ? 40 : 22;
+  if (dashed) {
+    return `<svg width="${w}" height="${h}" viewBox="0 0 16 18" style="flex-shrink:0;display:block">
+      <polygon points="${HEX_PTS}" fill="#f0f0f0" stroke="#aaa" stroke-width="1.5" stroke-dasharray="3,2"/>
+    </svg>`;
+  }
+  // Match the map: pale C/D swatches in the blue–yellow palette get a thin black
+  // outline so they don't fade against the legend background.
+  const stroke = outline ? ' stroke="#000" stroke-width="1"' : '';
+  return `<svg width="${w}" height="${h}" viewBox="0 0 16 18" style="flex-shrink:0;display:block">
+    <polygon points="${HEX_PTS}" fill="${colour}"${stroke}/>
+  </svg>`;
+}
+
+// Swatch that mirrors the most-recent-signup map marker for the legend: the
+// newest member's own tile colour, an accent outline, and a pulsing up-chevron
+// sitting on it, just like the marker on the map. Uses the same box size as the
+// other legend swatches (36×40 / viewBox 16×18) so the rows line up. Animation
+// and reduced-motion handling live in .legend-chevron-mark.
+function latestSwatch(colour) {
+  return `<svg width="36" height="40" viewBox="0 0 16 18" style="flex-shrink:0;display:block" aria-hidden="true">
+    <polygon points="${HEX_PTS}" fill="${colour}" stroke="var(--accent, #CC1133)" stroke-width="1.2"/>
+    <path class="legend-chevron-mark" d="M 4.6 10.4 L 8 6.4 L 11.4 10.4" fill="none"
+      stroke="var(--accent, #CC1133)" stroke-width="1.5"
+      stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+// Colour of the newest member's actual hex, so the legend key matches the tile
+// on the map. Falls back to the "None" colour if that constituency isn't loaded.
+function latestLegendColour() {
+  const h = latestMemberGss ? hexData.find(x => x.gss === latestMemberGss) : null;
+  return h ? memberColour(h.members || 0, maxMembers) : BUCKET_COLOURS[0];
+}
+
+function renderLegend() {
+  const el = document.getElementById('legend');
+  if (view === 'grade') {
+    const gradeEntries = Object.entries(gradePalette());
+    const mainGrades = gradeEntries.filter(([g]) => g !== 'DNR' && g !== '?');
+    const dnrGrade = gradeEntries.find(([g]) => g === 'DNR');
+    const notScoredGrade = gradeEntries.find(([g]) => g === '?');
+    el.innerHTML = `
+      <div class="legend-title">AI Safety Rating</div>
+      <div class="legend-subtitle legend-subtitle-muted">Of current MP by ASVA</div>
+      <div class="legend-items">
+        ${mainGrades.map(([grade, colour]) => `
+          <div class="legend-item">
+            ${hexSwatch(colour, false, true, gradeGetsOutline(grade))}
+            <span>Grade ${grade}</span>
+          </div>`).join('')}
+        <div class="legend-separator"></div>
+        ${dnrGrade ? `
+          <div class="legend-item">
+            ${hexSwatch(dnrGrade[1], false, true, gradeGetsOutline('DNR'))}
+            <span>No Response</span>
+          </div>` : ''}
+        ${notScoredGrade ? `
+          <div class="legend-item">
+            ${hexSwatch(notScoredGrade[1], false, true)}
+            <span>Not Scored</span>
+          </div>` : ''}
+      </div>
+      <div class="legend-info">
+        <span class="legend-info-link" id="gradeInfoLink">How are grades calculated?</span>
+      </div>`;
+  } else {
+    const ranges = memberBucketRanges(maxMembers);
+    el.innerHTML = `
+      <div class="legend-title">ASVA Members</div>
+      <div class="legend-subtitle legend-subtitle-muted">ASVA Members per constituency</div>
+      <div class="legend-items">
+        <div class="legend-item">
+          ${hexSwatch(BUCKET_COLOURS[0], false, true)}
+          <span>None</span>
+        </div>
+        ${ranges.map(r => `
+        <div class="legend-item">
+          ${hexSwatch(r.colour, false, true)}
+          <span>${r.lo === r.hi ? r.lo : `${r.lo}–${r.hi}`}</span>
+        </div>`).join('')}
+        <div class="legend-separator"></div>
+        <div class="legend-item">
+          ${latestSwatch(latestLegendColour())}
+          <span>Newest Member</span>
+        </div>
+      </div>`;
+  }
+}
+
+// ── View toggle ───────────────────────────────────────────────────
+function setView(v) {
+  view = v;
+  document.getElementById('btn-grade').classList.toggle('active',  v === 'grade');
+  document.getElementById('btn-member').classList.toggle('active', v === 'member');
+  // Colour-blind mode only affects the grade palette, so hide its toggle in
+  // Member View. The `colourblind`/`cbBlueYellow` state (and localStorage)
+  // is untouched, so it reappears exactly as the user left it in MP View.
+  const underbar = document.querySelector('.map-underbar');
+  if (underbar) underbar.hidden = v === 'member';
+  renderMap();
+}
+
+// ── Colour-blind palette toggles ──────────────────────────────────
+// Reflect the current toggle state on the buttons and the slide-out group.
+function syncColourblindUI() {
+  const btn = document.getElementById('btn-cb');
+  if (btn) {
+    btn.classList.toggle('active', colourblind);
+    btn.setAttribute('aria-pressed', colourblind ? 'true' : 'false');
+  }
+  const group = document.getElementById('cb-group');
+  if (group) group.classList.toggle('expanded', colourblind);
+  const byBtn = document.getElementById('btn-cb-by');
+  if (byBtn) {
+    byBtn.classList.toggle('active', colourblind && cbBlueYellow);
+    byBtn.setAttribute('aria-pressed', cbBlueYellow ? 'true' : 'false');
+    // Keep the collapsed sub-toggle out of tab order and off screen readers.
+    byBtn.setAttribute('aria-hidden', colourblind ? 'false' : 'true');
+    byBtn.tabIndex = colourblind ? 0 : -1;
+  }
+}
+
+function setColourblind(on) {
+  colourblind = !!on;
+  try { localStorage.setItem('asva-map-cb', colourblind ? '1' : '0'); } catch {}
+  syncColourblindUI();
+  renderMap();
+}
+
+function setBlueYellow(on) {
+  cbBlueYellow = !!on;
+  try { localStorage.setItem('asva-map-by', cbBlueYellow ? '1' : '0'); } catch {}
+  syncColourblindUI();
+  renderMap();
+}
+
+// ── Search ────────────────────────────────────────────────────────
+function matchesSearch(h, q) {
+  if (!q) return true;
+  if (h.name.toLowerCase().includes(q)) return true;
+  if (h.mpName) {
+    if (h.mpName.toLowerCase().includes(q)) return true;
+    if (stripHonorifics(h.mpName).toLowerCase().includes(q)) return true;
+  }
+  return false;
+}
+
+function onSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  const matches = searchQuery
+    ? hexData.filter(h => matchesSearch(h, searchQuery))
+    : [];
+  if (matches.length === 1) {
+    selectedGss = matches[0].gss;
+    renderInfoCard(matches[0]);
+  }
+  renderMap();
+}
+
+// ── Search autocomplete dropdown ──────────────────────────────────
+// Mirrors the scorecard's dropdown: suggests matching constituencies and MPs
+// as you type (no candidates on the map). Picking one selects that
+// constituency and shows its info card.
+const searchBox     = document.getElementById('search-box');
+const searchDropdown = document.getElementById('map-search-dropdown');
+
+function escHTML(s) {
+  return (s || '').replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+function hideDropdown() { searchDropdown.style.display = 'none'; }
+
+function addDropdownGroup(text) {
+  const el = document.createElement('div');
+  el.className = 'dropdown-group';
+  el.textContent = text;
+  searchDropdown.appendChild(el);
+}
+
+function pickFromDropdown(h, label) {
+  searchBox.value = label;
+  searchQuery = label.toLowerCase().trim();
+  hideDropdown();
+  selectConstituency(h);
+}
+
+function addConsItem(h) {
+  const item = document.createElement('div');
+  item.className = 'dropdown-item' + (h.gss === selectedGss ? ' selected' : '');
+  item.textContent = h.name;
+  item.addEventListener('click', () => pickFromDropdown(h, h.name));
+  searchDropdown.appendChild(item);
+}
+
+function addMpItem(h) {
+  const item = document.createElement('div');
+  item.className = 'dropdown-item dropdown-person';
+  const party = PARTY_NAMES[h.party] || h.party || '';
+  const sub = [party, h.name].filter(Boolean).join(' · ');
+  item.innerHTML = '<span class="dp-name">' + escHTML(h.mpName) + '</span>' +
+                   (sub ? '<span class="dp-sub"> · ' + escHTML(sub) + '</span>' : '');
+  item.addEventListener('click', () => pickFromDropdown(h, h.mpName));
+  searchDropdown.appendChild(item);
+}
+
+function showDropdown(term) {
+  term = (term || '').toLowerCase().trim();
+  if (!term) { hideDropdown(); return; }
+
+  const consMatches = hexData.filter(h => h.name.toLowerCase().includes(term));
+  const mpMatches   = hexData.filter(h => h.mpName &&
+    (h.mpName.toLowerCase().includes(term) ||
+     stripHonorifics(h.mpName).toLowerCase().includes(term)));
+
+  if (!consMatches.length && !mpMatches.length) {
+    searchDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">No matches found</div>';
+    searchDropdown.style.display = 'block';
+    return;
+  }
+
+  searchDropdown.innerHTML = '';
+  const showLabels = consMatches.length && mpMatches.length;
+  if (consMatches.length) {
+    if (showLabels) addDropdownGroup('Constituencies');
+    consMatches.slice(0, 12).forEach(addConsItem);
+  }
+  if (mpMatches.length) {
+    if (showLabels) addDropdownGroup('MPs');
+    mpMatches.slice(0, 12).forEach(addMpItem);
+  }
+  searchDropdown.style.display = 'block';
+}
+
+// ── Info panel ────────────────────────────────────────────────────
+function selectConstituency(h) {
+  selectedGss = h.gss;
+  renderMap();
+  renderInfoCard(h);
+}
+
+function renderInfoCard(h) {
+  const card    = document.getElementById('info-card');
+  const gradeBg = gradeColour(h.asvaGrade);
+  const members = h.members || 0;
+
+  const mpName = h.mpName || 'Unknown';
+
+  card.innerHTML = `
+    <h3>${h.name}</h3>
+
+    <div class="info-row">
+      <span class="info-label">Current MP</span>
+      <span class="info-value">${mpName}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">ASVA Grade</span>
+      <span class="info-value">
+        ${h.asvaGrade
+          ? `<span class="grade-badge" style="background:${gradeBg};color:${GRADE_DARK_TEXT.has(h.asvaGrade) ? '#333' : '#fff'}">${GRADE_DISPLAY[h.asvaGrade] ?? h.asvaGrade}</span>`
+          : '<span style="color:#999">TBC</span>'}
+      </span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">Majority</span>
+      <span class="info-value">${h.majority != null ? h.majority.toLocaleString() : '—'}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label">ASVA Members</span>
+      <span class="info-value">${members}</span>
+    </div>
+
+    <a class="scorecard-link" href="scorecard.html?constituency=${encodeURIComponent(h.name)}">
+      View on Scorecard →
+    </a>
+  `;
+
+  fillMobileInfo(h);
+}
+
+// Fill the mobile-only details box under the search bar. Mirrors the fields of
+// the desktop info-card, so a tap or search shows details without having to
+// scroll to the panel below the map.
+function fillMobileInfo(h) {
+  const box = document.getElementById('info-card-mobile');
+  if (!box) return;
+
+  const gradeBg      = gradeColour(h.asvaGrade);
+  const members      = h.members || 0;
+  const mpName       = h.mpName || 'Unknown';
+
+  document.getElementById('mi-name').textContent = h.name;
+  document.getElementById('mi-mp').textContent = mpName;
+
+  document.getElementById('mi-grade').innerHTML = h.asvaGrade
+    ? `<span class="grade-badge" style="background:${gradeBg};color:${GRADE_DARK_TEXT.has(h.asvaGrade) ? '#333' : '#fff'}">${GRADE_DISPLAY[h.asvaGrade] ?? h.asvaGrade}</span>`
+    : '<span style="color:#999">TBC</span>';
+
+  document.getElementById('mi-majority').textContent =
+    h.majority != null ? h.majority.toLocaleString() : '—';
+
+  document.getElementById('mi-members').textContent = members;
+
+  const link = document.getElementById('mi-scorecard');
+  link.href = `scorecard.html?constituency=${encodeURIComponent(h.name)}`;
+  box.classList.add('has-selection');
+}
+
+// ── Tooltip ───────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip(e, h) {
+  const partyName = PARTY_NAMES[h.party] || h.party || '?';
+  const members   = h.members || 0;
+  const grade     = h.asvaGrade ? (GRADE_DISPLAY[h.asvaGrade] ?? h.asvaGrade) : 'TBC';
+  const mpName    = h.mpName;
+  const isLatest  = view === 'member' && latestMemberGss && h.gss === latestMemberGss;
+  const detail = view === 'member'
+    ? `${partyName} · ${members} member${members !== 1 ? 's' : ''}`
+    : `${partyName} · Grade ${grade}`;
+  tooltip.innerHTML =
+    (isLatest ? '<span class="tip-latest-badge">Newest Member</span>' : '') +
+    `<strong>${h.name}</strong>` +
+    (mpName ? mpName + '<br>' : '') +
+    detail;
+  tooltip.style.display = 'block';
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  // Measure the tooltip and clamp it to the viewport so it flips and stays
+  // fully visible when the cursor/tap is near the right or bottom edge.
+  const margin = 8;
+  const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+  let x = e.clientX + 14;
+  if (x + tw > window.innerWidth - margin) x = e.clientX - 14 - tw;
+  x = Math.max(margin, Math.min(x, window.innerWidth - tw - margin));
+  let y = e.clientY + 14;
+  if (y + th > window.innerHeight - margin) y = e.clientY - 14 - th;
+  y = Math.max(margin, Math.min(y, window.innerHeight - th - margin));
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+function hideTooltip() {
+  tooltip.style.display = 'none';
+}
+
+// ── Wire up controls ──────────────────────────────────────────────
+document.getElementById('btn-grade').addEventListener('click', () => setView('grade'));
+document.getElementById('btn-member').addEventListener('click', () => setView('member'));
+document.getElementById('btn-cb').addEventListener('click', () => setColourblind(!colourblind));
+document.getElementById('btn-cb-by').addEventListener('click', () => setBlueYellow(!cbBlueYellow));
+searchBox.addEventListener('input', e => { onSearch(e.target.value); showDropdown(e.target.value); });
+searchBox.addEventListener('focus', () => showDropdown(searchBox.value));
+document.addEventListener('click', e => {
+  if (!searchBox.contains(e.target) && !searchDropdown.contains(e.target)) hideDropdown();
+});
+
+// Dismiss the follow-cursor tooltip on touch. It has no hover to end it, and
+// being position:fixed it otherwise stays stuck on screen while the page
+// scrolls. A tap anywhere that isn't a map hex closes it; scrolling clears it
+// too. The white info card below keeps the tapped constituency's details.
+// We test the target's own data-gss rather than its DOM position, because a
+// hex tap re-renders the map (svg.innerHTML = '') and detaches the tapped node
+// before this bubbling handler runs — the attribute survives, its parent
+// doesn't, so a positional check would wrongly hide the just-shown tooltip.
+document.addEventListener('click', e => {
+  const t = e.target;
+  const onHex = t && t.tagName && t.tagName.toLowerCase() === 'polygon'
+    && t.dataset && t.dataset.gss;
+  if (!onHex) hideTooltip();
+});
+window.addEventListener('scroll', hideTooltip, { passive: true });
+
+// Reflect a persisted colour-blind preference on the toggle buttons at load.
+// Suppress the slide-out animation for the initial (already-chosen) state so a
+// returning visitor doesn't see the sub-toggle animate in on page load.
+(function syncColourblindButtons() {
+  const byBtn = document.getElementById('btn-cb-by');
+  if (byBtn) {
+    byBtn.style.transition = 'none';
+    syncColourblindUI();
+    // Force a reflow, then restore transitions for subsequent user toggles.
+    void byBtn.offsetWidth;
+    byBtn.style.transition = '';
+  } else {
+    syncColourblindUI();
+  }
+})();
+
+// ── Grade info tooltip (follow-cursor) ───────────────────────────
+(function() {
+  const tip = document.createElement('div');
+  tip.style.cssText = 'display:none;position:fixed;background:#111;color:#fff;border-radius:8px;padding:12px 14px;width:240px;font-size:0.78rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.35);z-index:9999;pointer-events:none;';
+  tip.innerHTML = '<p style="margin-bottom:8px;">Grades are given based on public information found or submitted to ASVA. This information is shown in the constituency scorecard.</p><p style="margin-bottom:8px;">No Response means that we have found insufficient public information and the MP has not responded to queries from ASVA.</p><p>Not Scored means that ASVA has not yet scored this MP.</p>';
+  document.body.appendChild(tip);
+
+  // Position the tip near the cursor, but keep it fully on screen by
+  // flipping/clamping against the viewport edges (matters on mobile taps
+  // near the right or bottom edge).
+  function positionTip(x, y) {
+    const margin = 8;
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = x + 14;
+    if (left + tw > window.innerWidth - margin) left = x - 14 - tw;
+    left = Math.max(margin, Math.min(left, window.innerWidth - tw - margin));
+    let top = y + 14;
+    if (top + th > window.innerHeight - margin) top = y - 14 - th;
+    top = Math.max(margin, Math.min(top, window.innerHeight - th - margin));
+    tip.style.left = left + 'px';
+    tip.style.top  = top + 'px';
+  }
+
+  document.getElementById('legend').addEventListener('mouseover', e => {
+    if (e.target.closest('#gradeInfoLink')) {
+      tip.style.display = 'block';
+      positionTip(e.clientX, e.clientY);
+    }
+  });
+  document.getElementById('legend').addEventListener('mousemove', e => {
+    if (e.target.closest('#gradeInfoLink')) positionTip(e.clientX, e.clientY);
+  });
+  document.getElementById('legend').addEventListener('mouseout', e => {
+    if (e.target.closest('#gradeInfoLink')) tip.style.display = 'none';
+  });
+})();
+
+// ── Pan / zoom (drives the SVG viewBox) ───────────────────────────
+// Zoom buttons scale the viewBox around its centre; drag pans when zoomed.
+// Hit-testing/coords keep working because the viewBox transforms everything.
+(function initZoom(){
+  const svg    = document.getElementById('hex-svg');
+  const zin    = document.getElementById('zoom-in');
+  const zout   = document.getElementById('zoom-out');
+  const zreset = document.getElementById('zoom-reset');
+  if (!svg || !zin) return;
+
+  const BASE  = { x: 0, y: 0, w: 600, h: 850 };
+  const MIN_W = BASE.w * 0.28;          // ~3.5× maximum zoom-in
+  const vb    = { ...BASE };
+
+  function apply(){
+    svg.setAttribute('viewBox', vb.x + ' ' + vb.y + ' ' + vb.w + ' ' + vb.h);
+    const zoomed = vb.w < BASE.w - 0.5;
+    svg.classList.toggle('zoomed', zoomed);
+    svg.style.touchAction = zoomed ? 'none' : '';   // let the page scroll when not zoomed
+    zin.disabled  = vb.w <= MIN_W + 0.5;
+    zout.disabled = !zoomed;
+  }
+  function clampPan(){
+    vb.x = Math.min(BASE.x + BASE.w - vb.w, Math.max(BASE.x, vb.x));
+    vb.y = Math.min(BASE.y + BASE.h - vb.h, Math.max(BASE.y, vb.y));
+  }
+  function zoomAt(factor, cx, cy){
+    const nw = Math.min(BASE.w, Math.max(MIN_W, vb.w * factor));
+    const nh = nw * BASE.h / BASE.w;
+    const fx = (cx - vb.x) / vb.w, fy = (cy - vb.y) / vb.h;
+    vb.x = cx - fx * nw; vb.y = cy - fy * nh; vb.w = nw; vb.h = nh;
+    clampPan(); apply();
+  }
+  const centre = () => ({ x: vb.x + vb.w / 2, y: vb.y + vb.h / 2 });
+  function reset(){ vb.x = BASE.x; vb.y = BASE.y; vb.w = BASE.w; vb.h = BASE.h; apply(); }
+
+  zin.addEventListener('click',    () => { const c = centre(); zoomAt(0.7,     c.x, c.y); });
+  zout.addEventListener('click',   () => { const c = centre(); zoomAt(1 / 0.7, c.x, c.y); });
+  zreset.addEventListener('click', reset);
+
+  // Drag to pan (only when zoomed). A real drag suppresses the trailing click so
+  // it doesn't also select a constituency.
+  let active = null, moved = false, sx = 0, sy = 0, svbx = 0, svby = 0;
+  svg.addEventListener('pointerdown', e => {
+    if (vb.w >= BASE.w - 0.5) return;                    // not zoomed → normal behaviour
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (active !== null) return;                         // ignore extra fingers
+    active = e.pointerId; moved = false;
+    sx = e.clientX; sy = e.clientY; svbx = vb.x; svby = vb.y;
+    svg.classList.add('grabbing');
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  svg.addEventListener('pointermove', e => {
+    if (e.pointerId !== active) return;
+    const r = svg.getBoundingClientRect();
+    if (Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 4) moved = true;
+    vb.x = svbx - (e.clientX - sx) * vb.w / r.width;
+    vb.y = svby - (e.clientY - sy) * vb.h / r.height;
+    clampPan(); apply();
+  });
+  function end(e){
+    if (e.pointerId !== active) return;
+    active = null; svg.classList.remove('grabbing');
+    try { svg.releasePointerCapture(e.pointerId); } catch (_) {}
+  }
+  svg.addEventListener('pointerup', end);
+  svg.addEventListener('pointercancel', end);
+  svg.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+
+  apply();
+})();
+
+// ── Boot ──────────────────────────────────────────────────────────
+init();
+})();
+</script>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

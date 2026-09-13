@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - Scorecard</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - Scorecard" />
+  <meta property="og:description" content="Find your MP's AI safety grade and the evidence behind it, then pledge your vote." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/scorecard" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - Scorecard" />
+  <meta name="twitter:description" content="Find your MP's AI safety grade and the evidence behind it, then pledge your vote." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="Find your MP's AI safety grade and the evidence behind it, then pledge your vote." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/scorecard" />
+  <meta name="turbo-cache-control" content="no-cache">
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+
+<body class="page-scorecard">
+
+<!-- Site navigation -->
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<!-- Search bar -->
+<div class="toprow">
+  <div class="bar">
+    <div class="search-wrapper">
+      <input
+        type="text"
+        id="constituencySearch"
+        placeholder="Search by postcode, constituency, MP or candidate…"
+        autocomplete="off"
+        aria-label="Search by postcode, constituency, MP or candidate"
+      >
+      <button id="clearBtn" class="clear-btn" aria-label="Clear search">×</button>
+      <div id="constituencyDropdown"></div>
+    </div>
+  </div>
+</div>
+
+<div id="noConstituencyPrompt" style="max-width:calc(900px - 28px);margin:12px auto 0;background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06);padding:20px;text-align:center;font-size:20px;color:var(--ink);">Find your constituency above, or conduct a search.</div>
+
+<!-- Scorecard -->
+<div class="app">
+  <div class="sheetWrap" id="sheetWrap" style="display:none">
+    <div class="sheet">
+      <div class="header">
+        <div class="titleBlock">
+          <div class="constituency" id="titleConstituency">—</div>
+          <div class="subtitle">Scorecard</div>
+        </div>
+        <button type="button" class="sc-share-btn" id="scShareBtn" hidden>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+          <span id="scShareLabel">Share this scorecard</span>
+        </button>
+      </div>
+      <div class="cards" id="cards">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Member-edit modal: appended once, reused for whichever card's "Submit a
+     member edit" button was clicked (see window.openMemberEditModal below). -->
+<div class="member-edit-overlay" id="memberEditOverlay" role="dialog" aria-modal="true" aria-label="Suggest an edit">
+  <div class="member-edit-box">
+    <button type="button" class="member-edit-close" id="meClose" aria-label="Close">×</button>
+    <h2 id="meTitle">Suggest an edit</h2>
+    <span class="member-edit-sub" id="meSubtitle"></span>
+
+    <!-- Step 1: request a login link -->
+    <div id="meStepLogin">
+      <p style="font-size:14px;color:#444;line-height:1.6;margin-bottom:16px;">
+        ASVA members can suggest a grade, bullet points, or sources for this MP. We'll email you a one-time link to confirm it's you.
+      </p>
+      <div class="member-edit-field">
+        <label for="meEmail">Your email address</label>
+        <input type="email" id="meEmail" autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="member-edit-actions">
+        <button type="button" class="member-edit-btn member-edit-btn-primary" id="meLoginBtn">Email me a login link</button>
+      </div>
+      <div class="member-edit-status" id="meLoginStatus"></div>
+      <p class="member-edit-not-member">
+        Not a member yet? <a href="pledge.html">Sign the pledge</a> to join — or if you'd rather not create an account,
+        <a id="meMailtoFallback" href="#">email us your suggestion</a> instead.
+      </p>
+    </div>
+
+    <!-- Step 2: the edit form (shown once a valid member session is found) -->
+    <div id="meStepForm" hidden>
+      <a href="member-edit-guide.html" target="_blank" rel="noopener noreferrer" class="member-edit-guide-link">Read the style guide before you start →</a>
+      <div class="member-edit-field">
+        <label for="meGrade">Grade</label>
+        <select id="meGrade">
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="?">? (not scored)</option>
+          <option value="DNR">DNR (did not respond)</option>
+          <option value="D">D</option>
+          <option value="E">E</option>
+          <option value="F">F</option>
+        </select>
+      </div>
+      <div class="member-edit-field">
+        <label>Justification bullets <span class="member-edit-hint">tap to edit · drag ⠿ to reorder</span></label>
+        <div id="meBullets"></div>
+      </div>
+      <div class="member-edit-field">
+        <label>Sources <span class="member-edit-hint">tap to edit · drag ⠿ to reorder</span></label>
+        <div id="meSources"></div>
+      </div>
+      <div class="member-edit-field">
+        <label for="meNote">Note to the reviewer <span class="member-edit-hint">optional</span></label>
+        <textarea id="meNote" placeholder="Anything the reviewer should know"></textarea>
+      </div>
+      <div class="member-edit-actions">
+        <button type="button" class="member-edit-btn member-edit-btn-primary" id="meSubmitBtn">Submit for review</button>
+        <button type="button" class="member-edit-btn member-edit-btn-secondary" id="meCancelBtn">Cancel</button>
+      </div>
+      <div class="member-edit-status" id="meFormStatus"></div>
+    </div>
+  </div>
+</div>
+
+<script src="editable-list.js"></script>
+<script>
+(function() {
+
+  // ── Grade colours / order ─────────────────────────────────────────────────
+  const COLOUR = {
+    A: getComputedStyle(document.body).getPropertyValue('--A').trim(),
+    B: getComputedStyle(document.body).getPropertyValue('--B').trim(),
+    C: getComputedStyle(document.body).getPropertyValue('--C').trim(),
+    '?': getComputedStyle(document.body).getPropertyValue('--Q').trim(),
+    D: getComputedStyle(document.body).getPropertyValue('--D').trim(),
+    E: getComputedStyle(document.body).getPropertyValue('--E').trim(),
+    F: getComputedStyle(document.body).getPropertyValue('--F').trim(),
+    DNR: '#F0D080',
+  };
+  const ORDER = {A:0, B:1, C:2, '?':3, DNR:4, D:5, E:6, F:7};
+  const GRADE_LABEL = { '?': 'TBC', DNR: '?' };
+
+  function escHTML(s) {
+    return String(s ?? '')
+      .replaceAll('&','&amp;').replaceAll('<','&lt;')
+      .replaceAll('>','&gt;').replaceAll('"','&quot;');
+  }
+  function gradeKey(g) {
+    const gg = (g || '?').toString().trim().toUpperCase() || '?';
+    return (gg in ORDER) ? ORDER[gg] : 999;
+  }
+
+  // ── Data ─────────────────────────────────────────────────────────────────
+  let allData = null;
+  let ratingsMap = {}; // confirmed ratings from Supabase, keyed by constituency
+  let peopleIndex = []; // { name, party, constituency, isMP } for MP/candidate search
+  let currentListData = []; // the rendered constituency's candidate rows, for the member-edit modal's prefill
+
+  // Flatten every candidate (and current MP) into a searchable index. The
+  // candidates map already includes each seat's current MP, so anyone here is
+  // guaranteed to render as a card on their constituency's scorecard.
+  function buildPeopleIndex() {
+    const map = (allData && allData.candidates) || {};
+    const seen = new Set();
+    peopleIndex = [];
+    const add = (name, party, constituency, isMP) => {
+      name = (name || '').trim();
+      if (!name || !constituency) return;
+      const key = name.toLowerCase() + '||' + constituency.toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      peopleIndex.push({ name, party: (party || '').trim(), constituency, isMP: !!isMP });
+    };
+    Object.keys(map).forEach(cons => (map[cons] || []).forEach(c => add(c.name, c.party, cons, c.current_mp)));
+    // Include any confirmed-rating MP name too, in case it differs from the sheet.
+    Object.keys(ratingsMap).forEach(cons => add(ratingsMap[cons].mp_name, '', cons, true));
+    peopleIndex.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+  }
+
+  async function fetchConstituencies() {
+    const res = await fetch('/data.json');
+    if (!res.ok) throw new Error('Failed to load data');
+    allData = await res.json();
+    // Overlay confirmed ratings at runtime (never blocks — falls back to sheet).
+    try {
+      const rr = await fetch('/api/current-ratings', { cache: 'no-store' });
+      if (rr.ok) ratingsMap = (await rr.json()).ratings || {};
+    } catch { /* keep built-in grades */ }
+    return allData.constituencies;
+  }
+
+  // Apply a confirmed rating to the current MP's card for a constituency,
+  // overriding the sheet grade/bullets/evidence. Returns a new list.
+  function applyRating(constituencyName, list) {
+    const r = ratingsMap[constituencyName];
+    if (!r) return list;
+    const bullets = r.bullets || [], sources = r.sources || [];
+    const overrides = {
+      grade: r.grade,
+      bullet1: bullets[0] || '', bullet2: bullets[1] || '', bullet3: bullets[2] || '',
+      bullet4: bullets[3] || '', bullet5: bullets[4] || '',
+      evidence1: sources[0]?.title || '', evidence1_url: sources[0]?.url || '',
+      evidence2: sources[1]?.title || '', evidence2_url: sources[1]?.url || '',
+      evidence3: sources[2]?.title || '', evidence3_url: sources[2]?.url || '',
+      evidence4: sources[3]?.title || '', evidence4_url: sources[3]?.url || '',
+      evidence5: sources[4]?.title || '', evidence5_url: sources[4]?.url || '',
+      evidence6: sources[5]?.title || '', evidence6_url: sources[5]?.url || '',
+      last_updated: (r.updated_at || '').slice(0, 10),
+    };
+    const norm = s => (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+    const out = list.map(c => ({ ...c }));
+    let target = out.find(c => c.current_mp) || out.find(c => norm(c.name) === norm(r.mp_name));
+    if (target) Object.assign(target, overrides);
+    else out.push({ name: r.mp_name, party: '', current_mp: true, ...overrides });
+    return out;
+  }
+
+  async function fetchCandidates(constituencyName) {
+    const raw  = allData?.candidates?.[constituencyName] || [];
+    const list = applyRating(constituencyName, raw);
+    return [...list].sort((a, b) => {
+      const ka = gradeKey(a.grade), kb = gradeKey(b.grade);
+      if (ka !== kb) return ka - kb;
+      return (a.name || '').localeCompare(b.name || '', undefined, {sensitivity:'base'});
+    });
+  }
+
+  // ── Toggle card expand ────────────────────────────────────────────────────
+  window.toggleCard = function(card) {
+    card.classList.toggle('open');
+  };
+
+  // ── DOM refs ──────────────────────────────────────────────────────────────
+  const constituencySearch   = document.getElementById('constituencySearch');
+  const constituencyDropdown = document.getElementById('constituencyDropdown');
+  const clearBtn             = document.getElementById('clearBtn');
+  const titleConstituency    = document.getElementById('titleConstituency');
+  const cards                = document.getElementById('cards');
+  const sheetWrap            = document.getElementById('sheetWrap');
+  const noConstituencyPrompt = document.getElementById('noConstituencyPrompt');
+  const scShareBtn           = document.getElementById('scShareBtn');
+  const scShareLabel         = document.getElementById('scShareLabel');
+
+  let allConstituencies = [];
+  let selectedConstituency = '';
+
+  // ── Shareable per-constituency link ─────────────────────────────────────────
+  // A scorecard's address is the page URL with ?constituency=<name> (the same
+  // param the init deep-link already reads). We keep the address bar in sync as
+  // the user browses, so copying the URL — or the "Share this scorecard" button —
+  // always points at the scorecard on screen.
+  function shareUrlFor(name) {
+    const base = location.origin + location.pathname;
+    return name ? base + '?constituency=' + encodeURIComponent(name) : base;
+  }
+  // Reflect the current selection in the URL without adding history entries.
+  function syncShareUrl(name) {
+    try { history.replaceState(null, '', shareUrlFor(name)); } catch (e) {}
+  }
+  function flashShare(msg) {
+    if (!scShareLabel) return;
+    const prev = scShareLabel.getAttribute('data-base') || scShareLabel.textContent;
+    scShareLabel.setAttribute('data-base', prev);
+    scShareLabel.textContent = msg;
+    scShareBtn.classList.add('copied');
+    clearTimeout(scShareBtn._t);
+    scShareBtn._t = setTimeout(() => { scShareLabel.textContent = prev; scShareBtn.classList.remove('copied'); }, 1800);
+  }
+  if (scShareBtn) {
+    scShareBtn.addEventListener('click', () => {
+      const name = selectedConstituency;
+      if (!name) return;
+      const url = shareUrlFor(name);
+      const shareData = { title: name + ' — ASVA scorecard', text: 'See how ' + name + '’s MP scores on AI safety:', url: url };
+      // Native share sheet where available (mobile); otherwise copy the link.
+      if (navigator.share) {
+        navigator.share(shareData).catch(() => {});
+        return;
+      }
+      const copy = navigator.clipboard && navigator.clipboard.writeText
+        ? navigator.clipboard.writeText(url)
+        : Promise.reject();
+      copy.then(() => flashShare('Link copied!'), () => flashShare('Press Ctrl+C'));
+    });
+  }
+
+  function updateClearButton() {
+    clearBtn.classList.toggle('visible', !!constituencySearch.value);
+  }
+
+  // Keep the whole prompt readable on small screens: swap to a shorter
+  // placeholder where the full one would be clipped by the input width.
+  const PLACEHOLDER_FULL  = 'Search by postcode, constituency, MP or candidate…';
+  const PLACEHOLDER_SHORT = 'Search postcode, MP or candidate…';
+  function updatePlaceholder() {
+    constituencySearch.placeholder =
+      window.innerWidth <= 560 ? PLACEHOLDER_SHORT : PLACEHOLDER_FULL;
+  }
+  updatePlaceholder();
+  window.addEventListener('resize', updatePlaceholder);
+
+  clearBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    constituencySearch.value = '';
+    selectedConstituency = '';
+    constituencyDropdown.style.display = 'none';
+    updateClearButton();
+    render('');
+    constituencySearch.focus();
+  });
+
+  constituencySearch.addEventListener('input', e => {
+    updateClearButton();
+    const raw = e.target.value.trim();
+    if (FULL_POSTCODE_RE.test(raw)) { handlePostcode(raw); return; }
+    filterAndShowDropdown(e.target.value.toLowerCase());
+  });
+  constituencySearch.addEventListener('focus', () => {
+    filterAndShowDropdown(constituencySearch.value.toLowerCase());
+  });
+  document.addEventListener('click', e => {
+    if (!constituencySearch.contains(e.target) && !constituencyDropdown.contains(e.target)) {
+      constituencyDropdown.style.display = 'none';
+    }
+  });
+
+  function addGroupLabel(text) {
+    const el = document.createElement('div');
+    el.className = 'dropdown-group';
+    el.textContent = text;
+    constituencyDropdown.appendChild(el);
+  }
+  function addConsItem(name) {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item' + (name === selectedConstituency ? ' selected' : '');
+    item.textContent = name;
+    item.addEventListener('click', () => window.selectConstituency(name));
+    constituencyDropdown.appendChild(item);
+  }
+  function addPersonItem(p) {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item dropdown-person';
+    const sub = [p.party, p.constituency].filter(Boolean).join(' · ') + (p.isMP ? ' · Current MP' : '');
+    item.innerHTML = '<span class="dp-name">' + escHTML(p.name) + '</span>' +
+                     (sub ? '<span class="dp-sub"> · ' + escHTML(sub) + '</span>' : '');
+    item.addEventListener('click', () => selectPerson(p));
+    constituencyDropdown.appendChild(item);
+  }
+
+  // A full UK postcode typed into the search box is resolved to a constituency
+  // via postcodes.io (nothing stored) and offered in the dropdown; the user taps
+  // it to load that scorecard, just like any other constituency match.
+  const FULL_POSTCODE_RE = /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/;
+  let postcodeSeq = 0;
+  async function handlePostcode(pc) {
+    const seq = ++postcodeSeq;
+    constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">Looking up postcode…</div>';
+    constituencyDropdown.style.display = 'block';
+    let cons = null;
+    try {
+      const r = await fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc.trim()));
+      if (r.ok) { const j = await r.json(); const res = j && j.result; cons = res && (res.parliamentary_constituency_2024 || res.parliamentary_constituency); }
+    } catch (_) { /* offline / bad postcode — fall back to name search */ }
+    if (seq !== postcodeSeq) return;                       // a newer keystroke superseded this
+    if (cons) {
+      const match = allConstituencies.find(c => c.name.toLowerCase() === cons.toLowerCase());
+      constituencyDropdown.innerHTML = '';
+      if (match) {
+        addGroupLabel('Constituency for this postcode');
+        addConsItem(match.name);
+      } else {
+        constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">No scorecard for ' + escHTML(cons) + '</div>';
+      }
+      return;
+    }
+    filterAndShowDropdown(pc.toLowerCase());
+  }
+
+  function filterAndShowDropdown(term) {
+    term = (term || '').trim();
+
+    // On first load the search box can be focused before fetchConstituencies()
+    // resolves, when allConstituencies is still empty — without this check that
+    // looked identical to a real zero-result search and showed "No matches
+    // found" until the page was refreshed (and a refresh usually "fixed" it
+    // only because /data.json was then served from cache almost instantly).
+    if (!allConstituencies.length) {
+      constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">Loading constituencies…</div>';
+      constituencyDropdown.style.display = 'block';
+      return;
+    }
+
+    const consMatches   = allConstituencies.filter(c => c.name.toLowerCase().includes(term));
+    const peopleMatches = term ? peopleIndex.filter(p => p.name.toLowerCase().includes(term)) : [];
+
+    if (!consMatches.length && !peopleMatches.length) {
+      constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">No matches found</div>';
+      constituencyDropdown.style.display = 'block';
+      return;
+    }
+
+    constituencyDropdown.innerHTML = '';
+    const showLabels = consMatches.length && peopleMatches.length;
+    if (consMatches.length) {
+      if (showLabels) addGroupLabel('Constituencies');
+      consMatches.forEach(c => addConsItem(c.name));
+    }
+    if (peopleMatches.length) {
+      addGroupLabel('Candidates & MPs');
+      peopleMatches.slice(0, 12).forEach(addPersonItem);
+    }
+    constituencyDropdown.style.display = 'block';
+  }
+
+  window.selectConstituency = function(name) {
+    selectedConstituency = name;
+    constituencySearch.value = name;
+    constituencyDropdown.style.display = 'none';
+    updateClearButton();
+    render(name);
+  };
+
+  // Selecting an MP/candidate takes the user to the constituency they appear in,
+  // then scrolls to and highlights that person's card.
+  function selectPerson(p) {
+    selectedConstituency = p.constituency;
+    constituencySearch.value = p.constituency;
+    constituencyDropdown.style.display = 'none';
+    updateClearButton();
+    render(p.constituency, p.name);
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  async function render(constituency, focusName) {
+    titleConstituency.textContent = constituency || '—';
+    if (!constituency) {
+      sheetWrap.style.display = 'none';
+      noConstituencyPrompt.style.display = '';
+      if (scShareBtn) scShareBtn.hidden = true;
+      syncShareUrl('');
+      return;
+    }
+    sheetWrap.style.display = '';
+    noConstituencyPrompt.style.display = 'none';
+    if (scShareBtn) scShareBtn.hidden = false;
+    syncShareUrl(constituency);
+    cards.innerHTML = '<div class="loading">Loading candidates...</div>';
+    try {
+      const list = await fetchCandidates(constituency);
+      currentListData = list;
+      if (!list.length) {
+        cards.innerHTML = '<div class="empty">No candidates found for this constituency.</div>';
+        return;
+      }
+      cards.innerHTML = list.map(r => {
+        const g      = (r.grade || '?').toUpperCase();
+        const colour = COLOUR[g] || '#ccc';
+
+        const bullets = [];
+        for (let i = 1; i <= 5; i++) {
+          const t = (r[`bullet${i}`] || '').trim();
+          if (t) bullets.push(`<li>${escHTML(t)}</li>`);
+        }
+
+        const evidences = [];
+        for (let i = 1; i <= 6; i++) {
+          const text = (r[`evidence${i}`] || '').trim();
+          const url  = (r[`evidence${i}_url`] || '').trim();
+          if (text) {
+            evidences.push(url
+              ? `<li><a href="${escHTML(url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${escHTML(text)}</a></li>`
+              : `<li>${escHTML(text)}</li>`
+            );
+          }
+        }
+
+        const lastUpdated = (r.last_updated || '').trim();
+
+        return `
+          <div class="card${g === '?' ? ' grade-q' : ''}" data-grade="${escHTML(g)}" data-name="${escHTML(r.name)}" style="border-color:${colour}" onclick="toggleCard(this)">
+            <div class="card-summary">
+              <div class="cell leftStrip" style="background:${colour}">
+                <div class="pill">${escHTML(GRADE_LABEL[g] || g)}</div>
+              </div>
+              <div class="cell middle">
+                <div class="name">${escHTML(r.name)}${r.current_mp ? '<span class="current-mp-tag">Current MP</span>' : ''}</div>
+                ${bullets.length ? `<ul>${bullets.join('')}</ul>` : ''}
+              </div>
+              ${r.current_mp ? `
+              <div class="cell mp-badge-cell">
+                <svg viewBox="0 0 20 24" width="28" height="34" fill="#1a1a2e" xmlns="http://www.w3.org/2000/svg">
+                  <polygon points="2,8 2,5 5.5,7 10,2 14.5,7 18,5 18,8"/>
+                  <rect x="1" y="8" width="18" height="2"/>
+                  <rect x="2" y="10" width="2.5" height="10"/>
+                  <rect x="6.5" y="10" width="2.5" height="10"/>
+                  <rect x="11" y="10" width="2.5" height="10"/>
+                  <rect x="15.5" y="10" width="2.5" height="10"/>
+                  <rect x="1" y="13.5" width="18" height="1.5"/>
+                  <rect x="1" y="17" width="18" height="1.5"/>
+                </svg>
+                Current MP
+              </div>` : ''}
+              <div class="cell right">
+                ${escHTML(r.party)}
+                <span class="chevron">▼</span>
+              </div>
+            </div>
+            <div class="card-expanded">
+              <div class="expanded-meta">
+                ${lastUpdated ? `<span>Last updated: ${escHTML(lastUpdated)}</span>` : '<span></span>'}
+              </div>
+              ${evidences.length ? `<ul class="evidence-list">${evidences.join('')}</ul>` : ''}
+              <div class="card-links-row">
+                <a href="mailto:contact@aisafetyvoteralliance.co.uk?subject=Scorecard%20update%20for%20${encodeURIComponent(r.name)}"
+                   class="suggest-link"
+                   onclick="event.stopPropagation()">
+                  Something to add or something we got wrong? Let us know by email →
+                </a>
+                <button type="button" class="member-edit-trigger"
+                        data-constituency="${escHTML(constituency)}" data-mp="${escHTML(r.name)}"
+                        onclick="event.stopPropagation(); window.openMemberEditModal(this.dataset.constituency, this.dataset.mp)">
+                  Submit a Member edit →
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // If we arrived by searching a person, reveal and highlight their card.
+      if (focusName) {
+        const norm = s => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        const want = norm(focusName);
+        const target = [...cards.querySelectorAll('.card')].find(el => {
+          const nm = norm(el.getAttribute('data-name'));
+          return nm === want || nm.startsWith(want) || want.startsWith(nm);
+        });
+        if (target) {
+          target.classList.add('open', 'card-highlight');
+          setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
+          setTimeout(() => target.classList.remove('card-highlight'), 2400);
+        }
+      }
+    } catch {
+      cards.innerHTML = '<div class="error">Error loading candidates.</div>';
+    }
+  }
+
+  // ── Member-edit modal ────────────────────────────────────────────────────
+  // Suggests an edit to an MP's rating as a confirmed ASVA member. Login is a
+  // magic link (see functions/api/member/*, lib/member-auth.js) entirely
+  // separate from the admin Golden Path session; the edit is only ever staged
+  // (functions/api/member-submissions/create.js) — nothing here writes to the
+  // live rating directly. The bullets/sources sub-editors (drag to reorder)
+  // are the same shared component Golden Path uses — see editable-list.js.
+  const editableList     = window.ASVAEditableList.editableList;
+  const meOverlay        = document.getElementById('memberEditOverlay');
+  const meTitle          = document.getElementById('meTitle');
+  const meSubtitle       = document.getElementById('meSubtitle');
+  const meStepLogin      = document.getElementById('meStepLogin');
+  const meStepForm       = document.getElementById('meStepForm');
+  const meEmail          = document.getElementById('meEmail');
+  const meLoginBtn       = document.getElementById('meLoginBtn');
+  const meLoginStatus    = document.getElementById('meLoginStatus');
+  const meMailtoFallback = document.getElementById('meMailtoFallback');
+  const meGrade          = document.getElementById('meGrade');
+  const meBulletsWrap    = document.getElementById('meBullets');
+  const meSourcesWrap    = document.getElementById('meSources');
+  const meNote           = document.getElementById('meNote');
+  const meSubmitBtn      = document.getElementById('meSubmitBtn');
+  const meCancelBtn      = document.getElementById('meCancelBtn');
+  const meFormStatus     = document.getElementById('meFormStatus');
+  const meClose          = document.getElementById('meClose');
+
+  let meContext       = null; // { constituency, mpName }
+  let meBulletsEditor = null;
+  let meSourcesEditor = null;
+
+  function meShowStatus(el, msg, kind) {
+    el.textContent = msg;
+    el.className = 'member-edit-status show' + (kind ? ' ' + kind : '');
+  }
+  function meClearStatus(el) {
+    el.textContent = '';
+    el.className = 'member-edit-status';
+  }
+
+  // The card's currently-shown values for an MP (already reflects any
+  // confirmed-rating overlay) — used to prefill the form the first time a
+  // member edits this seat, before they have a pending submission of their own.
+  function meCurrentValuesFor(mpName) {
+    const norm = s => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const want = norm(mpName);
+    const data = currentListData.find(r => norm(r.name) === want);
+    if (!data) return { grade: '?', bullets: [], sources: [] };
+    const bullets = [];
+    for (let i = 1; i <= 5; i++) { const t = (data[`bullet${i}`] || '').trim(); if (t) bullets.push(t); }
+    const sources = [];
+    for (let i = 1; i <= 6; i++) {
+      const title = (data[`evidence${i}`] || '').trim();
+      const url   = (data[`evidence${i}_url`] || '').trim();
+      if (title) sources.push({ title, url });
+    }
+    return { grade: (data.grade || '?').toUpperCase(), bullets, sources };
+  }
+
+  function meRenderForm(values) {
+    meGrade.value = values.grade || '?';
+    meBulletsWrap.innerHTML = '';
+    meBulletsEditor = editableList('bullets', values.bullets || []);
+    meBulletsWrap.appendChild(meBulletsEditor);
+    meSourcesWrap.innerHTML = '';
+    meSourcesEditor = editableList('srcs', values.sources || []);
+    meSourcesWrap.appendChild(meSourcesEditor);
+    meNote.value = values.note || '';
+  }
+
+  function meShowLoginStep() {
+    meStepLogin.hidden = false;
+    meStepForm.hidden = true;
+    meClearStatus(meLoginStatus);
+    meEmail.value = '';
+    meLoginBtn.disabled = false;
+    meLoginBtn.textContent = 'Email me a login link';
+  }
+
+  function meShowFormStep(values) {
+    meStepLogin.hidden = true;
+    meStepForm.hidden = false;
+    meClearStatus(meFormStatus);
+    meSubmitBtn.disabled = false;
+    meSubmitBtn.textContent = 'Submit for review';
+    meRenderForm(values);
+  }
+
+  window.openMemberEditModal = function (constituency, mpName) {
+    meContext = { constituency, mpName };
+    meTitle.textContent = 'Suggest an edit';
+    meSubtitle.textContent = mpName + ' — ' + constituency;
+    meMailtoFallback.href = 'mailto:contact@aisafetyvoteralliance.co.uk?subject=' +
+      encodeURIComponent('Scorecard update for ' + mpName);
+    meOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    meShowLoginStep(); // default while the session check below resolves
+    fetch('/api/member/session?constituency=' + encodeURIComponent(constituency), { credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(session => {
+        // A newer click on a different card superseded this check.
+        if (!meContext || meContext.constituency !== constituency || meContext.mpName !== mpName) return;
+        if (!session.authenticated) { meShowLoginStep(); return; }
+        const p = session.pending_submission;
+        meShowFormStep(p
+          ? { grade: p.proposed_grade, bullets: p.bullets || [], sources: p.sources || [], note: p.note || '' }
+          : meCurrentValuesFor(mpName));
+      })
+      .catch(() => meShowLoginStep());
+  };
+
+  function meCloseModal() {
+    meOverlay.classList.remove('show');
+    document.body.style.overflow = '';
+    meContext = null;
+  }
+  meClose.addEventListener('click', meCloseModal);
+  meCancelBtn.addEventListener('click', meCloseModal);
+  meOverlay.addEventListener('click', e => { if (e.target === meOverlay) meCloseModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && meOverlay.classList.contains('show')) meCloseModal();
+  });
+
+  meEmail.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); meLoginBtn.click(); }
+  });
+  meLoginBtn.addEventListener('click', () => {
+    const email = meEmail.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      meShowStatus(meLoginStatus, 'Please enter a valid email address.', 'err');
+      return;
+    }
+    meLoginBtn.disabled = true;
+    meLoginBtn.textContent = 'Sending…';
+    fetch('/api/member/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, constituency: meContext && meContext.constituency, mp_name: meContext && meContext.mpName }),
+    })
+      .then(() => {
+        meShowStatus(meLoginStatus, "If that email matches an ASVA member, we've sent a login link — check your inbox.", 'ok');
+        meLoginBtn.textContent = 'Link sent';
+      })
+      .catch(() => {
+        meShowStatus(meLoginStatus, 'Something went wrong — please try again.', 'err');
+        meLoginBtn.disabled = false;
+        meLoginBtn.textContent = 'Email me a login link';
+      });
+  });
+
+  meSubmitBtn.addEventListener('click', () => {
+    if (!meContext) return;
+    const bullets = meBulletsEditor ? meBulletsEditor.getValues() : [];
+    const sources = meSourcesEditor ? meSourcesEditor.getValues() : [];
+    meSubmitBtn.disabled = true;
+    meSubmitBtn.textContent = 'Submitting…';
+    fetch('/api/member-submissions/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        constituency: meContext.constituency,
+        mp_name:      meContext.mpName,
+        grade:        meGrade.value,
+        bullets, sources,
+        note: meNote.value.trim(),
+      }),
+    })
+      .then(r => {
+        if (r.status === 401) {
+          meShowLoginStep();
+          meShowStatus(meLoginStatus, 'Your session expired — please log in again.', 'err');
+          return null;
+        }
+        return r.json();
+      })
+      .then(data => {
+        if (!data) return;
+        if (data.success) {
+          meShowStatus(meFormStatus, 'Thanks — your suggested edit has been sent for review.', 'ok');
+          meSubmitBtn.textContent = 'Submitted';
+          setTimeout(meCloseModal, 1800);
+        } else {
+          meShowStatus(meFormStatus, data.error || 'Something went wrong — please try again.', 'err');
+          meSubmitBtn.disabled = false;
+          meSubmitBtn.textContent = 'Submit for review';
+        }
+      })
+      .catch(() => {
+        meShowStatus(meFormStatus, 'Something went wrong — please try again.', 'err');
+        meSubmitBtn.disabled = false;
+        meSubmitBtn.textContent = 'Submit for review';
+      });
+  });
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  (async function init() {
+    try {
+      allConstituencies = await fetchConstituencies();
+      buildPeopleIndex();
+      sheetWrap.style.display = 'none';
+      noConstituencyPrompt.style.display = '';
+
+      // If the user focused the search box before this resolved, it's showing
+      // the "Loading constituencies…" placeholder — refresh it now so the real
+      // list appears without needing another click.
+      if (document.activeElement === constituencySearch) {
+        filterAndShowDropdown(constituencySearch.value.toLowerCase());
+      }
+
+      const params   = new URLSearchParams(window.location.search);
+      const deepLink = params.get('constituency');
+      // Returning from the member-login email link (functions/api/member/verify.js
+      // redirects here with these params): reopen the right card AND the edit
+      // form automatically, instead of dropping the member on a blank scorecard.
+      const editMp = params.get('editMp');
+      const wantsMemberEdit = params.get('memberEdit') === '1' && !!deepLink && !!editMp;
+
+      if (deepLink) {
+        const match = allConstituencies.find(c =>
+          c.name === deepLink || c.name.toLowerCase() === deepLink.toLowerCase()
+        );
+        if (match) {
+          selectedConstituency = match.name;
+          constituencySearch.value = match.name;
+          updateClearButton();
+          await render(match.name, wantsMemberEdit ? editMp : undefined);
+          setTimeout(() => {
+            document.querySelector('.sheetWrap')?.scrollIntoView({behavior:'smooth', block:'start'});
+          }, 300);
+          if (wantsMemberEdit) window.openMemberEditModal(match.name, editMp);
+        }
+      }
+
+      if (params.has('memberEdit') || params.has('editMp')) {
+        params.delete('memberEdit');
+        params.delete('editMp');
+        const qs = params.toString();
+        history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
+      }
+    } catch {
+      cards.innerHTML = '<div class="error">Failed to load constituencies.</div>';
+    }
+  })();
+
+})();
+</script>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

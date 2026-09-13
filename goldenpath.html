@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - Golden Path</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="turbo-cache-control" content="no-cache">
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <style>
+    /* Pre-login "Golden Path" screen: a full-viewport blank white overlay with
+       just a centred title and a single golden button, plus the site nav (which
+       sits above the overlay at z-index:100) for easy navigation back to the
+       main site. The review UI itself is never revealed until the session cookie
+       checks out: gp-locked (on <body>) keeps the admin header, tabs and footer
+       hidden until then, belt-and-braces with the overlay covering the rest. */
+    .gp-screen {
+      position: fixed; inset: 0; z-index: 50; background: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 30px; padding: 24px; text-align: center;
+    }
+    .gp-screen[hidden] { display: none; }
+    .gp-title { margin: 0; font-size: clamp(30px, 7vw, 46px); font-weight: 800; letter-spacing: .01em; color: #1a1a2e; }
+    .gp-btn {
+      background: linear-gradient(180deg, #f6d976 0%, #d4af37 55%, #b8912a 100%);
+      color: #3a2e00; border: none; border-radius: 12px;
+      padding: 14px 46px; font: inherit; font-size: 17px; font-weight: 800; letter-spacing: .02em;
+      cursor: pointer; box-shadow: 0 8px 22px rgba(184, 145, 42, .38);
+    }
+    .gp-btn:hover { filter: brightness(1.04); }
+    .gp-btn[disabled] { opacity: .6; cursor: default; filter: none; }
+    .gp-toast { min-height: 1.2em; }
+    body.gp-locked .admin-head,
+    body.gp-locked #tabs,
+    body.gp-locked .sitefooter { display: none !important; }
+
+    /* Gold-themed site nav — a playful touch for this page only, kept for easy
+       navigation back to the main site. Scoped to .page-admin (unique to this
+       page) so the rest of the site's nav is untouched. The nav already sits at
+       z-index:100, above the gp-screen overlay (z-index:50), so it shows over
+       the blank pre-login screen too. */
+    body.page-admin .sitenav {
+      background: linear-gradient(180deg, #f7dd82 0%, #e4bd45 100%);
+      border-bottom: 1px solid #c9a233;
+      box-shadow: 0 2px 10px rgba(150, 115, 20, .28);
+    }
+    body.page-admin .sitenav-links a { color: #3a2e00; }
+    body.page-admin .sitenav-links a:hover,
+    body.page-admin .sitenav-links a.active { background: #3a2e00; color: #f7dd82 !important; }
+    body.page-admin .sitenav-sep { color: rgba(58, 46, 0, .35); }
+    body.page-admin .sitenav-current { color: #3a2e00; }
+    body.page-admin .sitenav-toggle { color: #3a2e00; }
+    body.page-admin .sitenav-toggle:hover { background: rgba(58, 46, 0, .12); }
+
+    .admin-wrap { max-width: 900px; margin: 18px auto 60px; padding: 0 14px; }
+    .admin-head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+    .admin-head h1 { font-size:24px; margin:0; color:var(--ink); }
+    .admin-sub { color:#667; font-size:14px; }
+    .admin-note { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+    .rec-card { background:#fff; border:1px solid var(--line); border-left-width:8px; border-radius:14px; padding:16px 18px; margin:14px 0; box-shadow:0 4px 12px rgba(0,0,0,.05); }
+    .rec-top { display:flex; align-items:flex-start; gap:14px; justify-content:space-between; flex-wrap:wrap; }
+    .rec-name { font-weight:700; font-size:18px; color:var(--ink); }
+    .rec-meta { color:#667; font-size:13px; margin-top:2px; }
+    .rec-rationale { margin:10px 0; font-style:italic; color:#334; }
+    /* Borderline / "worth a closer look" cards: an amber ring + badge, keeping the
+       grade-coloured left border intact. Marked by a leading ⚑ in the rationale. */
+    .rec-card.flagged { background:#fffdf5; box-shadow:0 0 0 2px rgba(228,189,69,.85), 0 6px 16px rgba(150,115,20,.15); }
+    .rec-flag { display:inline-flex; align-items:center; gap:6px; margin:2px 0 8px; padding:3px 11px; font-size:12px; font-weight:700; letter-spacing:.01em; color:#3a2e00; background:linear-gradient(180deg,#f7dd82,#e4bd45); border:1px solid #c9a233; border-radius:999px; }
+    .rec-field { margin:12px 0; }
+    .rec-field label { display:block; font-size:12px; font-weight:700; letter-spacing:.02em; text-transform:uppercase; color:#889; margin-bottom:4px; }
+    .rec-field textarea { width:100%; box-sizing:border-box; font:inherit; font-size:14px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; resize:vertical; min-height:64px; }
+    .rec-grade-row { display:flex; align-items:center; gap:10px; }
+    .grade-pill { display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:34px; padding:0 10px; border-radius:8px; font-weight:800; color:#1a1a2e; }
+    .rec-grade-row select { font:inherit; font-size:15px; padding:6px 8px; border:1px solid var(--line); border-radius:8px; }
+    .src-list a { display:inline; }
+    .btn-row { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+    .btn-confirm { background:#1f9d55; color:#fff; border:none; }
+    .btn-reject  { background:#fff; color:#b33; border:1px solid #e2b3b3; }
+    .btn-confirm, .btn-reject { padding:10px 18px; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; }
+    .btn-confirm[disabled], .btn-reject[disabled] { opacity:.5; cursor:default; }
+    .toast { padding:8px 12px; border-radius:8px; font-size:13px; margin-top:8px; }
+    .toast.ok  { background:#e7f6ec; color:#1f7a44; }
+    .toast.err { background:#fdeaea; color:#b33; }
+    .muted { color:#889; }
+    .linkbtn { background:none; border:none; color:#CC1133; font:inherit; cursor:pointer; padding:0; text-decoration:underline; }
+    .admin-tabs { display:flex; gap:6px; margin:6px 0 4px; border-bottom:1px solid var(--line); }
+    .admin-tabs .tab { background:none; border:none; border-bottom:3px solid transparent; padding:8px 14px; font:inherit; font-weight:700; color:#889; cursor:pointer; margin-bottom:-1px; }
+    .admin-tabs .tab.active { color:var(--ink); border-bottom-color:#CC1133; }
+    .btn-save { background:#1f9d55; color:#fff; border:none; padding:10px 18px; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; }
+    .btn-save[disabled] { opacity:.5; cursor:default; }
+    .rec-field label .edit-hint { text-transform:none; letter-spacing:normal; font-weight:600; color:#aab; font-size:11px; margin-left:6px; }
+    /* Live-ratings sort + filter toolbar */
+    .live-toolbar { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin:6px 0 10px; }
+    .live-toolbar .lt-field { display:flex; flex-direction:column; gap:3px; }
+    .live-toolbar .lt-search { flex:1; min-width:200px; }
+    .live-toolbar label { font-size:11px; font-weight:700; letter-spacing:.02em; text-transform:uppercase; color:#889; }
+    .live-toolbar select, .live-toolbar input { font:inherit; font-size:14px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); }
+    .live-toolbar .lt-search input { width:100%; box-sizing:border-box; }
+    .live-count { font-size:13px; color:#889; margin:0 0 10px; }
+    .member-tally { font-size:14px; color:#556; margin:2px 0 12px; display:flex; flex-wrap:wrap; gap:6px 14px; }
+    .member-tally strong { color:var(--ink); font-variant-numeric:tabular-nums; }
+    .member-tally .mt-sep { color:#ccd; }
+    .sigfix-badge { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em;
+      padding:1px 7px; border-radius:999px; background:#eef4ff; color:#2b5f7a; border:1px solid #cfe0f0; }
+
+    /* Member Submissions tab: current-vs-proposed diff shown above the
+       (editable) proposed bullets/sources on each card. */
+    .ms-diff-grade { font-size:15px; margin-top:2px; }
+    .ms-diff-grade .arrow { color:#889; margin:0 6px; }
+    .ms-diff-row { display:flex; gap:16px; flex-wrap:wrap; margin:10px 0; }
+    .ms-diff-col { flex:1 1 220px; min-width:0; background:#f7f8fa; border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+    .ms-diff-col label { display:block; font-size:11px; font-weight:700; letter-spacing:.02em; text-transform:uppercase; color:#889; margin-bottom:6px; }
+    .ms-diff-list { list-style:none; margin:0; padding:0; font-size:13px; line-height:1.7; color:#334; }
+    .ms-diff-list li { word-break:break-word; }
+    .ms-diff-list a { color:#2b5f7a; }
+    .ms-diff-empty { color:#aab; font-style:italic; }
+    .member-note { background:#fffdf0; border:1px solid #eadfa8; border-radius:9px; padding:8px 12px; font-size:13px; color:#5a4a10; margin:10px 0; }
+    .reject-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; flex:1 1 260px; }
+    .reject-reason-input { flex:1 1 200px; font:inherit; font-size:13px; padding:9px 11px; border:1px solid var(--line); border-radius:9px; }
+
+    /* Editable, reorderable bullet / source lists: see the shared
+       ".edit-list" block in app.css (used here and on scorecard.html's
+       member-edit form via editable-list.js). */
+    /* Session controls (logged-in only): redeploy button + log out link. */
+    .session-ctl { display:inline-flex; align-items:center; gap:14px; }
+    .btn-redeploy { background:#0b2e42; color:#fff; border:none; border-radius:9px; padding:8px 14px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+    .btn-redeploy:hover { background:#123e59; }
+    .btn-redeploy[disabled] { opacity:.55; cursor:default; }
+    .session-ctl .redeploy-toast { font-size:13px; }
+    .session-ctl .redeploy-toast.ok  { color:#1f7a44; }
+    .session-ctl .redeploy-toast.err { color:#b33; }
+    .session-ctl .stay-signed { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#334; cursor:pointer; user-select:none; }
+    .session-ctl .stay-signed input { width:15px; height:15px; cursor:pointer; accent-color:#CC1133; }
+    @media (max-width: 560px) {
+      .rec-card { padding:14px 13px; }
+      .edit-item { padding:9px 8px; }
+      .editable { padding:5px 6px; }
+    }
+
+    /* ── Communications tab ── */
+    .comms-intro { margin-bottom:14px; }
+    .comms-intro p { margin:0; }
+    .comms-intro p + p { margin-top:8px; }
+    .comms-intro code { background:#f3f3f5; border:1px solid var(--line); border-radius:5px; padding:1px 5px; font-size:13px; }
+    .comms-picker { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .comms-chip { background:#fff; border:1px solid var(--line); border-radius:999px; padding:8px 15px; font:inherit; font-weight:700; font-size:14px; color:#667; cursor:pointer; transition:background .15s, color .15s, border-color .15s; }
+    .comms-chip:hover { background:#faf0f2; }
+    .comms-chip.active { background:#CC1133; border-color:#CC1133; color:#fff; }
+    .comms-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+    .comms-meta { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+    .comms-row { display:flex; gap:12px; align-items:baseline; font-size:14px; line-height:1.5; }
+    .comms-label { flex:0 0 132px; color:#889; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+    .comms-subject { font-weight:700; color:var(--ink); }
+    .comms-link { color:#CC1133; font-weight:600; word-break:break-all; }
+    .comms-fields { display:flex; flex-wrap:wrap; gap:6px; }
+    .comms-field { background:#f3f3f5; border:1px solid var(--line); border-radius:6px; padding:2px 8px; font-size:12px; color:#556; }
+    .comms-previews { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .comms-pane { display:flex; flex-direction:column; min-width:0; }
+    .comms-pane-h { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#889; margin-bottom:6px; }
+    .comms-hint { font-weight:400; text-transform:none; letter-spacing:0; color:#aab; }
+    .comms-frame { width:100%; height:360px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+    .comms-src { width:100%; height:360px; resize:vertical; border:1px solid var(--line); border-radius:10px; padding:12px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.5px; line-height:1.5; color:#233; background:#fbfbfc; }
+    .comms-src:focus { outline:none; border-color:#CC1133; box-shadow:0 0 0 2px rgba(204,17,51,.12); }
+    .comms-actions { display:flex; align-items:center; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    .btn-mini { background:#CC1133; border:0; color:#fff; border-radius:9px; padding:7px 13px; font:inherit; font-weight:700; font-size:13px; cursor:pointer; transition:background .15s; }
+    .btn-mini:hover { background:#a50f27; }
+    .btn-mini.ghost { background:none; border:1px solid var(--line); color:#667; }
+    .btn-mini.ghost:hover { background:#f2f2f2; color:var(--ink); }
+    .comms-toast { font-size:13px; color:#1f7a44; }
+    @media (max-width: 720px) {
+      .comms-previews { grid-template-columns:1fr; }
+      .comms-label { flex-basis:104px; }
+    }
+  </style>
+</head>
+<body class="page-admin gp-locked">
+
+<!-- Not turbo-permanent (unlike other pages): this page uses a gold logo + gold
+     nav theme, so it must render its own nav rather than persist one to/from the
+     main site during Turbo navigation. -->
+<nav class="sitenav" id="sitenav">
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo_transparent.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<div class="admin-wrap">
+  <div class="admin-head">
+    <div>
+      <h1>MP rating review</h1>
+      <div class="admin-sub" id="progress"></div>
+    </div>
+    <div id="sessionControls"></div>
+  </div>
+
+  <!-- Membership tally (shown once logged in) -->
+  <div id="memberTally" class="member-tally" hidden></div>
+
+  <!-- Pre-login screen: blank but for the title and the golden button. -->
+  <div id="loginView" class="gp-screen" hidden>
+    <h1 class="gp-title">Golden Path</h1>
+    <button class="gp-btn" id="loginBtn">Enter</button>
+    <div id="loginToast" class="gp-toast"></div>
+  </div>
+
+  <!-- Loading: a blank white screen while the session is checked, so no page
+       chrome flashes before we know whether the visitor is authenticated. -->
+  <div id="loadingView" class="gp-screen"></div>
+
+  <!-- Tabs (shown once logged in) -->
+  <div id="tabs" class="admin-tabs" hidden>
+    <button class="tab active" id="tab-pending">Pending review</button>
+    <button class="tab" id="tab-members">Member Submissions</button>
+    <button class="tab" id="tab-live">Live Claude Ratings</button>
+    <button class="tab" id="tab-human">Live Human Reviewed</button>
+    <button class="tab" id="tab-comms">Communications</button>
+  </div>
+
+  <!-- Recommendations list -->
+  <div id="listView" hidden>
+    <div id="pendingToolbar" class="live-toolbar" hidden>
+      <div class="lt-field">
+        <label for="pendingSort">Sort by</label>
+        <select id="pendingSort">
+          <option value="created_desc">Recently drafted (most to least)</option>
+          <option value="created_asc">Recently drafted (least to most)</option>
+          <option value="grade_desc">Rating (high to low)</option>
+          <option value="grade_asc">Rating (low to high)</option>
+          <option value="surname">Surname (A–Z)</option>
+        </select>
+      </div>
+      <div class="lt-field lt-search">
+        <label for="pendingSearch">Search</label>
+        <input type="text" id="pendingSearch" placeholder="Filter by MP name or constituency…" autocomplete="off">
+      </div>
+    </div>
+    <div id="pendingCount" class="live-count" hidden></div>
+    <div id="recs"></div>
+    <div id="emptyState" class="admin-note" hidden>
+      <p>No recommendations are waiting for review.</p>
+      <p class="muted">Run the research skill in Claude Code to generate a new batch, then refresh this page.</p>
+    </div>
+  </div>
+
+  <!-- Member Submissions: edits confirmed ASVA members suggested from the
+       scorecard (functions/api/member-submissions/*). Distinct from the agent's
+       own drafts (Pending review, above) — never shown publicly until Confirmed. -->
+  <div id="membersView" hidden>
+    <div id="membersToolbar" class="live-toolbar" hidden>
+      <div class="lt-field">
+        <label for="membersSort">Sort by</label>
+        <select id="membersSort">
+          <option value="created_desc">Recently submitted (most to least)</option>
+          <option value="created_asc">Recently submitted (least to most)</option>
+          <option value="surname">Surname (A–Z)</option>
+        </select>
+      </div>
+      <div class="lt-field lt-search">
+        <label for="membersSearch">Search</label>
+        <input type="text" id="membersSearch" placeholder="Filter by MP, constituency or member…" autocomplete="off">
+      </div>
+    </div>
+    <div id="membersCount" class="live-count" hidden></div>
+    <div id="membersList"></div>
+    <div id="membersEmpty" class="admin-note" hidden>
+      <p>No member submissions are waiting for review.</p>
+      <p class="muted">These appear when a confirmed ASVA member suggests an edit from a card on the scorecard.</p>
+    </div>
+  </div>
+
+  <!-- Live Claude Ratings editor: live on the map but not yet checked by a person.
+       Saving a card here moves it to the Live Human Reviewed tab. -->
+  <div id="liveView" hidden>
+    <div id="liveToolbar" class="live-toolbar" hidden>
+      <div class="lt-field">
+        <label for="liveSort">Sort by</label>
+        <select id="liveSort">
+          <option value="updated_desc">Recently updated (most to least)</option>
+          <option value="updated_asc">Recently updated (least to most)</option>
+          <option value="grade_desc">Rating (high to low)</option>
+          <option value="grade_asc">Rating (low to high)</option>
+          <option value="surname">Surname (A–Z)</option>
+        </select>
+      </div>
+      <div class="lt-field">
+        <label for="liveFilter">Show</label>
+        <select id="liveFilter">
+          <option value="all">All Claude ratings</option>
+          <option value="sigfix">Signatory-fixed only</option>
+        </select>
+      </div>
+      <div class="lt-field lt-search">
+        <label for="liveSearch">Search</label>
+        <input type="text" id="liveSearch" placeholder="Filter by MP name or constituency…" autocomplete="off">
+      </div>
+    </div>
+    <div id="liveCount" class="live-count" hidden></div>
+    <div id="liveList"></div>
+    <div id="liveEmpty" class="admin-note" hidden>
+      <p>No Claude ratings are waiting for review.</p>
+      <p class="muted">Every live rating that has not been checked by a person shows here. Save a card to move it to Live Human Reviewed.</p>
+    </div>
+  </div>
+
+  <!-- Live Human Reviewed editor: live ratings a person has Saved/Confirmed. -->
+  <div id="humanView" hidden>
+    <div id="humanToolbar" class="live-toolbar" hidden>
+      <div class="lt-field">
+        <label for="humanSort">Sort by</label>
+        <select id="humanSort">
+          <option value="updated_desc">Recently reviewed (most to least)</option>
+          <option value="updated_asc">Recently reviewed (least to most)</option>
+          <option value="grade_desc">Rating (high to low)</option>
+          <option value="grade_asc">Rating (low to high)</option>
+          <option value="surname">Surname (A–Z)</option>
+        </select>
+      </div>
+      <div class="lt-field">
+        <label for="humanFilter">Show</label>
+        <select id="humanFilter">
+          <option value="all">All reviewed ratings</option>
+          <option value="sigfix">Signatory-fixed only</option>
+        </select>
+      </div>
+      <div class="lt-field lt-search">
+        <label for="humanSearch">Search</label>
+        <input type="text" id="humanSearch" placeholder="Filter by MP name or constituency…" autocomplete="off">
+      </div>
+    </div>
+    <div id="humanCount" class="live-count" hidden></div>
+    <div id="humanList"></div>
+    <div id="humanEmpty" class="admin-note" hidden>
+      <p>No ratings have been human-reviewed yet.</p>
+      <p class="muted">Save a card in Live Claude Ratings (or Confirm one in Pending review) and it will appear here.</p>
+    </div>
+  </div>
+
+  <!-- Communications: preview of every email ASVA sends automatically -->
+  <div id="commsView" hidden>
+    <div class="admin-note comms-intro">
+      <p>Every email ASVA sends automatically, plus the confirmation page people land on after clicking a link. Each preview is rendered from the live template or page with example details filled in, so what you see here is exactly what goes out.</p>
+      <p class="muted">To change one permanently, edit the file named under its HTML source (or paste the edited HTML to Claude). You can edit and preview here first without affecting anything live.</p>
+    </div>
+    <div class="comms-picker" id="commsPicker"></div>
+    <div id="commsDetail"></div>
+  </div>
+</div>
+
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+<script src="editable-list.js"></script>
+<script>
+(function () {
+  var editableList = window.ASVAEditableList.editableList;
+  var GRADES = ['A', 'B', 'C', '?', 'DNR', 'D', 'E', 'F'];
+  var cs = getComputedStyle(document.body);
+  // The scorecard's grade-colour CSS vars are scoped to body.page-scorecard, so
+  // they aren't visible here — fall back to the same hex values explicitly so
+  // every grade (not just DNR) shows its colour on this page.
+  function cssVar(name, fallback) { var v = cs.getPropertyValue(name).trim(); return v || fallback; }
+  var COLOUR = {
+    A: cssVar('--A', '#2D5A3D'), B: cssVar('--B', '#4CAF73'),
+    C: cssVar('--C', '#A8D5B0'), '?': cssVar('--Q', '#cccccc'),
+    D: cssVar('--D', '#F2A0A0'), E: cssVar('--E', '#D94040'),
+    F: cssVar('--F', '#8B1A1A'), DNR: '#F0D080',
+  };
+  function colourFor(g) { return COLOUR[g] || '#ccc'; }
+  // Choose readable text (dark or white) for a given background hex.
+  function textOn(hex) {
+    var m = /^#?([0-9a-fA-F]{6})$/.exec((hex || '').trim());
+    if (!m) return '#1a1a2e';
+    var n = parseInt(m[1], 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    var L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    return L > 0.6 ? '#1a1a2e' : '#fff';
+  }
+  // Paint a grade pill (and optional card border) to match the grade.
+  function paintPill(pill, card, g) {
+    var c = colourFor(g);
+    pill.textContent = g;
+    pill.style.background = c;
+    pill.style.color = textOn(c);
+    if (card) card.style.borderLeftColor = c;
+  }
+
+  var loginView   = document.getElementById('loginView');
+  var loadingView = document.getElementById('loadingView');
+  var listView    = document.getElementById('listView');
+  var recsEl      = document.getElementById('recs');
+  var emptyState  = document.getElementById('emptyState');
+  var pendingToolbar = document.getElementById('pendingToolbar');
+  var pendingSort    = document.getElementById('pendingSort');
+  var pendingSearch  = document.getElementById('pendingSearch');
+  var pendingCount   = document.getElementById('pendingCount');
+
+  var membersView    = document.getElementById('membersView');
+  var membersListEl  = document.getElementById('membersList');
+  var membersEmpty   = document.getElementById('membersEmpty');
+  var membersToolbar = document.getElementById('membersToolbar');
+  var membersSort    = document.getElementById('membersSort');
+  var membersSearch  = document.getElementById('membersSearch');
+  var membersCount   = document.getElementById('membersCount');
+  var progressEl  = document.getElementById('progress');
+  var sessionCtl  = document.getElementById('sessionControls');
+  var tabsEl      = document.getElementById('tabs');
+  var memberTally = document.getElementById('memberTally');
+  var liveView    = document.getElementById('liveView');
+  var humanView   = document.getElementById('humanView');
+  var commsView   = document.getElementById('commsView');
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replaceAll('&','&amp;').replaceAll('<','&lt;')
+      .replaceAll('>','&gt;').replaceAll('"','&quot;');
+  }
+
+  // ── Login flow ───────────────────────────────────────────────────────────
+  function showLogin() {
+    loadingView.hidden = true;
+    listView.hidden = true;
+    loginView.hidden = false;
+
+    var params = new URLSearchParams(location.search);
+    var reason = params.get('login');
+    var toast = document.getElementById('loginToast');
+    if (reason === 'expired')      toast.innerHTML = '<div class="toast err">That link had expired. Press Enter for a new one.</div>';
+    else if (reason === 'invalid') toast.innerHTML = '<div class="toast err">That link was invalid or already used. Press Enter for a new one.</div>';
+    else if (reason === 'error')   toast.innerHTML = '<div class="toast err">Something went wrong. Please try again.</div>';
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', function () {
+    // Disabling on click (and leaving it disabled on success) means a single page
+    // load can trigger at most one email, so mashing the button can't spam the
+    // inbox. The /api/admin/login endpoint also rate-limits to 5 per IP / 15 min.
+    var btn = this;
+    btn.disabled = true;
+    var toast = document.getElementById('loginToast');
+    fetch('/api/admin/login', { method: 'POST' })
+      .then(function () {
+        toast.innerHTML = '<div class="toast ok">Check your inbox for a link to continue.</div>';
+      })
+      .catch(function () {
+        toast.innerHTML = '<div class="toast err">Something went wrong. Please try again.</div>';
+        btn.disabled = false;
+      });
+  });
+
+  function logout() {
+    fetch('/api/admin/logout', { method: 'POST' }).finally(function () { location.href = '/goldenpath.html'; });
+  }
+
+  // Trigger a fresh Cloudflare Pages deployment of the current build. Confirms
+  // first, then POSTs to the admin-only endpoint (which holds the secret hook).
+  function redeploy() {
+    var btn = document.getElementById('redeployBtn');
+    var toast = document.getElementById('redeployToast');
+    if (!confirm('Redeploy the live site with the current build?')) return;
+    if (toast) { toast.textContent = ''; toast.className = 'redeploy-toast'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Redeploying…'; }
+    fetch('/api/admin/redeploy', { method: 'POST' })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && res.d.success) {
+          if (toast) { toast.textContent = 'Redeploy started. It takes a minute or two to go live.'; toast.className = 'redeploy-toast ok'; }
+          if (btn) btn.textContent = 'Redeploy started';
+        } else {
+          if (toast) { toast.textContent = (res.d && res.d.error) || 'Redeploy failed.'; toast.className = 'redeploy-toast err'; }
+          if (btn) { btn.disabled = false; btn.textContent = 'Redeploy site'; }
+        }
+      })
+      .catch(function () {
+        if (toast) { toast.textContent = 'Redeploy failed. Please try again.'; toast.className = 'redeploy-toast err'; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Redeploy site'; }
+      });
+  }
+
+  // ── Rendering recommendations ────────────────────────────────────────────
+  function gradeOptions(selected) {
+    return GRADES.map(function (g) {
+      var label = g === '?' ? '? (Not Scored)' : (g === 'DNR' ? 'DNR (Did Not Respond)' : g);
+      return '<option value="' + g + '"' + (g === selected ? ' selected' : '') + '>' + label + '</option>';
+    }).join('');
+  }
+
+
+  function renderCard(rec) {
+    var card = document.createElement('div');
+    // A leading ⚑ in the rationale is our review-only "borderline / worth a closer
+    // look" marker (set deliberately during a research pass). It never reaches the
+    // public site — mp_ratings has no rationale column — so it is safe as a flag
+    // sentinel: we strip it from the displayed text and show a badge instead.
+    var flagged = !!(rec.rationale && /^\s*⚑/.test(rec.rationale));
+    var rationaleText = flagged ? rec.rationale.replace(/^\s*⚑\s*/, '') : rec.rationale;
+    card.className = flagged ? 'rec-card flagged' : 'rec-card';
+
+    card.innerHTML =
+      '<div class="rec-top">' +
+        '<div>' +
+          '<div class="rec-name">' + esc(rec.mp_name) + '</div>' +
+          '<div class="rec-meta">' + esc(rec.constituency) + (rec.party ? ' · ' + esc(rec.party) : '') +
+            (rec.model ? ' · <span class="muted">drafted by ' + esc(rec.model) + '</span>' : '') + '</div>' +
+        '</div>' +
+        '<div class="rec-grade-row">' +
+          '<span class="grade-pill"></span>' +
+          '<select class="grade-select">' + gradeOptions(rec.recommended_grade) + '</select>' +
+        '</div>' +
+      '</div>' +
+      (flagged ? '<div class="rec-flag">⚑ Borderline — worth a closer look</div>' : '') +
+      (rationaleText ? '<div class="rec-rationale">' + esc(rationaleText) + '</div>' : '') +
+      '<div class="rec-field"><label>Justification bullets <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
+        '<div class="bullets-mount"></div></div>' +
+      '<div class="rec-field"><label>Sources <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
+        '<div class="sources-mount"></div></div>' +
+      '<div class="btn-row">' +
+        '<button class="btn-confirm">Confirm & publish</button>' +
+        '<button class="btn-reject">Reject</button>' +
+      '</div>' +
+      '<div class="card-toast"></div>';
+
+    var select = card.querySelector('.grade-select');
+    var pill   = card.querySelector('.grade-pill');
+    paintPill(pill, card, rec.recommended_grade);
+    select.addEventListener('change', function () { paintPill(pill, card, select.value); });
+
+    var bulletsList = editableList('bullets', rec.bullets || []);
+    var sourcesList = editableList('srcs', rec.sources || []);
+    card.querySelector('.bullets-mount').appendChild(bulletsList);
+    card.querySelector('.sources-mount').appendChild(sourcesList);
+
+    var toast = card.querySelector('.card-toast');
+    var confirmBtn = card.querySelector('.btn-confirm');
+    var rejectBtn  = card.querySelector('.btn-reject');
+
+    confirmBtn.addEventListener('click', function () {
+      confirmBtn.disabled = true; rejectBtn.disabled = true;
+      toast.innerHTML = '';
+      var sentBullets = bulletsList.getValues(), sentSources = sourcesList.getValues();
+      fetch('/api/recommendations/confirm', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: rec.id, grade: select.value, bullets: sentBullets, sources: sentSources }),
+      })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.d && res.d.error || 'Failed');
+          card.style.opacity = '.5';
+          // Echo exactly what was saved, so the grade/links recorded are visible
+          // regardless of what the scorecard is showing.
+          var savedGrade = (res.d && res.d.grade) || select.value;
+          toast.innerHTML = '<div class="toast ok">Published as <strong>' + esc(savedGrade) + '</strong> with ' +
+            sentBullets.length + ' bullet' + (sentBullets.length === 1 ? '' : 's') + ' and ' +
+            sentSources.length + ' source' + (sentSources.length === 1 ? '' : 's') +
+            '. Live on the site now (hard-refresh the scorecard to see it).</div>';
+          // Confirming is a human review, so it will land in Live Human Reviewed.
+          // Invalidate the live cache so both live tabs refetch when next opened.
+          liveLoaded = false;
+          setTimeout(function () { card.remove(); removePending(rec.id); refreshCount(); }, 1500);
+        })
+        .catch(function (e) {
+          toast.innerHTML = '<div class="toast err">' + esc(e.message) + '</div>';
+          confirmBtn.disabled = false; rejectBtn.disabled = false;
+        });
+    });
+
+    rejectBtn.addEventListener('click', function () {
+      rejectBtn.disabled = true; confirmBtn.disabled = true;
+      toast.innerHTML = '';
+      fetch('/api/recommendations/reject', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: rec.id }),
+      })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.d && res.d.error || 'Failed');
+          card.style.opacity = '.5';
+          toast.innerHTML = '<div class="toast ok">Rejected.</div>';
+          setTimeout(function () { card.remove(); removePending(rec.id); refreshCount(); }, 700);
+        })
+        .catch(function (e) {
+          toast.innerHTML = '<div class="toast err">' + esc(e.message) + '</div>';
+          confirmBtn.disabled = false; rejectBtn.disabled = false;
+        });
+    });
+
+    return card;
+  }
+
+  // Cached pending recommendations, so sorting/filtering never needs a refetch.
+  var pendingEntries = [];
+  function removePending(id) {
+    pendingEntries = pendingEntries.filter(function (e) { return e.rec.id !== id; });
+  }
+
+  function sortedPendingEntries() {
+    var mode = pendingSort ? pendingSort.value : 'created_desc';
+    return pendingEntries.slice().sort(function (a, b) {
+      var ra = a.rec, rb = b.rec, ca = ra.constituency || '', cb = rb.constituency || '';
+      switch (mode) {
+        case 'created_asc': return (ra.created_at || '').localeCompare(rb.created_at || '') || ca.localeCompare(cb);
+        case 'grade_desc':  return gradeRank(ra.recommended_grade) - gradeRank(rb.recommended_grade) || ca.localeCompare(cb);
+        case 'grade_asc':   return gradeRank(rb.recommended_grade) - gradeRank(ra.recommended_grade) || ca.localeCompare(cb);
+        case 'surname':     return surnameOf(ra.mp_name).localeCompare(surnameOf(rb.mp_name)) || ca.localeCompare(cb);
+        case 'created_desc':
+        default:            return (rb.created_at || '').localeCompare(ra.created_at || '') || ca.localeCompare(cb);
+      }
+    });
+  }
+
+  // Re-render the pending list from the cache using the current sort + search.
+  function renderPendingList() {
+    var term = (pendingSearch ? pendingSearch.value : '').trim().toLowerCase();
+    var shown = 0;
+    recsEl.innerHTML = '';
+    sortedPendingEntries().forEach(function (e) {
+      var hay = ((e.rec.mp_name || '') + ' ' + (e.rec.constituency || '')).toLowerCase();
+      if (term && hay.indexOf(term) === -1) return;
+      recsEl.appendChild(renderCard(e.rec));
+      shown++;
+    });
+    if (pendingEntries.length && !shown) {
+      recsEl.innerHTML = '<div class="admin-note">No recommendations match “' + esc(pendingSearch.value) + '”.</div>';
+    }
+    updatePendingCount(shown);
+  }
+
+  function updatePendingCount(shown) {
+    if (!pendingCount) return;
+    var total = pendingEntries.length;
+    if (shown == null) shown = recsEl.querySelectorAll('.rec-card').length;
+    var term = (pendingSearch ? pendingSearch.value : '').trim();
+    pendingCount.hidden = total === 0;
+    pendingCount.textContent = term
+      ? (shown + ' of ' + total + ' shown')
+      : (total + ' recommendation' + (total === 1 ? '' : 's') + ' awaiting review');
+  }
+
+  function refreshCount() {
+    var total = pendingEntries.length;
+    progressEl.textContent = total + ' recommendation' + (total === 1 ? '' : 's') + ' awaiting review';
+    emptyState.hidden = total !== 0;
+    if (pendingToolbar) pendingToolbar.hidden = total === 0;
+    updatePendingCount();
+  }
+
+  // ── Member Submissions: edits suggested by confirmed ASVA members ──────────
+  // Distinct queue from the agent's Pending review drafts above — a member's
+  // suggestion (functions/api/member-submissions/create.js) carries base_*
+  // (a snapshot of the live rating when they submitted) alongside proposed_*
+  // (what they suggest), so the reviewer sees a current-vs-proposed diff before
+  // editing and confirming/rejecting it, same mechanics as a recommendation.
+  var membersLoaded  = false;
+  var memberEntries  = [];
+
+  function fmtDate(iso) {
+    if (!iso) return '';
+    try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    catch (e) { return ''; }
+  }
+
+  function diffList(items, isSrc) {
+    var arr = items || [];
+    if (!arr.length) return '<li class="ms-diff-empty">Nothing yet</li>';
+    return arr.map(function (it) {
+      return isSrc
+        ? '<li>' + esc(it.title || it.url) + '</li>'
+        : '<li>' + esc(it) + '</li>';
+    }).join('');
+  }
+
+  function renderMemberCard(sub) {
+    var card = document.createElement('div');
+    card.className = 'rec-card';
+
+    var gradeChanged = (sub.base_grade || null) !== sub.proposed_grade;
+    var gradeDiffHTML = sub.base_grade
+      ? esc(sub.base_grade) + (gradeChanged ? '<span class="arrow">→</span><strong>' + esc(sub.proposed_grade) + '</strong>' : ' <span class="muted">(no change proposed)</span>')
+      : '<span class="muted">not yet rated</span><span class="arrow">→</span><strong>' + esc(sub.proposed_grade) + '</strong>';
+
+    card.innerHTML =
+      '<div class="rec-top">' +
+        '<div>' +
+          '<div class="rec-name">' + esc(sub.mp_name) + '</div>' +
+          '<div class="rec-meta">' + esc(sub.constituency) + ' · submitted by ' + esc(sub.member_name) +
+            ' (' + esc(sub.member_email) + ') · ' + esc(fmtDate(sub.created_at)) + '</div>' +
+        '</div>' +
+        '<div class="rec-grade-row">' +
+          '<span class="grade-pill"></span>' +
+          '<select class="grade-select">' + gradeOptions(sub.proposed_grade) + '</select>' +
+        '</div>' +
+      '</div>' +
+      (sub.note ? '<div class="member-note">Note from member: ' + esc(sub.note) + '</div>' : '') +
+      '<div class="rec-field"><label>Current vs proposed grade</label><div class="ms-diff-grade">' + gradeDiffHTML + '</div></div>' +
+      '<div class="ms-diff-row">' +
+        '<div class="ms-diff-col"><label>Current bullets</label><ul class="ms-diff-list">' + diffList(sub.base_bullets, false) + '</ul></div>' +
+        '<div class="ms-diff-col"><label>Current sources</label><ul class="ms-diff-list">' + diffList(sub.base_sources, true) + '</ul></div>' +
+      '</div>' +
+      '<div class="rec-field"><label>Proposed bullets (editable) <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
+        '<div class="bullets-mount"></div></div>' +
+      '<div class="rec-field"><label>Proposed sources (editable) <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
+        '<div class="sources-mount"></div></div>' +
+      '<div class="btn-row">' +
+        '<button class="btn-confirm">Confirm & publish</button>' +
+        '<div class="reject-row">' +
+          '<input type="text" class="reject-reason-input" placeholder="Reason to include in their email (optional)">' +
+          '<button class="btn-reject">Reject</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-toast"></div>';
+
+    var select = card.querySelector('.grade-select');
+    var pill   = card.querySelector('.grade-pill');
+    paintPill(pill, card, sub.proposed_grade);
+    select.addEventListener('change', function () { paintPill(pill, card, select.value); });
+
+    var bulletsList = editableList('bullets', sub.bullets || []);
+    var sourcesList = editableList('srcs', sub.sources || []);
+    card.querySelector('.bullets-mount').appendChild(bulletsList);
+    card.querySelector('.sources-mount').appendChild(sourcesList);
+
+    var toast      = card.querySelector('.card-toast');
+    var confirmBtn = card.querySelector('.btn-confirm');
+    var rejectBtn  = card.querySelector('.btn-reject');
+    var reasonInput = card.querySelector('.reject-reason-input');
+
+    confirmBtn.addEventListener('click', function () {
+      confirmBtn.disabled = true; rejectBtn.disabled = true;
+      toast.innerHTML = '';
+      var sentBullets = bulletsList.getValues(), sentSources = sourcesList.getValues();
+      fetch('/api/member-submissions/confirm', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: sub.id, grade: select.value, bullets: sentBullets, sources: sentSources }),
+      })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.d && res.d.error || 'Failed');
+          card.style.opacity = '.5';
+          var amendedNote = res.d && res.d.amended ? ' (the member was told it was published with amendments)' : '';
+          toast.innerHTML = '<div class="toast ok">Published as <strong>' + esc((res.d && res.d.grade) || select.value) +
+            '</strong>' + amendedNote + '. Live on the site now.</div>';
+          liveLoaded = false; // both live tabs should refetch when next opened
+          setTimeout(function () { card.remove(); removeMemberEntry(sub.id); refreshMembersCount(); }, 1500);
+        })
+        .catch(function (e) {
+          toast.innerHTML = '<div class="toast err">' + esc(e.message) + '</div>';
+          confirmBtn.disabled = false; rejectBtn.disabled = false;
+        });
+    });
+
+    rejectBtn.addEventListener('click', function () {
+      rejectBtn.disabled = true; confirmBtn.disabled = true;
+      toast.innerHTML = '';
+      fetch('/api/member-submissions/reject', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: sub.id, reason: reasonInput.value.trim() || undefined }),
+      })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.d && res.d.error || 'Failed');
+          card.style.opacity = '.5';
+          toast.innerHTML = '<div class="toast ok">Rejected.</div>';
+          setTimeout(function () { card.remove(); removeMemberEntry(sub.id); refreshMembersCount(); }, 700);
+        })
+        .catch(function (e) {
+          toast.innerHTML = '<div class="toast err">' + esc(e.message) + '</div>';
+          confirmBtn.disabled = false; rejectBtn.disabled = false;
+        });
+    });
+
+    return card;
+  }
+
+  function removeMemberEntry(id) {
+    memberEntries = memberEntries.filter(function (e) { return e.sub.id !== id; });
+  }
+
+  function sortedMemberEntries() {
+    var mode = membersSort ? membersSort.value : 'created_desc';
+    return memberEntries.slice().sort(function (a, b) {
+      var sa = a.sub, sb = b.sub, ca = sa.constituency || '', cb = sb.constituency || '';
+      switch (mode) {
+        case 'created_asc': return (sa.created_at || '').localeCompare(sb.created_at || '') || ca.localeCompare(cb);
+        case 'surname':     return surnameOf(sa.mp_name).localeCompare(surnameOf(sb.mp_name)) || ca.localeCompare(cb);
+        case 'created_desc':
+        default:            return (sb.created_at || '').localeCompare(sa.created_at || '') || ca.localeCompare(cb);
+      }
+    });
+  }
+
+  function renderMembersList() {
+    var term = (membersSearch ? membersSearch.value : '').trim().toLowerCase();
+    var shown = 0;
+    membersListEl.innerHTML = '';
+    sortedMemberEntries().forEach(function (e) {
+      var hay = ((e.sub.mp_name || '') + ' ' + (e.sub.constituency || '') + ' ' + (e.sub.member_name || '') + ' ' + (e.sub.member_email || '')).toLowerCase();
+      if (term && hay.indexOf(term) === -1) return;
+      membersListEl.appendChild(renderMemberCard(e.sub));
+      shown++;
+    });
+    if (memberEntries.length && !shown) {
+      membersListEl.innerHTML = '<div class="admin-note">No member submissions match “' + esc(membersSearch.value) + '”.</div>';
+    }
+    updateMembersCount(shown);
+  }
+
+  function updateMembersCount(shown) {
+    if (!membersCount) return;
+    var total = memberEntries.length;
+    if (shown == null) shown = membersListEl.querySelectorAll('.rec-card').length;
+    var term = (membersSearch ? membersSearch.value : '').trim();
+    membersCount.hidden = total === 0;
+    membersCount.textContent = term
+      ? (shown + ' of ' + total + ' shown')
+      : (total + ' submission' + (total === 1 ? '' : 's') + ' awaiting review');
+  }
+
+  function refreshMembersCount() {
+    var total = memberEntries.length;
+    membersEmpty.hidden = total !== 0;
+    if (membersToolbar) membersToolbar.hidden = total === 0;
+    updateMembersCount();
+  }
+
+  function loadMembers() {
+    membersLoaded = true;
+    membersListEl.innerHTML = '<div class="admin-note">Loading…</div>';
+    fetch('/api/member-submissions?status=pending', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        memberEntries = (data.submissions || []).map(function (sub) { return { sub: sub }; });
+        renderMembersList();
+        refreshMembersCount();
+      })
+      .catch(function () {
+        membersListEl.innerHTML = '<div class="admin-note">Could not load member submissions. Please refresh.</div>';
+      });
+  }
+
+  if (membersSort)   membersSort.addEventListener('change', renderMembersList);
+  if (membersSearch) membersSearch.addEventListener('input', renderMembersList);
+
+  // ── Live ratings editors: Live Claude Ratings + Live Human Reviewed ─────────
+  // Both tabs share ONE fetch of every live rating (mp_ratings) and partition it
+  // by review state: a rating with no human_reviewed_at is a "Live Claude rating"
+  // (published to the map but not yet checked by a person); Saving it here — or
+  // Confirming it from Pending review — stamps human_reviewed_at and it moves to
+  // "Live Human Reviewed". Both states stay live on the public map throughout.
+  var liveLoaded  = false;
+  var liveEntries = [];   // { cons, r } for every live rating, both states
+
+  var GRADE_RANK = { A: 0, B: 1, C: 2, '?': 3, DNR: 4, D: 5, E: 6, F: 7 };
+  function gradeRank(g) { g = String(g || '?').toUpperCase(); return (g in GRADE_RANK) ? GRADE_RANK[g] : 99; }
+  function surnameOf(name) { var p = String(name || '').trim().split(/\s+/); return (p[p.length - 1] || '').toLowerCase(); }
+  function isReviewed(r) { return !!(r && r.human_reviewed_at); }
+
+  function renderLiveCard(consName, r) {
+    var card = document.createElement('div');
+    // A leading ⚑ in the carried-over rationale is the review-only "borderline"
+    // marker (see renderCard). Show it as a badge and strip it from the text.
+    var flagged = !!(r.rationale && /^\s*⚑/.test(r.rationale));
+    var rationaleText = flagged ? r.rationale.replace(/^\s*⚑\s*/, '') : r.rationale;
+    card.className = flagged ? 'rec-card flagged' : 'rec-card';
+
+    // Once a person has saved it, show when it was reviewed; otherwise when it
+    // last went live.
+    var when = r.human_reviewed_at
+      ? ' · <span class="muted">reviewed ' + esc((r.human_reviewed_at || '').slice(0, 10)) + '</span>'
+      : (r.updated_at ? ' · <span class="muted">updated ' + esc((r.updated_at || '').slice(0, 10)) + '</span>' : '');
+
+    card.innerHTML =
+      '<div class="rec-top">' +
+        '<div>' +
+          '<div class="rec-name">' + esc(r.mp_name || '') + '</div>' +
+          '<div class="rec-meta">' + esc(consName) +
+            (r.party ? ' · ' + esc(r.party) : '') + when +
+            (r.model ? ' · <span class="muted">drafted by ' + esc(r.model) + '</span>' : '') +
+            (r.signatory_fixed_at ? ' <span class="sigfix-badge" title="Both-campaign signatory coverage applied ' + esc((r.signatory_fixed_at || '').slice(0, 10)) + '">signatory-fixed</span>' : '') + '</div>' +
+        '</div>' +
+        '<div class="rec-grade-row">' +
+          '<span class="grade-pill"></span>' +
+          '<select class="grade-select">' + gradeOptions(r.grade) + '</select>' +
+        '</div>' +
+      '</div>' +
+      (flagged ? '<div class="rec-flag">⚑ Borderline — worth a closer look</div>' : '') +
+      (rationaleText ? '<div class="rec-rationale">' + esc(rationaleText) + '</div>' : '') +
+      '<div class="rec-field"><label>Justification bullets <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
+        '<div class="bullets-mount"></div></div>' +
+      '<div class="rec-field"><label>Sources <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
+        '<div class="sources-mount"></div></div>' +
+      '<div class="btn-row"><button class="btn-save">Save changes</button></div>' +
+      '<div class="card-toast"></div>';
+
+    var select = card.querySelector('.grade-select');
+    var pill   = card.querySelector('.grade-pill');
+    paintPill(pill, card, r.grade);
+    select.addEventListener('change', function () { paintPill(pill, card, select.value); });
+
+    var bulletsList = editableList('bullets', r.bullets || []);
+    var sourcesList = editableList('srcs', r.sources || []);
+    card.querySelector('.bullets-mount').appendChild(bulletsList);
+    card.querySelector('.sources-mount').appendChild(sourcesList);
+
+    var toast = card.querySelector('.card-toast');
+    var saveBtn = card.querySelector('.btn-save');
+    saveBtn.addEventListener('click', function () {
+      saveBtn.disabled = true;
+      toast.innerHTML = '';
+      var bullets = bulletsList.getValues();
+      var sources = sourcesList.getValues();
+      var wasReviewed = isReviewed(r);
+      fetch('/api/ratings/update', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ constituency: consName, mp_name: r.mp_name, grade: select.value, bullets: bullets, sources: sources }),
+      })
+        .then(function (rr) { return rr.json().then(function (d) { return { ok: rr.ok, d: d }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.d && res.d.error || 'Failed');
+          // Reflect the save in the shared cache so the card lands in the right tab.
+          r.grade = select.value; r.bullets = bullets; r.sources = sources;
+          r.human_reviewed_at = (res.d && res.d.human_reviewed_at) || new Date().toISOString();
+          r.updated_at = (res.d && res.d.updated_at) || r.human_reviewed_at;
+          if (!wasReviewed) {
+            toast.innerHTML = '<div class="toast ok">Saved as <strong>' + esc(select.value) +
+              '</strong> and moved to <strong>Live Human Reviewed</strong>.</div>';
+            // Re-render both tabs so the card hops out of Claude into Human reviewed.
+            setTimeout(rerenderLive, 1100);
+          } else {
+            toast.innerHTML = '<div class="toast ok">Saved as <strong>' + esc(select.value) + '</strong> with ' +
+              bullets.length + ' bullet' + (bullets.length === 1 ? '' : 's') + ' and ' +
+              sources.length + ' source' + (sources.length === 1 ? '' : 's') +
+              '. Live now (hard-refresh the scorecard to see it).</div>';
+            saveBtn.disabled = false;
+          }
+        })
+        .catch(function (e) {
+          toast.innerHTML = '<div class="toast err">' + esc(e.message) + '</div>';
+          saveBtn.disabled = false;
+        });
+    });
+    return card;
+  }
+
+  // A live-section controller (one per tab): filters the shared liveEntries by
+  // review state, then drives its own sort / filter / search / count / empty.
+  function makeLiveSection(cfg) {
+    var list    = document.getElementById(cfg.prefix + 'List');
+    var empty   = document.getElementById(cfg.prefix + 'Empty');
+    var toolbar = document.getElementById(cfg.prefix + 'Toolbar');
+    var sortEl  = document.getElementById(cfg.prefix + 'Sort');
+    var filter  = document.getElementById(cfg.prefix + 'Filter');
+    var search  = document.getElementById(cfg.prefix + 'Search');
+    var count   = document.getElementById(cfg.prefix + 'Count');
+
+    function mine() { return liveEntries.filter(function (e) { return cfg.wants(e.r); }); }
+
+    function sortEntries(arr) {
+      var mode = sortEl ? sortEl.value : 'updated_desc';
+      return arr.slice().sort(function (a, b) {
+        var ra = a.r, rb = b.r;
+        switch (mode) {
+          case 'updated_asc':  return (ra.updated_at || '').localeCompare(rb.updated_at || '') || a.cons.localeCompare(b.cons);
+          case 'grade_desc':   return gradeRank(ra.grade) - gradeRank(rb.grade) || a.cons.localeCompare(b.cons);
+          case 'grade_asc':    return gradeRank(rb.grade) - gradeRank(ra.grade) || a.cons.localeCompare(b.cons);
+          case 'surname':      return surnameOf(ra.mp_name).localeCompare(surnameOf(rb.mp_name)) || a.cons.localeCompare(b.cons);
+          case 'updated_desc':
+          default:             return (rb.updated_at || '').localeCompare(ra.updated_at || '') || a.cons.localeCompare(b.cons);
+        }
+      });
+    }
+
+    function render() {
+      var entries = mine();
+      empty.hidden = entries.length !== 0;
+      toolbar.hidden = entries.length === 0;
+      if (!entries.length) { list.innerHTML = ''; if (count) count.hidden = true; return; }
+      var term = (search ? search.value : '').trim().toLowerCase();
+      var onlyFixed = filter && filter.value === 'sigfix';
+      var fixedTotal = entries.filter(function (e) { return e.r && e.r.signatory_fixed_at; }).length;
+      var shown = 0;
+      list.innerHTML = '';
+      sortEntries(entries).forEach(function (e) {
+        if (onlyFixed && !(e.r && e.r.signatory_fixed_at)) return;
+        var hay = ((e.r.mp_name || '') + ' ' + e.cons).toLowerCase();
+        if (term && hay.indexOf(term) === -1) return;
+        list.appendChild(renderLiveCard(e.cons, e.r));
+        shown++;
+      });
+      if (entries.length && !shown) {
+        list.innerHTML = '<div class="admin-note">No ratings match the current filter'
+          + (term ? ' and “' + esc(search.value) + '”' : '') + '.</div>';
+      }
+      if (count) {
+        count.hidden = false;
+        var base = onlyFixed
+          ? (shown + ' signatory-fixed rating' + (shown === 1 ? '' : 's'))
+          : (term ? (shown + ' of ' + entries.length + ' shown')
+                  : (entries.length + ' ' + cfg.noun + (entries.length === 1 ? '' : 's')));
+        count.textContent = base + (!onlyFixed && fixedTotal ? ' · ' + fixedTotal + ' signatory-fixed' : '');
+      }
+    }
+
+    if (sortEl) sortEl.addEventListener('change', render);
+    if (filter) filter.addEventListener('change', render);
+    if (search) search.addEventListener('input', render);
+    return { render: render, list: list };
+  }
+
+  var claudeSection = makeLiveSection({ prefix: 'live',  noun: 'Claude rating',   wants: function (r) { return !isReviewed(r); } });
+  var humanSection  = makeLiveSection({ prefix: 'human', noun: 'reviewed rating', wants: isReviewed });
+  function rerenderLive() { claudeSection.render(); humanSection.render(); }
+
+  function loadLive() {
+    claudeSection.list.innerHTML = humanSection.list.innerHTML = '<div class="admin-note">Loading…</div>';
+    fetch('/api/ratings/list', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var map = (data && data.ratings) || {};
+        liveEntries = Object.keys(map).map(function (name) { return { cons: name, r: map[name] }; });
+        liveLoaded = true;
+        rerenderLive();
+      })
+      .catch(function () {
+        claudeSection.list.innerHTML = humanSection.list.innerHTML =
+          '<div class="admin-note">Could not load live ratings. Please refresh.</div>';
+      });
+  }
+
+  if (pendingSort)   pendingSort.addEventListener('change', renderPendingList);
+  if (pendingSearch) pendingSearch.addEventListener('input', renderPendingList);
+
+  function showTab(which) {
+    listView.hidden    = which !== 'pending';
+    membersView.hidden = which !== 'members';
+    liveView.hidden    = which !== 'live';
+    humanView.hidden   = which !== 'human';
+    commsView.hidden   = which !== 'comms';
+    document.getElementById('tab-pending').classList.toggle('active', which === 'pending');
+    document.getElementById('tab-members').classList.toggle('active', which === 'members');
+    document.getElementById('tab-live').classList.toggle('active', which === 'live');
+    document.getElementById('tab-human').classList.toggle('active', which === 'human');
+    document.getElementById('tab-comms').classList.toggle('active', which === 'comms');
+    if (which === 'members' && !membersLoaded) loadMembers();
+    if ((which === 'live' || which === 'human') && !liveLoaded) loadLive();
+    if (which === 'comms' && !commsLoaded) loadComms();
+  }
+
+  // ── Membership tally ──────────────────────────────────────────────────────
+  function loadStats() {
+    fetch('/api/admin/stats', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (s) {
+        if (!s) return;
+        function n(v) { return Number(v || 0).toLocaleString(); }
+        var parts = [
+          '<span><strong>' + n(s.members) + '</strong> member' + (s.members === 1 ? '' : 's') + '</span>',
+          '<span><strong>' + n(s.opted_in) + '</strong> opted in to AI safety news</span>',
+        ];
+        if (s.pending_partner_export != null) {
+          parts.push('<span><strong>' + n(s.pending_partner_export) + '</strong> queued for next partner export</span>');
+        }
+        memberTally.innerHTML = parts.join('<span class="mt-sep">·</span>');
+        memberTally.hidden = false;
+      })
+      .catch(function () {});
+  }
+
+  // ── Communications tab: preview every auto-sent email ─────────────────────
+  var commsLoaded = false;
+  function loadComms() {
+    commsLoaded = true;
+    var picker = document.getElementById('commsPicker');
+    var detail = document.getElementById('commsDetail');
+    detail.innerHTML = '<div class="admin-note">Loading…</div>';
+    fetch('/api/admin/comms', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.comms) {
+          detail.innerHTML = '<div class="admin-note">Could not load communications. Please refresh.</div>';
+          return;
+        }
+        picker.innerHTML = '';
+        data.comms.forEach(function (c, i) {
+          var b = document.createElement('button');
+          b.className = 'comms-chip' + (i === 0 ? ' active' : '');
+          b.textContent = c.name;
+          b.addEventListener('click', function () {
+            [].forEach.call(picker.children, function (x) { x.classList.remove('active'); });
+            b.classList.add('active');
+            renderComm(c);
+          });
+          picker.appendChild(b);
+        });
+        if (data.comms.length) renderComm(data.comms[0]);
+        else detail.innerHTML = '<div class="admin-note">No automatic emails are configured.</div>';
+      })
+      .catch(function () {
+        detail.innerHTML = '<div class="admin-note">Could not load communications. Please refresh.</div>';
+      });
+  }
+
+  function renderComm(c) {
+    var detail = document.getElementById('commsDetail');
+    var isPage = c.kind === 'page';
+    var editPath = c.editPath || 'lib/comms-templates.js';
+    var fields = (c.fields || []).map(function (f) {
+      return '<span class="comms-field">' + esc(f) + '</span>';
+    }).join('');
+    // Pages have no subject line; show where the live page lives instead.
+    var topRow = isPage
+      ? (c.previewUrl
+          ? '<div class="comms-row"><span class="comms-label">Live page</span><span><a class="comms-link" href="' + esc(c.previewUrl) + '" target="_blank" rel="noopener">' + esc(c.previewUrl) + '</a></span></div>'
+          : '')
+      : '<div class="comms-row"><span class="comms-label">Subject</span><span class="comms-subject">' + esc(c.subject) + '</span></div>';
+    detail.innerHTML =
+      '<div class="comms-card">' +
+        '<div class="comms-meta">' +
+          topRow +
+          '<div class="comms-row"><span class="comms-label">' + (isPage ? 'When it is shown' : 'When it is sent') + '</span><span>' + esc(c.trigger) + '</span></div>' +
+          (fields ? '<div class="comms-row"><span class="comms-label">Personalised</span><span class="comms-fields">' + fields + '</span></div>' : '') +
+        '</div>' +
+        '<div class="comms-previews">' +
+          '<div class="comms-pane"><div class="comms-pane-h">Preview</div>' +
+            '<iframe class="comms-frame" sandbox="" title="' + (isPage ? 'Page preview' : 'Email preview') + '"></iframe></div>' +
+          '<div class="comms-pane"><div class="comms-pane-h">HTML source <span class="comms-hint">(edit &amp; preview here; permanent edits go in ' + esc(editPath) + ')</span></div>' +
+            '<textarea class="comms-src" spellcheck="false"></textarea>' +
+            '<div class="comms-actions">' +
+              '<button class="btn-mini" data-act="preview">Preview edits</button>' +
+              '<button class="btn-mini" data-act="copy">Copy HTML</button>' +
+              '<button class="btn-mini ghost" data-act="reset">Reset</button>' +
+              '<span class="comms-toast"></span>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    var card  = detail.querySelector('.comms-card');
+    var frame = card.querySelector('.comms-frame');
+    var src   = card.querySelector('.comms-src');
+    var toast = card.querySelector('.comms-toast');
+    var original = c.html;
+    function flash(msg) { toast.textContent = msg; setTimeout(function () { if (toast.textContent === msg) toast.textContent = ''; }, 2000); }
+    src.value = original;
+    // Normally render the exact HTML (styles load; scripts are off, so a page
+    // shows its default/confirmed state). If a page's file couldn't be read,
+    // fall back to loading its live URL so it still previews.
+    if (!original && c.previewUrl) { frame.removeAttribute('srcdoc'); frame.src = c.previewUrl; }
+    else { frame.srcdoc = original; }
+    card.querySelector('[data-act="preview"]').addEventListener('click', function () { frame.removeAttribute('src'); frame.srcdoc = src.value; flash('Preview updated'); });
+    card.querySelector('[data-act="reset"]').addEventListener('click', function () {
+      src.value = original;
+      if (!original && c.previewUrl) { frame.removeAttribute('srcdoc'); frame.src = c.previewUrl; }
+      else { frame.removeAttribute('src'); frame.srcdoc = original; }
+      flash(isPage ? 'Reset to live page' : 'Reset to live template');
+    });
+    card.querySelector('[data-act="copy"]').addEventListener('click', function () {
+      (navigator.clipboard ? navigator.clipboard.writeText(src.value) : Promise.reject())
+        .then(function () { flash('HTML copied'); }, function () { src.select(); flash('Press Ctrl/Cmd+C to copy'); });
+    });
+  }
+
+  // ── Session keep-alive ─────────────────────────────────────────────────────
+  // The admin session is a fixed window (8 h by default from login). With "Keep
+  // me signed in" ON, the page slides that window forward now and every few
+  // minutes while it stays open, re-issuing the cookie for 30 days — so an open
+  // or active session won't time out mid-edit and survives closing the tab. OFF
+  // restores the default 8-hour behaviour. Note this can only extend a session
+  // that is still valid; once one has expired you have to log in again.
+  var STAY_KEY = 'asva_admin_stay';
+  var keepAliveTimer = null;
+  function staySignedIn() {
+    try { return localStorage.getItem(STAY_KEY) !== '0'; } catch (e) { return true; } // default on
+  }
+  function refreshSession(remember) {
+    return fetch('/api/admin/refresh', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ remember: !!remember }),
+    }).catch(function () {});
+  }
+  function startKeepAlive() {
+    stopKeepAlive();
+    refreshSession(true);
+    keepAliveTimer = setInterval(function () { refreshSession(true); }, 5 * 60 * 1000);
+  }
+  function stopKeepAlive() {
+    if (keepAliveTimer) { clearInterval(keepAliveTimer); keepAliveTimer = null; }
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  fetch('/api/recommendations?status=pending')
+    .then(function (r) {
+      if (r.status === 401) { showLogin(); return null; }
+      return r.json();
+    })
+    .then(function (data) {
+      if (!data) return;
+      // Authenticated: drop the blank overlay and reveal the review UI + chrome.
+      loadingView.hidden = true;
+      document.body.classList.remove('gp-locked');
+      listView.hidden = false;
+      tabsEl.hidden = false;
+      loadStats();
+      sessionCtl.innerHTML =
+        '<span class="session-ctl">' +
+          '<button class="btn-redeploy" id="redeployBtn">Redeploy site</button>' +
+          '<span class="redeploy-toast" id="redeployToast"></span>' +
+          '<label class="stay-signed" title="Keep this session signed in on this device (30 days), refreshed while this tab is open">' +
+            '<input type="checkbox" id="staySignedIn"> Keep me signed in</label>' +
+          '<button class="linkbtn" id="logoutBtn">Log out</button>' +
+        '</span>';
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+      document.getElementById('redeployBtn').addEventListener('click', redeploy);
+      var stayCb = document.getElementById('staySignedIn');
+      stayCb.checked = staySignedIn();
+      if (stayCb.checked) startKeepAlive();
+      stayCb.addEventListener('change', function () {
+        try { localStorage.setItem(STAY_KEY, stayCb.checked ? '1' : '0'); } catch (e) {}
+        if (stayCb.checked) startKeepAlive();
+        else { stopKeepAlive(); refreshSession(false); }  // revert to an 8-hour window from now
+      });
+      document.getElementById('tab-pending').addEventListener('click', function () { showTab('pending'); });
+      document.getElementById('tab-members').addEventListener('click', function () { showTab('members'); });
+      document.getElementById('tab-live').addEventListener('click', function () { showTab('live'); });
+      document.getElementById('tab-human').addEventListener('click', function () { showTab('human'); });
+      document.getElementById('tab-comms').addEventListener('click', function () { showTab('comms'); });
+
+      pendingEntries = (data.recommendations || []).map(function (rec) { return { rec: rec }; });
+      renderPendingList();
+      refreshCount();
+    })
+    .catch(function () {
+      loadingView.innerHTML = 'Could not load recommendations. Please refresh.';
+    });
+})();
+</script>
+
+</body>
+</html>

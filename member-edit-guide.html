@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - Style Guide</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - Style Guide" />
+  <meta property="og:description" content="What to keep in mind when suggesting an edit to an MP's ASVA scorecard rating." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/member-edit-guide" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - Style Guide" />
+  <meta name="twitter:description" content="What to keep in mind when suggesting an edit to an MP's ASVA scorecard rating." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="What to keep in mind when suggesting an edit to an MP's ASVA scorecard rating." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/member-edit-guide" />
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-about">
+
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<div class="app">
+  <div class="about-content">
+    <h1>Style Guide</h1>
+    <p>Thanks for taking the time to help keep the scorecard accurate. Every edit you submit is reviewed by ASVA before it goes live; nothing you write is published automatically; following this guide makes it far more likely your suggestion is accepted as-is, and quickly.</p>
+
+    <h2>1. Source every claim</h2>
+    <p>The scorecard's credibility rests on every claim being checkable. For each bullet point you add or change, include a source; this could be a link to the MP's own statement, a vote record, a written question, a campaign signatory list, or comparable public record. A bullet with no source is the single most common reason a submission is sent back, so this alone will save you a round trip.</p>
+
+    <h2>2. Keep it factual</h2>
+    <ul>
+      <li>Describe what the MP has said or done ("Voted against the Bill on 12 March 2026"), not how you feel about it ("Ian Byrne clearly doesn't care about AI safety").</li>
+      <li>Avoid campaigning language, sarcasm, or personal characterisations of the MP. The scorecard grades a voting/public record, not a personality.</li>
+      <li>If something is genuinely ambiguous or contested, say so; "unclear" or "no public statement found" is a more honest bullet than a confident guess.</li>
+    </ul>
+
+    <h2>3. Follow the format</h2>
+    <ul>
+      <li>Keep each bullet to one clear sentence; the card has room for up to five.</li>
+      <li>Up to six sources per MP; give each one a short, plain title (e.g. "Written question, 30 May 2025") rather than pasting the raw URL as the title.</li>
+      <li>Only propose a grade change if the bullets you're submitting genuinely support a different grade than the one currently shown; the grade should follow from the evidence, not the other way round.</li>
+    </ul>
+
+    <h2>4. Grading rubric</h2>
+    <p>Use this as a rough guide for which grade the evidence supports:</p>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Grade</th><th>What it looks like</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>Signed a campaign statement (ControlAI or PauseAI) and shown active governance work, e.g. led a Westminster Hall or Commons debate on AI safety, tabled an EDM or written questions on AI risk, sponsored a relevant bill, or repeatedly spoken publicly on catastrophic risk.</td></tr>
+          <tr><td>B</td><td>Clear positive alignment but lighter, e.g. a meaningful PauseAI or ControlAI signatory but little else on record.</td></tr>
+          <tr><td>C</td><td>Some positive engagement, or a general push for AI regulation.</td></tr>
+          <tr><td>D</td><td>Leans against safety governance, e.g. prioritises "innovation" or "growth" over safeguards, or is dismissive of AI safety without a hard record of active opposition.</td></tr>
+          <tr><td>E</td><td>Actively works against AI safety, e.g. voted or campaigned against binding regulation, an AI Bill, or independent oversight.</td></tr>
+          <tr><td>F</td><td>Vocal opposition to AI safety, e.g. calls AI risk "hype" or "doomerism", champions deregulation or an "AI arms race".</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>5. What not to submit</h2>
+    <ul>
+      <li>Unsourced claims, rumour, or anything you can't point to a public record for.</li>
+      <li>Personal attacks, or claims about the MP's motives rather than their actions.</li>
+      <li>Duplicate submissions for minor wording tweaks; if you need to fix something in an edit you already sent, just submit again; your new version replaces the pending one automatically.</li>
+    </ul>
+
+    <h2>What happens after you submit</h2>
+    <p>An ASVA reviewer checks your suggested edit against the sources you provided. You'll get an email either way: if it's published, whether it went live exactly as you wrote it or with some changes; if it isn't, a short note on why not so you can try again.</p>
+  </div>
+</div>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - Data Privacy Notice</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - Data Privacy Notice" />
+  <meta property="og:description" content="How the AI Safety Voter Alliance handles your data." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/privacy" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - Data Privacy Notice" />
+  <meta name="twitter:description" content="How the AI Safety Voter Alliance handles your data." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="How the AI Safety Voter Alliance handles your data." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/privacy" />
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-privacy">
+
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<div class="app">
+
+  <!-- KEEP IN SYNC: this notice is duplicated in the privacy modal in pledge.html — update both copies together. -->
+  <div class="card">
+    <h1 style="text-align:center">Data Privacy Notice</h1>
+
+    <h2>1. Who we are</h2>
+    <p>The AI Safety Voter Alliance (ASVA) is a campaign organisation dedicated to promoting responsible AI governance in the United Kingdom. References to "we", "us" or "our" refer to ASVA.</p>
+
+    <h2>2. What data we collect</h2>
+    <p>When you sign the pledge, we collect your:</p>
+    <ul>
+      <li>First name and last name</li>
+      <li>Email address</li>
+      <li>Home address including postcode (if given)</li>
+      <li>Parliamentary constituency</li>
+      <li>Pledge level and contact preference</li>
+    </ul>
+    <p>When you load the homepage, we briefly collect your IP address to estimate your constituency via postcodes.io. This is used only to show you the scorecard for your estimated MP and is not stored or in any way retained.</p>
+    <p>Our website also uses Cloudflare for security purposes, which may involve processing technical data such as your IP address. Cloudflare is based in the United States; where data is transferred internationally, this is done under UK GDPR-approved safeguards (the UK Addendum to the EU Standard Contractual Clauses, or the UK extension to the EU-US Data Privacy Framework).</p>
+
+    <h2>3. Why we collect it</h2>
+    <ul>
+      <li>To record your pledge and count members by constituency</li>
+      <li>To send you occasional essential updates from ASVA, and, if you opt in, to share your name and email address with our partner campaign organisations (<strong>ControlAI</strong> and <strong>PauseAI</strong>) so they can send you AI safety news</li>
+      <li>To report aggregate (anonymised) membership numbers publicly</li>
+    </ul>
+
+    <h2>4. Legal basis</h2>
+    <p>We process your data on the basis of your explicit consent. Essential ASVA updates are a core part of membership and cannot be individually opted out of, but you may withdraw consent to all processing at any time by notifying us that consent is withdrawn. This can be done by emailing your withdrawal of consent to <a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>, which will remove you from our records.</p>
+
+    <h2>5. How we store and share your data</h2>
+    <p>Your data is stored securely in an encrypted database. We do not sell or rent your data.</p>
+    <p>If you opt in to receive AI safety news, we share your name and email address with our partner campaign organisations; <strong>ControlAI</strong> and <strong>PauseAI</strong>, solely so they can send you their newsletters. These partners act as independent data controllers and process your data under their own privacy policies. You can withdraw this consent at any time (see "Legal basis" above), and we will ask them to remove you. We do not otherwise share your data with third parties except where required by law.</p>
+
+    <h2>6. Retention</h2>
+    <p>We retain your data for as long as you remain a member, or until you request deletion.</p>
+
+    <h2>7. Your rights</h2>
+    <p>Under UK GDPR you have the right to access, correct, or delete your data, restrict or object to its processing, and request it in a portable format. You also have the right to lodge a complaint with the ICO.</p>
+
+    <h2>8. Contact</h2>
+    <p>For any queries, email <a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>.</p>
+  </div>
+
+</div>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - Email Confirmation</title>
+  <meta name="robots" content="noindex">
+  <meta name="turbo-cache-control" content="no-cache">
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script src="qrcode.min.js"></script>
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-confirmed">
+
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<div class="app">
+  <div class="confirm-card">
+    <h1 id="confirmTitle">Email Confirmed</h1>
+    <p id="confirmMsg">Your ASVA membership is confirmed and the total for your constituency has been updated. Thank you for making a difference.</p>
+
+    <div id="successExtra" hidden>
+      <p id="newsLine" hidden>You will receive AI safety news from ControlAI and PauseAI.</p>
+      <p>If you want to do even more, share this site and get friends and family to take the pledge too.</p>
+      <p>Together, we can make AI safe.</p>
+
+      <!-- Share tools, mirrored from share.html so members can share straight
+           from the confirmation page. Same IDs/classes as the share page so the
+           shared component styles and the share script below apply unchanged. -->
+      <div class="confirm-share">
+        <h2>Share in one tap</h2>
+        <div class="share-grid">
+          <button type="button" class="share-btn" id="shareNative" style="display:none">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></span>
+            <span class="share-btn-label">Share…</span>
+          </button>
+          <a class="share-btn" id="shareWhatsApp" href="#" target="_blank" rel="noopener noreferrer">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
+            <span class="share-btn-label">WhatsApp</span>
+          </a>
+          <a class="share-btn" id="shareX" href="#" target="_blank" rel="noopener noreferrer">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
+            <span class="share-btn-label">Post on X</span>
+          </a>
+          <a class="share-btn" id="shareFacebook" href="#" target="_blank" rel="noopener noreferrer">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></span>
+            <span class="share-btn-label">Facebook</span>
+          </a>
+          <a class="share-btn" id="shareLinkedIn" href="#" target="_blank" rel="noopener noreferrer">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+            <span class="share-btn-label">LinkedIn</span>
+          </a>
+          <a class="share-btn" id="shareInstagram" href="#">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igGrad" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".28" stop-color="#fa7e1e"/><stop offset=".54" stop-color="#d62976"/><stop offset=".78" stop-color="#962fbf"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><path fill="url(#igGrad)" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></span>
+            <span class="share-btn-label">Instagram</span>
+          </a>
+          <a class="share-btn" id="shareEmail" href="#">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></span>
+            <span class="share-btn-label">Email</span>
+          </a>
+          <button type="button" class="share-btn" id="shareQR">
+            <span class="share-btn-ico"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm-2 16h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm-6 4h2v2h-2zm2 2h2v2h-2zm-2 2h2v2h-2zm2 2h2v2h-2zm2-2h2v2h-2zm0-4h2v2h-2zm2 2h2v2h-2z"/></svg></span>
+            <span class="share-btn-label">QR code</span>
+          </button>
+        </div>
+
+        <h2>Or copy a ready-made message</h2>
+        <div class="share-message" id="shareMessage">ASVA is building a voter bloc to make sure AI is developed and regulated safely; before it outpaces our ability to control it. Take a look and add your voice: <span id="shareUrlText"></span></div>
+        <div class="share-actions">
+          <button type="button" class="share-copy-btn" id="copyMessageBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            <span id="copyMessageLabel">Copy message</span>
+          </button>
+          <button type="button" class="share-copy-btn" id="copyLinkBtn" style="background:#0b2e42">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+            <span id="copyLinkLabel">Copy link</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="confirm-update-note">If you want to update your details, please sign the pledge again with the same email address and confirm the changes.</p>
+    </div>
+
+    <!-- Empty on success (no button); the script fills it with a recovery
+         button on the error / invalid-link states only. -->
+    <div class="btn-row" id="confirmActions"></div>
+  </div>
+</div>
+
+<!-- QR-code modal (opened by the "QR code" share button above) -->
+<div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-label="QR code for this site">
+  <div class="qr-box">
+    <button type="button" class="qr-close" id="qrClose" aria-label="Close">&times;</button>
+    <div class="qr-canvas" id="qrCanvas"></div>
+    <p class="qr-url" id="qrUrl"></p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var params = new URLSearchParams(location.search);
+    var status = params.get('status') || 'invalid';
+    var token  = params.get('token') || '';
+    var title = document.getElementById('confirmTitle');
+    var msg   = document.getElementById('confirmMsg');
+    var acts  = document.getElementById('confirmActions');
+
+    if (status === 'error') {
+      title.textContent = 'Something went wrong';
+      msg.textContent = 'We could not confirm your email just now. Please try the link again in a few minutes.';
+      acts.innerHTML = '<a class="btn" href="scorecard.html">Back to the Scorecard →</a>';
+      return;
+    }
+    if (status !== 'ok') {
+      title.textContent = 'Link invalid';
+      msg.textContent = 'This confirmation link is invalid or has already been replaced. Sign the pledge again with the same email address and we’ll send you a fresh link.';
+      acts.innerHTML = '<a class="btn" href="pledge.html">Sign the Pledge →</a>';
+      return;
+    }
+
+    // Success — reveal the follow-on message. Then fetch the member's details
+    // (via the confirm token) to personalise the page: name their constituency
+    // in the confirmation line, and show the "AI safety news" line only if they
+    // opted in to it. The generic "your constituency" wording stays as a
+    // fallback if the details can't be loaded.
+    document.getElementById('successExtra').hidden = false;
+    if (!token) return;
+
+    fetch('/api/member-details?token=' + encodeURIComponent(token))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) return;
+        if (data.contact_pref === 'urgent_and_updates') {
+          document.getElementById('newsLine').hidden = false;
+        }
+        if (data.constituency) {
+          msg.textContent = 'Your ASVA membership is confirmed and the total for ' + data.constituency + ' has been updated. Thank you for making a difference.';
+        }
+      })
+      .catch(function () { /* personalisation is a nicety — never block the page */ });
+  })();
+</script>
+
+<!-- Share tools: mirrors share.html's logic so the buttons above work here too.
+     Guarded on the .confirm-share block (present only on this page's success
+     view) instead of body.page-share. -->
+<script>
+  (function(){
+    var SUBJECT = 'Making AI safety a voting issue';
+    var MESSAGE = "ASVA is building a voter bloc to make sure AI is developed and regulated safely; before it outpaces our ability to control it. Take a look and add your voice:";
+
+    function siteUrl(){
+      // Share the site's home page, on whatever domain this is served from.
+      try { return location.origin + '/'; } catch(e){ return 'https://aisafetyvoteralliance.co.uk/'; }
+    }
+
+    function flash(btn, labelEl, done){
+      if(!btn || !labelEl) return;
+      var prev = labelEl.getAttribute('data-base') || labelEl.textContent;
+      labelEl.setAttribute('data-base', prev);
+      labelEl.textContent = done;
+      btn.classList.add('copied');
+      clearTimeout(btn._t);
+      btn._t = setTimeout(function(){ labelEl.textContent = prev; btn.classList.remove('copied'); }, 1800);
+    }
+
+    function copyText(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(text);
+      }
+      return new Promise(function(resolve, reject){
+        try{
+          var ta = document.createElement('textarea');
+          ta.value = text; ta.setAttribute('readonly','');
+          ta.style.position = 'absolute'; ta.style.left = '-9999px';
+          document.body.appendChild(ta); ta.select();
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          ok ? resolve() : reject();
+        }catch(e){ reject(e); }
+      });
+    }
+
+    function setup(){
+      if(!document.querySelector('.confirm-share')) return;
+      var isMobile = /Android|iPhone|iPad|iPod|Mobile|Silk/i.test(navigator.userAgent || '');
+      var url = siteUrl();
+      var full = MESSAGE + ' ' + url;
+      var eText = encodeURIComponent(MESSAGE);
+      var eUrl = encodeURIComponent(url);
+
+      var urlSpan = document.getElementById('shareUrlText');
+      if(urlSpan) urlSpan.textContent = url;
+
+      function setHref(id, href){ var el = document.getElementById(id); if(el) el.setAttribute('href', href); }
+      setHref('shareWhatsApp', 'https://wa.me/?text=' + encodeURIComponent(full));
+      setHref('shareX', 'https://twitter.com/intent/tweet?text=' + eText + '&url=' + eUrl);
+      setHref('shareFacebook', 'https://www.facebook.com/sharer/sharer.php?u=' + eUrl);
+      setHref('shareLinkedIn', 'https://www.linkedin.com/sharing/share-offsite/?url=' + eUrl);
+      setHref('shareEmail', 'mailto:?subject=' + encodeURIComponent(SUBJECT) + '&body=' + encodeURIComponent(full));
+
+      // Native share sheet (mobile / supported browsers) — includes Instagram etc.
+      var nativeBtn = document.getElementById('shareNative');
+      if(nativeBtn){
+        if(navigator.share){
+          nativeBtn.style.display = '';
+          nativeBtn.onclick = function(){
+            navigator.share({ title: 'AI Safety Voter Alliance', text: MESSAGE, url: url }).catch(function(){});
+          };
+        } else {
+          nativeBtn.style.display = 'none';
+        }
+      }
+
+      // LinkedIn's web share composer shows a login wall on mobile browsers.
+      // On mobile, route through the native share sheet instead so the tap
+      // lands in the already-logged-in LinkedIn app. Desktop keeps the web URL.
+      var li = document.getElementById('shareLinkedIn');
+      if(li){
+        li.onclick = function(e){
+          if(isMobile && navigator.share){
+            e.preventDefault();
+            navigator.share({ title: 'AI Safety Voter Alliance', text: MESSAGE, url: url }).catch(function(){});
+          }
+        };
+      }
+
+      // Instagram has no web link-share intent, so we can't pre-fill a post.
+      // Copy the link, then open Instagram directly — instagram.com is a
+      // universal link, so it opens the app on mobile and the site on desktop,
+      // ready to paste into a story, post or bio.
+      var ig = document.getElementById('shareInstagram');
+      if(ig){
+        ig.onclick = function(e){
+          e.preventDefault();
+          copyText(full).then(function(){
+            flash(ig, ig.querySelector('.share-btn-label'), 'Link copied!');
+          }).catch(function(){});
+          window.open('https://www.instagram.com/', '_blank', 'noopener');
+        };
+      }
+
+      var copyMsg = document.getElementById('copyMessageBtn');
+      if(copyMsg){
+        copyMsg.onclick = function(){
+          copyText(full).then(function(){ flash(copyMsg, document.getElementById('copyMessageLabel'), 'Copied!'); })
+                        .catch(function(){ flash(copyMsg, document.getElementById('copyMessageLabel'), 'Press Ctrl+C'); });
+        };
+      }
+      var copyLink = document.getElementById('copyLinkBtn');
+      if(copyLink){
+        copyLink.onclick = function(){
+          copyText(url).then(function(){ flash(copyLink, document.getElementById('copyLinkLabel'), 'Copied!'); })
+                       .catch(function(){ flash(copyLink, document.getElementById('copyLinkLabel'), 'Press Ctrl+C'); });
+        };
+      }
+
+      // QR code
+      var modal = document.getElementById('qrModal');
+      var canvas = document.getElementById('qrCanvas');
+      var qrUrlEl = document.getElementById('qrUrl');
+      var qrBtn = document.getElementById('shareQR');
+      var qrClose = document.getElementById('qrClose');
+      // Build a styled QR as SVG: connected ASVA-blue "blobs" (each module is a
+      // unit square whose OUTER corners round off where it has no orthogonal
+      // neighbour, so runs merge into thick rounded shapes), rounded blue finder
+      // "eyes", and a small cleared square in the middle for the logo. Level 'H'
+      // (~30% recoverable) keeps it scannable despite the cleared centre.
+      function styledQR(text){
+        var BLUE = '#0b2e42', RED = '#e11f29';
+        var qr = qrcode(0, 'H');
+        qr.addData(text);
+        qr.make();
+        var n = qr.getModuleCount();
+        var m = 4;                       // quiet-zone margin, in modules
+        var size = n + m * 2;
+        var cover = Math.round(size * 0.24);        // cleared centre (modules)
+        if((n - cover) % 2 !== 0) cover += 1;        // keep it centred on odd n
+        var from = (n - cover) / 2, to = from + cover - 1;
+        function isFinder(r, c){
+          return (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
+        }
+        function on(r, c){
+          if(r < 0 || c < 0 || r >= n || c >= n) return false;
+          if(isFinder(r, c)) return false;
+          if(r >= from && r <= to && c >= from && c <= to) return false;
+          return qr.isDark(r, c);
+        }
+        // One rounded-rect path per module, corners rounded only where free.
+        function blob(x, y, tl, tr, br, bl){
+          return 'M' + (x + tl) + ',' + y +
+                 'L' + (x + 1 - tr) + ',' + y + (tr ? 'A' + tr + ',' + tr + ' 0 0 1 ' + (x + 1) + ',' + (y + tr) : '') +
+                 'L' + (x + 1) + ',' + (y + 1 - br) + (br ? 'A' + br + ',' + br + ' 0 0 1 ' + (x + 1 - br) + ',' + (y + 1) : '') +
+                 'L' + (x + bl) + ',' + (y + 1) + (bl ? 'A' + bl + ',' + bl + ' 0 0 1 ' + x + ',' + (y + 1 - bl) : '') +
+                 'L' + x + ',' + (y + tl) + (tl ? 'A' + tl + ',' + tl + ' 0 0 1 ' + (x + tl) + ',' + y : '') + 'Z';
+        }
+        var rr = 0.5, d = '';
+        for(var r = 0; r < n; r++){
+          for(var c = 0; c < n; c++){
+            if(!on(r, c)) continue;
+            var up = on(r - 1, c), dn = on(r + 1, c), lf = on(r, c - 1), rt = on(r, c + 1);
+            d += blob(m + c, m + r,
+                      (!up && !lf) ? rr : 0, (!up && !rt) ? rr : 0,
+                      (!dn && !rt) ? rr : 0, (!dn && !lf) ? rr : 0);
+          }
+        }
+        var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size +
+                '" shape-rendering="geometricPrecision"><rect width="' + size + '" height="' + size + '" fill="#fff"/>';
+        s += '<path fill="' + BLUE + '" d="' + d + '"/>';
+        [[0, 0], [0, n - 7], [n - 7, 0]].forEach(function(p){
+          var y = m + p[0], x = m + p[1];
+          s += '<rect x="' + x + '" y="' + y + '" width="7" height="7" rx="2.3" fill="' + BLUE + '"/>' +
+               '<rect x="' + (x + 1) + '" y="' + (y + 1) + '" width="5" height="5" rx="1.6" fill="#fff"/>' +
+               '<rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="3" height="3" rx="1" fill="' + RED + '"/>';
+        });
+        return s + '</svg>';
+      }
+      function renderQR(){
+        if(!canvas || canvas.getAttribute('data-url') === url) return;
+        if(typeof qrcode !== 'function'){ canvas.textContent = 'QR unavailable'; return; }
+        try{
+          canvas.innerHTML = styledQR(url) +
+            '<span class="qr-logo"><img src="asva-shield.svg" alt="ASVA"></span>';
+          canvas.setAttribute('data-url', url);
+        }catch(err){ canvas.textContent = 'QR unavailable'; }
+      }
+      function openQR(){ renderQR(); if(qrUrlEl) qrUrlEl.textContent = url; if(modal) modal.classList.add('open'); }
+      function closeQR(){ if(modal) modal.classList.remove('open'); }
+      if(qrBtn) qrBtn.onclick = openQR;
+      if(qrClose) qrClose.onclick = closeQR;
+      if(modal) modal.onclick = function(e){ if(e.target === modal) closeQR(); };
+      document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeQR(); });
+    }
+
+    setup();
+    document.addEventListener('turbo:load', setup);
+  })();
+</script>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

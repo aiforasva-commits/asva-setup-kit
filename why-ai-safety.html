@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - Why AI Safety</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - Why AI Safety" />
+  <meta property="og:description" content="Why AI safety matters, in plain terms — and what's at stake." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/why-ai-safety" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - Why AI Safety" />
+  <meta name="twitter:description" content="Why AI safety matters, in plain terms — and what's at stake." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="Why AI safety matters, in plain terms — and what's at stake." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/why-ai-safety" />
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-concern">
+
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<div class="app">
+  <div class="concern-content">
+    <h1>Why AI Safety</h1>
+    <p class="concern-intro">Find out why growing numbers want action.</p>
+
+    <div class="path" data-path>
+      <div class="path-stage">
+
+        <div class="path-step" data-step>
+          <h3>1. AI is approaching human level</h3>
+          <p>You've probably noticed AI getting sharper, but the pace is easy to underestimate. Systems now write code, pass professional exams, and outperform most people at tasks we had assumed needed human judgement.</p>
+        </div>
+
+        <div class="path-step" data-step>
+          <h3>2. AI development is a race</h3>
+          <p>Whoever develops the first truly human level AI will control the economy, so the leading labs are locked into a flat-out race. Worse, many labs have the explicit goal of building an AI beyond human intelligence.</p>
+        </div>
+
+        <div class="path-step" data-step>
+          <h3>3. We can't control advanced AI</h3>
+          <p>No one, not even the people building these systems, knows how to control an AI at human level, let alone one smarter than us. We're <a href="https://www.bbc.co.uk/news/articles/cpqeng9d20go" target="_blank" rel="noopener">barely in control</a> of <a href="https://www.bbc.co.uk/news/articles/cj9xj89dk40o" target="_blank" rel="noopener">the AI we already have</a>.</p>
+        </div>
+
+        <div class="path-step" data-step>
+          <h3>4. Uncontrolled AI could cause extinction</h3>
+          <p>Geoffrey Hinton, who won a Nobel Prize for his work on AI, <a href="https://www.bbc.co.uk/news/world-us-canada-65452940" target="_blank" rel="noopener">left Google specifically to warn about it</a>. In 2023 top experts around the world, including the heads of major AI labs, signed a <a href="https://safe.ai/work/statement-on-ai-extinction-risk" target="_blank" rel="noopener">one-line statement</a> putting AI extinction risk alongside pandemics and nuclear war.</p>
+        </div>
+
+        <div class="path-step" data-step>
+          <h3>5. There are no guardrails</h3>
+          <p>There is no law against a company building a dangerous AI system. There is not even a legal requirement for these systems to be tested before release. Despite this, right now AI safety barely registers on the political radar.</p>
+        </div>
+
+        <div class="path-step" data-step>
+          <h3>6. Safety is possible</h3>
+          <p>None of this is hopeless. There are real proposals that can work; testing regimes, oversight rules, international agreements. History shows that we can <a href="https://disarmament.unoda.org/biological-weapons/" target="_blank" rel="noopener">hold back dangerous technology</a> when society makes this a priority. ASVA exists to make AI safety a priority for our society &ndash; and for the people who govern it.</p>
+        </div>
+
+      </div>
+      <div class="path-nav">
+        <button class="path-back" type="button"><span aria-hidden="true">←</span><span class="lbl">Back</span></button>
+        <div class="path-dots" data-dots aria-hidden="true"></div>
+        <button class="path-next" type="button">Next<span class="arw" aria-hidden="true">→</span></button>
+      </div>
+    </div>
+
+    <div class="path-cta-row" style="justify-content:center">
+      <a class="btn" href="pledge.html">Sign the Pledge</a>
+      <a class="btn btn-blue" href="https://www.thecompendium.ai/" target="_blank" rel="noopener">Why is AI an extinction risk?</a>
+    </div>
+
+  </div>
+
+  <script>
+    (function(){
+      function initPathways(){
+        document.querySelectorAll('[data-path]').forEach(function(pw){
+          if(pw.dataset.pathInit) return;
+          pw.dataset.pathInit = '1';
+
+          var stage = pw.querySelector('.path-stage');
+          var steps = Array.prototype.slice.call(pw.querySelectorAll('[data-step]'));
+          var backBtn = pw.querySelector('.path-back');
+          var nextBtn = pw.querySelector('.path-next');
+          var dotsWrap = pw.querySelector('[data-dots]');
+          var idx = 0;
+          if(!stage || !steps.length) return;
+
+          // Move the steps onto a horizontal track that slides between them, so
+          // the panel can be flicked from slide to slide (the stage is the
+          // clipping viewport). Falls back gracefully: if this script never
+          // runs, the steps are plain stacked blocks and all content is shown.
+          var track = document.createElement('div');
+          track.className = 'path-track animate';
+          stage.insertBefore(track, steps[0]);
+          steps.forEach(function(s){ track.appendChild(s); });
+
+          stage.setAttribute('tabindex', '0');
+          stage.setAttribute('role', 'group');
+          stage.setAttribute('aria-roledescription', 'carousel');
+
+          // Progress dots double as jump-to-slide buttons.
+          steps.forEach(function(_, i){
+            var d = document.createElement('button');
+            d.type = 'button';
+            d.className = 'path-dot';
+            d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+            dotsWrap.appendChild(d);
+          });
+          dotsWrap.removeAttribute('aria-hidden');
+          var dots = Array.prototype.slice.call(dotsWrap.children);
+
+          function setTransform(px){
+            track.style.transform = 'translateX(calc(' + (-idx * 100) + '% + ' + (px || 0) + 'px))';
+          }
+          function render(){
+            steps.forEach(function(s, i){
+              var on = (i === idx);
+              s.classList.toggle('active', on);
+              // Keep off-screen slides out of the tab order and hidden from
+              // assistive tech while they're parked off-stage.
+              if(on){ s.removeAttribute('inert'); s.removeAttribute('aria-hidden'); }
+              else  { s.setAttribute('inert', ''); s.setAttribute('aria-hidden', 'true'); }
+            });
+            dots.forEach(function(d, i){ d.classList.toggle('on', i === idx); });
+            backBtn.disabled = (idx === 0);
+            nextBtn.hidden = (idx === steps.length - 1);
+          }
+          function go(n){
+            idx = Math.max(0, Math.min(steps.length - 1, n));
+            track.classList.add('animate');
+            setTransform(0);
+            render();
+          }
+
+          nextBtn.addEventListener('click', function(){ go(idx + 1); });
+          backBtn.addEventListener('click', function(){ go(idx - 1); });
+          dots.forEach(function(d, i){ d.addEventListener('click', function(){ go(i); }); });
+
+          stage.addEventListener('keydown', function(e){
+            if(e.key === 'ArrowRight'){ e.preventDefault(); go(idx + 1); }
+            else if(e.key === 'ArrowLeft'){ e.preventDefault(); go(idx - 1); }
+          });
+
+          // ── Swipe / flick (touch + pen) ──────────────────────────────────
+          // The track follows the finger; a decisive flick or a drag past a
+          // fraction of the width advances, otherwise it springs back. The
+          // axis is locked on first movement so a vertical drag still scrolls
+          // the page instead of being swallowed.
+          var startX = 0, startY = 0, active = false, axis = '', t0 = 0, width = 1, suppressTap = false;
+          stage.addEventListener('pointerdown', function(e){
+            if(e.pointerType === 'mouse') return; // desktop: buttons, dots, arrows
+            active = true; axis = ''; suppressTap = false; startX = e.clientX; startY = e.clientY;
+            t0 = Date.now(); width = stage.getBoundingClientRect().width || 1;
+          });
+          stage.addEventListener('pointermove', function(e){
+            if(!active) return;
+            var dx = e.clientX - startX, dy = e.clientY - startY;
+            if(!axis){
+              if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+              axis = (Math.abs(dx) > Math.abs(dy)) ? 'x' : 'y';
+              if(axis === 'x'){
+                track.classList.remove('animate');          // follow the finger 1:1
+                try { stage.setPointerCapture(e.pointerId); } catch(_){}
+              }
+            }
+            if(axis !== 'x') return;                          // vertical → page scrolls
+            e.preventDefault();
+            // Resist at the ends so it feels bounded, not broken.
+            if((idx === 0 && dx > 0) || (idx === steps.length - 1 && dx < 0)) dx *= 0.35;
+            setTransform(dx);
+          });
+          function endDrag(e){
+            if(!active) return;
+            var wasX = (axis === 'x');
+            active = false;
+            track.classList.add('animate');
+            if(!wasX) return;
+            suppressTap = true;                              // don't let the trailing click also flip
+            var dx = (e.clientX || startX) - startX;
+            var flick = (Date.now() - t0 < 300 && Math.abs(dx) > 25);
+            var far   = Math.abs(dx) > Math.min(90, width * 0.2);
+            var atEnd = (idx === 0 && dx > 0) || (idx === steps.length - 1 && dx < 0);
+            if((flick || far) && !atEnd) go(idx + (dx < 0 ? 1 : -1));
+            else setTransform(0);                            // spring back
+          }
+          stage.addEventListener('pointerup', endDrag);
+          stage.addEventListener('pointercancel', function(){
+            if(!active) return;
+            active = false; track.classList.add('animate'); setTransform(0);
+          });
+
+          // ── Tap-to-flip (mobile) ─────────────────────────────────────────
+          // A tap on the left third steps back, the right third steps forward.
+          // Links inside a slide still work, and the click that follows a swipe
+          // is ignored.
+          stage.addEventListener('click', function(e){
+            if(window.innerWidth > 700) return;              // mobile only
+            if(e.target.closest('a')) return;                // let links work
+            if(suppressTap){ suppressTap = false; return; }  // was a swipe, not a tap
+            var rect = stage.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            if(x < rect.width / 3) go(idx - 1);
+            else if(x > rect.width * 2 / 3) go(idx + 1);
+          });
+
+          setTransform(0);
+          render();
+        });
+      }
+
+      initPathways();
+      document.addEventListener('DOMContentLoaded', initPathways);
+      document.addEventListener('turbo:load', initPathways);
+    })();
+  </script>
+</div>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Cloudflare Pages redirects (served from repo root — pages_build_output_dir = ".")
+#
+# The admin review page was renamed admin.html -> goldenpath.html to make it
+# less discoverable. These rules make sure the old /admin URL is never a way
+# back into it: any lingering request (including a stale edge-cached one, or a
+# bookmark someone kept) is redirected to the home page instead of exposing an
+# admin page. The redirect is evaluated by Pages routing ahead of static-asset
+# serving, so it takes effect even if an old admin.html were ever still around.
+/admin        /  301
+/admin.html   /  301
+/admin/*      /  301
+
+# The National Overview page was renamed constituency-map.html -> overview.html
+# (URL /constituency-map -> /overview). Keep the old paths working for anyone
+# with a bookmark or an external link to the previous URL.
+/constituency-map        /overview  301
+/constituency-map.html   /overview  301

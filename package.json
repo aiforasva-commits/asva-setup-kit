@@ -1,0 +1,18 @@
+{
+  "name": "asva-scorecard-functions",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "fetch-data": "node scripts/fetch-data.js",
+    "missing-mps": "node scripts/missing-mps.js",
+    "import-ratings": "node scripts/import-ratings.js",
+    "build": "node scripts/fetch-data.js",
+    "dev": "node scripts/fetch-data.js && wrangler pages dev . --compatibility-date=2024-01-01"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.81.1"
+  }
+}

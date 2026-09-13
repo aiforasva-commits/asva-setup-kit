@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="turbo-cache-control" content="no-cache">
+  <title>ASVA - Founding Statement</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - Founding Statement" />
+  <meta property="og:description" content="The ASVA founding statement: turning quiet concern about AI into real electoral pressure." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/founding-statement" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - Founding Statement" />
+  <meta name="twitter:description" content="The ASVA founding statement: turning quiet concern about AI into real electoral pressure." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="The ASVA founding statement: turning quiet concern about AI into real electoral pressure." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/founding-statement" />
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-founding">
+
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<div class="page">
+
+  <div class="charter">
+
+    <div class="fs-hero">
+      <h1>Founding Statement</h1>
+      <img src="ASVA_Logo_Hero.png" alt="ASVA logo" class="fs-hero-logo" onerror="this.outerHTML='<span class=\'fs-hero-logo-fallback\'>ASVA</span>'">
+    </div>
+
+    <h2>Preamble</h2>
+    <p>We publish this Declaration at a moment of profound change. The tools we create are rapidly acquiring capacities that once defined us. Machines can now converse, reason, plan, and imitate the patterns of human thought.</p>
+    <p>The risks posed by advanced artificial intelligence are unlike those of any previous technology. A misaligned or uncontrolled system with capabilities beyond human knowledge or intervention could threaten livelihoods, liberties, and the very continuity of our species.</p>
+    <p>In the United Kingdom, we take pride in parliamentary democracy, the rule of law, and a long tradition of public oversight over powerful forces, from industry to finance, from medicine to energy.</p>
+    <p>It is in this tradition that we found the AI Safety Voter Alliance ("<strong>ASVA</strong>").</p>
+    <p>Through our votes and our voices, we declare that AI must remain accountable to the society that creates it, and that no frontier system should be developed or deployed without proven safety measures, independent evaluation, and lawful oversight.</p>
+    <p>This Charter sets forth our purpose, our values, and our commitments. It is our public statement of intent.</p>
+
+    <h2>Purpose and Public Role</h2>
+    <p>ASVA exists primarily to:</p>
+    <ul>
+      <li>Make AI safety a core priority for all future UK Governments.</li>
+      <li>Inform and organise voters who believe that powerful technologies must be subject to democratic oversight.</li>
+      <li>Publish and maintain an <strong>AI Safety Scorecard</strong> evaluating MPs and candidate MPs on their commitment to AI Safety.</li>
+      <li>Encourage voters to adopt the <strong>AI Safety Pledge</strong> and become members of ASVA ("<strong>Members</strong>").</li>
+      <li>Uphold the principle that no system should be advanced beyond our ability to control it.</li>
+    </ul>
+    <p>ASVA is a non-charitable, non-partisan civic organisation.</p>
+    <p>ASVA is aligned with no political party.</p>
+    <p>We seek not to hinder innovation, but to ensure that it proceeds within boundaries that protect human life, dignity, autonomy, and freedom.</p>
+
+    <h2>Values</h2>
+
+    <h3>Human Primacy</h3>
+    <p>Decisions with moral, civic, or existential consequence must remain in human hands.</p>
+    <p>Artificial intelligence must remain a tool, not an authority.</p>
+
+    <h3>Safety Before Capability</h3>
+    <p>The development of frontier AI must not outpace the development of the safety mechanisms required to govern it. Commercial advantage must not override public safety.</p>
+
+    <h3>Democratic Oversight</h3>
+    <p>Parliament, regulators, and public institutions must retain ultimate oversight over the creation, testing, deployment, and operation of advanced AI systems.</p>
+
+    <h3>Transparency</h3>
+    <p>Citizens must have access to truthful, clear information about the risks, capabilities, and governance of advanced AI systems. Developers and policymakers must operate with candour and disclosure.</p>
+
+    <h3>Responsibility to Future Generations</h3>
+    <p>We hold in trust the world that future generations across the globe will inherit. They cannot advocate for their own safety. We must act on their behalf.</p>
+
+    <h3>International Cooperation</h3>
+    <p>The United Kingdom cannot manage frontier AI alone. We must work with others to prevent reckless capability races, encourage responsible global governance, and uphold common safety standards.</p>
+
+    <h2>AI Safety Pledge</h2>
+    <p>ASVA will encourage as many voters as possible to sign either level of the AI Safety Pledge. The number of voters pledged and the constituencies of those votes will be publicly visible.</p>
+
+    <div class="pledge-block">
+      <p>"I am a registered UK voter. I recognise that frontier AI poses catastrophic risks. <strong>I pledge to vote for AI safety</strong>, guided by ASVA's recommendation."</p>
+    </div>
+
+    <div class="pledge-block">
+      <p>"I am a registered UK voter. I recognise that frontier AI poses catastrophic risks. I pledge to <strong>meaningfully consider</strong> ASVA's recommendations when voting."</p>
+    </div>
+
+    <p>The pledge is voluntary and may be withdrawn at any time. It reflects a simple democratic principle: elected representatives must be accountable for the safety of the public.</p>
+
+    <h2>Members</h2>
+    <p>Any voter that signs the AI Safety Pledge and confirms their email becomes a Member of ASVA. Based on their sign up, Members choose whether they receive updates from ASVA and/or AI Safety news and will act as the first port of call for volunteers.</p>
+    <p>Any personal data collected for this purpose will be handled in accordance with UK data protection law and used only for ASVA's civic activities.</p>
+
+    <h2>The AI Safety Scorecard</h2>
+    <p>The AI Safety Scorecard provides voters with accessible, non-partisan information about each candidate's stance on AI safety.</p>
+
+    <h3>Early-Stage Criteria</h3>
+    <p>Until formal parliamentary divisions exist on AI safety legislation, the Scorecard shall consider:</p>
+    <ul>
+      <li>Adoption of the ControlAI Campaign Statement.</li>
+      <li>Public statements recognising AI risk.</li>
+      <li>Engagement with independent scientific or governance experts.</li>
+      <li>Support for licensing, oversight, and independent testing.</li>
+      <li>Participation in relevant committees, inquiries, or policy work.</li>
+      <li>Any other relevant and public available information.</li>
+    </ul>
+    <p>Grades shall range from A to F. Higher grades (A–C) indicate increasing alignment with ASVA's safety principles, while lower grades (D–F) indicate inadequate engagement with, or opposition to, effective AI safety governance. 'Not Scored' means ASVA has not found sufficient public information to score this candidate or MP. 'No Response' means ASVA has not found sufficient public information to score this candidate or MP and they have not responded to a query from ASVA.</p>
+
+    <h3>Mature Criteria</h3>
+    <p>Once votes and motions on AI governance are introduced in Parliament, the Scorecard shall incorporate:</p>
+    <ul>
+      <li>Voting records.</li>
+      <li>Bill sponsorship.</li>
+      <li>Committee oversight activity.</li>
+      <li>Public consistency and integrity.</li>
+    </ul>
+
+    <h3>Transparency</h3>
+    <p>Each Scorecard shall give at least one reason and (where available) provide a publicly available source.</p>
+
+    <h2>Principles for a Safe AI Framework</h2>
+    <p>ASVA supports a safety-first approach grounded in scientific evidence, democratic oversight, and practical enforceability. Key principles include:</p>
+
+    <h3>Frontier Licensing</h3>
+    <p>Advanced AI systems should require a formal licence tied to strict compute tracking and auditing.</p>
+
+    <h3>Compute Caps</h3>
+    <p>Where AI systems approach or exceed dangerous capability thresholds, mandatory limits on compute must apply, preventing the development or training of systems that could surpass safe controllability.</p>
+
+    <h3>Independent Evaluation</h3>
+    <p>The AI Security Institute or equivalent statutory bodies must be empowered to evaluate high-risk systems before and after deployment and to publish meaningful findings.</p>
+
+    <h3>Liability for Incidents</h3>
+    <p>Organisations creating or deploying high-risk AI systems must bear clear, enforceable legal liability for the harms their systems cause, aligning incentives with safety rather than rapid capability advancement.</p>
+
+    <h3>Shutdown and Pause Powers</h3>
+    <p>Regulators must be empowered to halt unsafe development or deployment pending investigation.</p>
+
+    <h3>Transparency and Access</h3>
+    <p>Public-interest summaries of safety testing, risk assessments, and major findings must be published where consistent with national security.</p>
+
+    <h3>International Coordination</h3>
+    <p>The United Kingdom should advocate for treaties and cooperative frameworks to prevent uncontrolled proliferation of frontier AI.</p>
+
+    <h2>Conduct and Public Standards</h2>
+    <p>Members and officers of ASVA commit to:</p>
+    <ul>
+      <li>Honest representation of evidence.</li>
+      <li>Civility in public discourse.</li>
+      <li>Non-partisanship.</li>
+      <li>Avoidance of personal attacks.</li>
+      <li>Transparency regarding conflicts of interest.</li>
+      <li>Compliance with UK electoral and campaign law.</li>
+    </ul>
+
+    <h2>Closing Declaration</h2>
+    <p>We publish this Founding Statement in the belief that the United Kingdom must not be a passive bystander to the emergence of artificial intelligence. We must guide its development, restrain its risks, and ensure its alignment with the values that define our common life.</p>
+    <p>We believe that the British people, through their votes, possess the power to demand safety, accountability, and foresight from those who govern. That power must now be exercised.</p>
+
+    <a class="return-link" href="#">↑ Return to top</a>
+
+  </div>
+</div>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

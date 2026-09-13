@@ -1,0 +1,1640 @@
+/* =====================================================================
+   ASVA shared stylesheet
+   ---------------------------------------------------------------------
+   This single file is linked (identically) on every page. Because the
+   <head> is then the same everywhere, Turbo Drive has no per-page
+   <style> block to leak across navigations.
+
+   GLOBAL rules (reset, theme vars, site nav) are defined once below.
+   Every PAGE-SPECIFIC rule is scoped under a unique `body.page-*` class
+   so the same class/element name can never collide between pages.
+   When adding a new page: give its <body> a unique `page-xxx` class and
+   wrap that page's rules in `body.page-xxx { … }`.
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+/* ===================== GLOBAL — identical on every page ===================== */
+:root{ --ink:#222; --muted:#666; --bg:#f6f6f6; --panel:#fff; --line:#e8e8e8; }
+*, *::before, *::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ overflow-y:scroll; }
+body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; }
+
+/* ── Site nav (shared, persistent via data-turbo-permanent) ── */
+.sitenav{
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:10px 24px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.sitenav-logo{ height:36px; width:auto; display:block; }
+.sitenav-logo-text{ font-weight:900; font-size:20px; }
+.sitenav-links{
+  flex:0 1 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:13px;
+  font-weight:600;
+  flex-wrap:wrap;
+}
+.sitenav-links a{
+  color:var(--ink);
+  text-decoration:none;
+  padding:5px 8px;
+  border-radius:6px;
+  transition:background .15s;
+  white-space:nowrap;
+}
+.sitenav-links a:hover, .sitenav-links a.active{ background:#CC1133; color:#fff !important; }
+.sitenav-sep{ color:#ccc; font-weight:400; }
+.sitenav-welcome{ display:none; }   /* mobile hamburger only (shown in the media query below) */
+/* Share link: a logo-height icon pinned to the far right of the nav, in the
+   ASVA logo's dark blue (#0b2e42). Its container (.sitenav-right) mirrors the
+   brand's flex:1 so the link group still sits at the true page centre. Hover —
+   and the active state on the share page itself — give it the same red pill +
+   white treatment as the text links (the SVG uses fill:currentColor). */
+.sitenav-right{ flex:1 1 0; display:flex; align-items:center; justify-content:flex-end; }
+/* No padding, so the hover/active highlight is a square that hugs the icon
+   (icon is square: 52×52 desktop, 30×30 mobile) without adding to nav height. */
+.sitenav-share-link{ display:inline-flex; align-items:center; justify-content:center; color:#0b2e42; padding:0; border-radius:10px; text-decoration:none; transition:background .15s, color .15s; }
+.sitenav-share-link:hover{ background:#CC1133; color:#fff; }
+.sitenav-share-icon{ display:block; width:52px; height:52px; }
+/* Brand, current-page label and hamburger (label + toggle show on mobile only).
+   On desktop the brand and an equal-width right container both grow (flex:1), so
+   the link group sits at the true page centre — matching the centred content
+   boxes rather than centring in the space left of the logo. */
+.sitenav-brand{ flex:1 1 0; }
+.sitenav-current{ display:none; flex:1 1 auto; min-width:0; font-family:'DM Serif Display',serif; font-size:22px; line-height:1.15; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sitenav-toggle{ display:none; flex:0 0 auto; background:none; border:none; cursor:pointer; color:var(--ink); font-size:24px; line-height:1; padding:6px 10px; border-radius:8px; }
+.sitenav-toggle::before{ content:"\2630"; }             /* ☰ */
+.sitenav.open .sitenav-toggle::before{ content:"\2715"; } /* ✕ */
+.sitenav-toggle:hover{ background:#f2f2f2; }
+@media(max-width:700px){
+  .sitenav{ flex-wrap:nowrap; gap:10px; padding:8px 14px; }
+  .sitenav-brand{ flex:0 0 auto; }
+  .sitenav-brand img{ height:40px !important; }
+  .sitenav-right{ flex:0 0 auto; }
+  /* Share button matches the hamburger's icon size and padding, so the two
+     controls are the same size and sit level (hamburger: 24px glyph, 6px 10px
+     padding). */
+  .sitenav-share-link{ padding:6px 10px; border-radius:8px; }
+  .sitenav-share-icon{ width:24px; height:24px; }
+  /* Centre the page name between the logo and hamburger. */
+  .sitenav-current{ display:block; text-align:center; }
+  .sitenav-toggle{ display:flex; justify-content:flex-end; align-items:center; }
+  .sitenav-links{
+    display:none;
+    position:absolute; top:100%; left:0; right:0;
+    flex-direction:column; align-items:stretch; justify-content:flex-start;
+    gap:2px; padding:8px 12px 14px;
+    background:#fff; border-bottom:1px solid var(--line);
+    box-shadow:0 10px 20px rgba(0,0,0,.10);
+    font-size:16px;
+  }
+  .sitenav.open .sitenav-links{ display:flex; }
+  .sitenav-links a{ padding:12px 12px; border-radius:8px; white-space:normal; }
+  .sitenav-welcome{ display:block; }
+  .sitenav-sep{ display:none; }
+}
+
+/* ── Site footer (shared) ── */
+.sitefooter{ text-align:center; padding:28px 14px 36px; font-size:13px; color:var(--muted); }
+.sitefooter a{ color:var(--muted); text-decoration:underline; }
+.sitefooter a:hover{ color:var(--ink); }
+.sitefooter .sep{ margin:0 10px; color:#ccc; }
+
+/* Global keyframes (animation names are global scope) */
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ── Editable, reorderable bullet / source lists (shared: goldenpath.html's
+   review cards AND scorecard.html's member-edit form via editable-list.js —
+   see that file's header comment). Global, not page-scoped, since it's used
+   on more than one page's markup. Mobile-friendly. ── */
+.edit-list { list-style:none; margin:6px 0 0; padding:0; }
+.edit-list.bullets { counter-reset: bnum; }
+.edit-list.srcs { counter-reset: sidx; }
+.edit-item { display:flex; align-items:flex-start; gap:8px; padding:8px 9px; border:1px solid var(--line); border-radius:9px; margin:6px 0; background:#fafbfc; }
+.edit-item.dragging { opacity:.55; box-shadow:0 6px 16px rgba(0,0,0,.12); }
+/* While a drag is in progress, keep the cursor grabbing and stop stray
+   text selection in the editable fields. */
+.edit-list.reordering { cursor:grabbing; }
+.edit-list.reordering .editable { user-select:none; }
+.edit-list.bullets .edit-item { counter-increment: bnum; }
+.edit-list.srcs .edit-item { counter-increment: sidx; }
+.drag-handle { flex:0 0 auto; cursor:grab; touch-action:none; color:#aab; font-size:18px; line-height:1.3; user-select:none; padding:1px 3px; }
+.drag-handle:active { cursor:grabbing; }
+.edit-body { flex:1 1 auto; min-width:0; }
+.edit-line { display:flex; align-items:baseline; gap:6px; }
+.edit-line + .edit-line { margin-top:4px; }
+.edit-marker { flex:0 0 auto; font-weight:700; color:#889; font-variant-numeric:tabular-nums; min-width:1.4em; }
+.bullet-marker::before { content: counter(bnum) "."; }
+.src-title-marker::before { content: counter(sidx, lower-alpha) ")"; }
+.src-url-marker::before   { content: counter(sidx, lower-roman) ")"; }
+.editable { flex:1 1 auto; min-width:0; padding:3px 5px; border-radius:6px; outline:none; word-break:break-word; overflow-wrap:anywhere; }
+.editable:hover { background:#fff; box-shadow:inset 0 0 0 1px var(--line); }
+.editable:focus { background:#fff; box-shadow:inset 0 0 0 2px #CC1133; }
+.editable.url { font-size:13px; color:#2b5f7a; }
+.editable:empty::before { content: attr(data-placeholder); color:#b3b8c2; }
+.edit-remove { flex:0 0 auto; background:none; border:none; color:#b33; cursor:pointer; font-size:20px; line-height:1; padding:0 4px; align-self:flex-start; }
+.edit-remove:hover { color:#801; }
+.edit-add { background:none; border:1px dashed var(--line); color:#556; border-radius:9px; padding:7px 12px; font:inherit; font-size:13px; font-weight:600; cursor:pointer; margin-top:6px; }
+.edit-add:hover { border-color:#CC1133; color:#CC1133; }
+/* Source URL: shown as a clickable link, with a pen to switch to editing. */
+.src-url-link { flex:1 1 auto; min-width:0; font-size:13px; color:#2b5f7a; text-decoration:underline; word-break:break-word; overflow-wrap:anywhere; padding:3px 5px; }
+.src-url-link:hover { color:#CC1133; }
+.src-url-edit { flex:0 0 auto; background:none; border:none; color:#889; cursor:pointer; font-size:14px; line-height:1; padding:2px 5px; border-radius:6px; align-self:center; }
+.src-url-edit:hover { background:#fff; color:#CC1133; box-shadow:inset 0 0 0 1px var(--line); }
+.src-url-edit.editing { color:#1f7a44; }
+.edit-line .src-url[hidden], .edit-line .src-url-link[hidden] { display:none !important; }
+@media (max-width: 560px) {
+  .edit-item { padding:9px 8px; }
+  .editable { padding:5px 6px; }
+}
+
+/* ── Member-edit modal (scorecard.html) ── shared, un-scoped: the modal is
+   appended once to the page and reused for whichever card triggered it, so
+   it can't live inside a body.page-* block keyed to one card's markup. Reuses
+   the .edit-list component above for the bullets/sources sub-editors. ── */
+.member-edit-overlay{
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.55); z-index:300;
+  overflow-y:auto; padding:24px 16px;
+}
+.member-edit-overlay.show{ display:flex; align-items:flex-start; justify-content:center; }
+.member-edit-box{
+  background:#fff; border-radius:16px;
+  max-width:600px; width:100%; margin:auto;
+  padding:32px 34px; position:relative;
+  box-shadow:0 12px 40px rgba(0,0,0,.2);
+}
+.member-edit-close{
+  position:absolute; top:14px; right:18px;
+  background:none; border:none; font-size:22px;
+  cursor:pointer; color:var(--muted); line-height:1;
+}
+.member-edit-close:hover{ color:var(--ink); }
+.member-edit-box h2{ font-family:'DM Serif Display',serif; font-size:22px; font-weight:400; margin-bottom:2px; }
+.member-edit-sub{ font-size:13px; color:var(--muted); margin-bottom:20px; display:block; }
+.member-edit-field{ margin-bottom:14px; }
+.member-edit-field label{ display:block; font-size:14px; font-weight:600; color:var(--ink); margin-bottom:6px; }
+.member-edit-field input[type="email"],
+.member-edit-field input[type="text"],
+.member-edit-field select,
+.member-edit-field textarea{
+  width:100%; padding:10px 14px; border:1px solid #ddd; border-radius:12px;
+  font-size:15px; font-family:inherit; background:#fff; color:var(--ink);
+  transition:border-color .15s, box-shadow .15s; outline:none;
+}
+.member-edit-field textarea{ resize:vertical; min-height:64px; }
+.member-edit-field input:focus, .member-edit-field select:focus, .member-edit-field textarea:focus{
+  border-color:#CC1133; box-shadow:0 0 0 3px rgba(204,17,51,.12);
+}
+.member-edit-hint{ font-size:12px; color:var(--muted); margin-top:6px; }
+.member-edit-guide-link{ display:inline-block; font-size:13px; color:#1a6ef5; font-weight:600; text-decoration:underline; margin-bottom:18px; }
+.member-edit-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+.member-edit-btn{
+  flex:1; min-width:150px; padding:13px 18px; border:none; border-radius:14px;
+  font-size:15px; font-weight:700; font-family:inherit; cursor:pointer;
+  transition:background .15s, transform .1s;
+}
+.member-edit-btn-primary{ background:#CC1133; color:#fff; }
+.member-edit-btn-primary:hover{ background:#a50f27; transform:translateY(-1px); }
+.member-edit-btn-primary:disabled{ background:#aaa; cursor:not-allowed; transform:none; }
+.member-edit-btn-secondary{ background:#2d2d4e; color:#fff; }
+.member-edit-btn-secondary:hover{ background:#3d3d6a; transform:translateY(-1px); }
+.member-edit-status{ font-size:13px; margin-top:12px; padding:10px 12px; border-radius:10px; display:none; }
+.member-edit-status.show{ display:block; }
+.member-edit-status.ok{ background:#e7f6ec; color:#1f7a44; }
+.member-edit-status.err{ background:#fdeaea; color:#b33; }
+.member-edit-not-member{ font-size:13px; color:var(--muted); margin-top:16px; line-height:1.6; }
+.member-edit-not-member a{ color:#1a6ef5; font-weight:600; text-decoration:underline; }
+@media(max-width:540px){ .member-edit-box{ padding:24px 18px; } }
+
+/* Two links side by side under a card's expanded evidence — the mailto
+   fallback (left) and the member-submission trigger (right). Wraps to a
+   stacked column on narrow cards rather than the small-screen breakpoint,
+   since a card can be this narrow well above 600px depending on layout. */
+.card-links-row{ display:flex; align-items:center; justify-content:space-between; gap:10px 16px; flex-wrap:wrap; }
+.member-edit-trigger{
+  display:inline-block; font-size:12px; color:#CC1133; font-weight:600;
+  background:none; border:1px solid #f0c0c8; border-radius:8px; padding:6px 12px;
+  cursor:pointer; font-family:inherit; transition:background .15s, color .15s;
+}
+.member-edit-trigger:hover{ background:#CC1133; color:#fff; border-color:#CC1133; }
+
+
+/* ===================== SCORECARD — index.html (body.page-scorecard) ===================== */
+body.page-scorecard{
+  --A:#2D5A3D; --B:#4CAF73; --C:#A8D5B0; --Q:#cccccc; --D:#F2A0A0; --E:#D94040; --F:#8B1A1A;
+
+  /* ── Search bar ── */
+  .toprow{
+    position:sticky;
+    top:58px;
+    z-index:10;
+    background:rgba(246,246,246,.92);
+    backdrop-filter:blur(6px);
+    padding:32px 14px 14px;
+  }
+  .bar{
+    max-width:calc(900px - 28px);
+    margin:0 auto;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,.06);
+    flex-wrap:wrap;
+  }
+  .bar label{ font-size:12px; color:var(--muted); margin-right:4px; white-space:nowrap; }
+  .search-wrapper{ position:relative; flex:1; }
+  input[type="text"]{
+    width:100%;
+    padding:8px 30px 8px 10px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:14px;
+    font-family:inherit;
+    background:#fff;
+    color:var(--ink);
+  }
+  input[type="text"]:focus{ outline:none; border-color:var(--A); box-shadow:0 0 0 3px rgba(46,204,113,.15); }
+  .clear-btn{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    background:#ddd; border:none; border-radius:50%;
+    width:20px; height:20px;
+    display:none; align-items:center; justify-content:center;
+    cursor:pointer; font-size:14px; color:#666; padding:0;
+  }
+  .clear-btn:hover{ background:#ccc; }
+  .clear-btn.visible{ display:flex; }
+  #constituencyDropdown{
+    display:none; position:absolute; top:100%; left:0; right:0;
+    background:#fff; border:1px solid #ddd; border-radius:8px;
+    max-height:300px; overflow-y:auto; margin-top:4px;
+    box-shadow:0 4px 12px rgba(0,0,0,.15); z-index:100;
+  }
+  .dropdown-item{ padding:10px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid #f0f0f0; }
+  .dropdown-item:hover{ background:#f8f9fa; }
+  .dropdown-item:last-child{ border-bottom:none; }
+  .dropdown-item.selected{ background:#e7f3ff; font-weight:600; }
+  .dropdown-group{ padding:7px 12px 5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#99a; background:#fafbfc; border-bottom:1px solid #f0f0f0; position:sticky; top:0; }
+  .dropdown-person{ font-size:14px; line-height:1.35; }
+  .dropdown-person .dp-name{ color:var(--ink); font-weight:600; }
+  .dropdown-person .dp-sub{ color:var(--muted); }
+  .card{ transition:box-shadow .25s; }
+  .card.card-highlight{ box-shadow:0 0 0 3px rgba(204,17,51,.55), 0 8px 20px rgba(0,0,0,.12); }
+  .badge{
+    display:inline-block; padding:5px 10px;
+    border:1px solid #e5e5e5; border-radius:999px;
+    background:#fff; font-weight:650; font-size:12px;
+    color:var(--muted); white-space:nowrap; margin-left:auto;
+  }
+
+  /* ── Scorecard sheet ── */
+  .app{ max-width:900px; margin:0 auto 40px; padding:0 14px; }
+  .sheetWrap{
+    margin-top:0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 6px 18px rgba(0,0,0,.06);
+  }
+  .sheet{ background:#fff; border:1px solid #eee; border-radius:14px; padding:18px; }
+  .header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; }
+  .titleBlock{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .constituency{ font-size:26px; font-weight:800; text-decoration:underline; line-height:1.05; word-break:break-word; }
+  .subtitle{ font-size:14px; color:var(--muted); font-weight:600; }
+  .logo img{ height:56px; width:auto; display:block; object-fit:contain; }
+  .logoFallback{ font-weight:900; font-size:22px; letter-spacing:.5px; }
+
+  /* ── Candidate cards ── */
+  .cards{ margin-top:6px; }
+  .card{
+    border-radius:16px;
+    border:2px solid #d9d9d9;
+    overflow:hidden;
+    margin-bottom:12px;
+    background:#fafafa;
+    cursor:pointer;
+    transition:box-shadow .15s;
+  }
+  .card:hover{ box-shadow:0 4px 14px rgba(0,0,0,.1); }
+  .card.grade-q{ border-style:dashed !important; border-color:#bbb !important; }
+  .mp-badge-cell{
+    width:120px; text-align:center; padding:10px 8px;
+    background:#fff; border-left:1px solid #eee;
+    color:#1a1a2e; font-weight:700; font-size:12px;
+    vertical-align:middle;
+  }
+  .mp-badge-cell svg{ display:block; margin:0 auto 4px; }
+  .card-summary{ display:table; width:100%; border-collapse:collapse; }
+  .cell{ display:table-cell; vertical-align:middle; }
+  .leftStrip{ width:72px; text-align:center; padding:10px 0; }
+  .pill{
+    width:50px; height:50px; border-radius:25px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:20px; font-weight:900; color:#fff;
+  }
+  .middle{ padding:12px 16px; background:#fff; }
+  .name{ font-size:16px; font-weight:800; margin-bottom:6px; }
+  ul{ margin:0; padding-left:18px; font-size:14px; line-height:1.3; }
+  li{ margin:0 0 4px 0; }
+  .right{
+    width:160px; text-align:center; padding:10px 12px;
+    background:#fff; border-left:1px solid #eee; font-weight:700; font-size:14px;
+  }
+  .chevron{ font-size:11px; color:var(--muted); margin-top:6px; display:block; transition:transform .2s; }
+  .card.open .chevron{ transform:rotate(180deg); }
+
+  /* ── Expanded section ── */
+  .card-expanded{
+    display:none;
+    padding:16px 20px;
+    background:#fff;
+    border-top:1px solid #eee;
+  }
+  .card.open .card-expanded{ display:block; }
+  .expanded-meta{
+    font-size:12px; color:var(--muted); margin-bottom:12px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;
+  }
+  .evidence-list{ margin:0 0 14px; padding-left:18px; }
+  .evidence-list li{ font-size:13px; line-height:1.6; margin-bottom:8px; }
+  .evidence-list a{ color:#1a73e8; text-decoration:underline; }
+  .suggest-link{
+    display:inline-block; font-size:12px; color:var(--muted);
+    border:1px solid #ddd; border-radius:8px; padding:6px 12px;
+    text-decoration:none; transition:background .15s, color .15s;
+  }
+  .suggest-link:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  /* ── States ── */
+  .empty{ padding:18px; color:var(--muted); border:1px dashed #ddd; border-radius:12px; background:#fcfcfc; font-size:14px; }
+  .empty--prompt{ border:none; background:none; border-radius:0; text-align:center; font-size:25px; }
+  .loading{ padding:18px; color:var(--muted); text-align:center; font-size:14px; }
+  .error{ padding:18px; color:#e74c3c; border:1px solid #e74c3c; border-radius:12px; background:#fef5f5; font-size:14px; }
+
+  .current-mp-tag{
+    display:none;
+    background:#1a1a2e; color:#fff; font-size:10px; font-weight:700;
+    padding:2px 6px; border-radius:4px; margin-left:6px; vertical-align:middle;
+    white-space:nowrap;
+  }
+
+  @media(max-width:600px){
+    .right{ width:110px; font-size:12px; }
+    .leftStrip{ width:60px; }
+    .pill{ width:44px; height:44px; border-radius:22px; font-size:18px; }
+    .constituency{ font-size:20px; }
+    .mp-badge-cell{ display:none; }
+    .current-mp-tag{ display:inline-block; }
+  }
+  /* Keep the search prompt fully visible on narrow phones */
+  @media(max-width:400px){
+    #constituencySearch::placeholder{ font-size:13px; }
+  }
+}
+
+
+/* ===================== SIGN THE PLEDGE — pledge.html (body.page-pledge) ===================== */
+body.page-pledge{
+  --A:#2D5A3D; --B:#4CAF73; --C:#A8D5B0; --Q:#282120; --D:#F1C40F; --E:#F39C12; --F:#E4352F;
+  --accent:#CC1133; --accent-dark:#a50f27;
+
+  /* ── Layout ── */
+  .app{ max-width:900px; margin:32px auto 60px; padding:0 14px; }
+
+  /* ── Hero ── */
+  .hero{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:28px 24px 22px; box-shadow:0 6px 18px rgba(0,0,0,.06); margin-bottom:14px;
+    display:grid; grid-template-columns:1fr 2fr; align-items:center; column-gap:0;
+    overflow:hidden;
+  }
+  .hero-text h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:20px; }
+  .hero-text p{ font-size:20px; color:var(--muted); line-height:1.8; padding-right:16px; }
+  .hero-logo{ display:flex; align-items:center; justify-content:center; }
+  .hero-logo img{ height:190px; width:auto; object-fit:contain; display:block; }
+  .hero-logo-fallback{ font-family:'DM Serif Display',serif; font-size:20px; flex-shrink:0; }
+
+  /* ── Pledge card ── */
+  .pledge-card{ background:var(--panel); border:2px solid var(--accent); border-radius:26px; overflow:hidden; margin-bottom:14px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+  .pledge-header{ background:var(--accent); padding:16px 22px; display:flex; align-items:center; gap:14px; }
+  .pledge-header-text{ color:#fff; }
+  .pledge-header-text h2{ font-family:'DM Serif Display',serif; font-size:28px; font-weight:400; }
+  .pledge-header-text p{ font-size:22px; opacity:.85; margin-top:2px; }
+  .pledge-body{ padding:20px 22px; }
+  .pledge-body > p{ font-size:20px; color:#444; line-height:1.7; margin-bottom:16px; }
+  .pledge-agree{ display:flex; align-items:flex-start; gap:14px; padding:16px 18px; background:#fff5f5; border:2px solid #f0b8c0; border-radius:14px; cursor:pointer; transition:background .15s; }
+  .pledge-agree:has(input:checked){ background:#fce4e4; border-color:var(--accent-dark); }
+  .pledge-agree input[type="checkbox"]{ width:22px; height:22px; accent-color:var(--accent-dark); flex-shrink:0; margin-top:2px; cursor:pointer; }
+  .pledge-agree-label{ font-size:15px; font-weight:700; color:var(--ink); line-height:1.4; }
+  .pledge-agree-label span{ display:block; font-weight:400; font-size:13px; color:var(--muted); margin-top:4px; }
+
+  /* ── Form card ── */
+  .form-card{ background:var(--panel); border:1px solid var(--line); border-radius:26px; overflow:hidden; margin-bottom:14px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+  .form-section{ padding:20px 22px; border-bottom:1px solid var(--line); }
+  .form-section:last-child{ border-bottom:none; }
+  .section-label{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:14px; }
+
+  /* ── Fields ── */
+  .field{ margin-bottom:14px; }
+  .field:last-child{ margin-bottom:0; }
+  .field label{ display:block; font-size:15px; font-weight:600; color:var(--ink); margin-bottom:6px; }
+  .field label .req{ color:var(--F); margin-left:2px; }
+  .field label .hint{ font-weight:400; color:var(--muted); font-size:12px; margin-left:4px; }
+  .field input[type="text"], .field input[type="email"]{
+    width:100%; padding:10px 14px; border:1px solid #ddd; border-radius:12px;
+    font-size:15px; font-family:inherit; background:#fff; color:var(--ink);
+    transition:border-color .15s, box-shadow .15s; outline:none;
+  }
+  .field input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(46,204,113,.15); }
+  .field input.error{ border-color:var(--F); box-shadow:0 0 0 3px rgba(228,53,47,.1); }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media(max-width:520px){ .field-row{ grid-template-columns:1fr; } }
+
+  .postcode-wrap{ display:flex; gap:8px; align-items:flex-start; }
+  .postcode-wrap input{ flex:1; text-transform:uppercase; }
+  .lookup-btn{ padding:10px 14px; background:var(--ink); color:#fff; border:none; border-radius:12px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; white-space:nowrap; transition:background .15s; flex-shrink:0; }
+  .lookup-btn:hover{ background:#444; }
+  .lookup-btn:disabled{ background:#aaa; cursor:not-allowed; }
+  .constituency-detected{ margin-top:8px; padding:8px 12px; background:#fff5f5; border:1px solid #f0b8c0; border-radius:10px; font-size:20px; color:#a50f27; font-weight:600; display:none; align-items:center; justify-content:center; gap:6px; }
+  .constituency-detected.show{ display:flex; }
+
+  /* ── Radio cards ── */
+  .radio-group{ display:flex; flex-direction:column; gap:8px; }
+  .radio-card{ display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border:2px solid var(--line); border-radius:14px; cursor:pointer; transition:border-color .15s, background .15s; }
+  .radio-card:hover{ background:#fff5f5; border-color:#e8a0a8; }
+  .radio-card:has(input:checked){ border-color:var(--accent); background:#fce4e4; }
+  .radio-card input[type="radio"]{ width:18px; height:18px; accent-color:var(--accent-dark); flex-shrink:0; cursor:pointer; margin-top:2px; }
+  .radio-card-text{ flex:1; min-width:0; }
+  .radio-card-title{ font-size:16px; font-weight:700; margin-bottom:4px; }
+  .radio-card-desc{ font-size:20px; color:var(--muted); line-height:1.6; }
+  .contact-intro{ font-size:20px; color:#444; line-height:1.7; margin:0 0 28px; }
+  .radio-card-badge{ font-size:15px; font-weight:700; padding:3px 8px; border-radius:999px; background:var(--accent); color:#fff; flex-shrink:0; }
+  .radio-card--rec{ align-items:center; }
+  .radio-card-main{ display:flex; align-items:center; gap:12px; flex:0 0 auto; }
+  .radio-card-main input[type="radio"]{ flex-shrink:0; }
+  .radio-card--rec .radio-card-text{ white-space:nowrap; }
+  .radio-card-badge-wrap{ flex:1; display:flex; justify-content:center; }
+
+  /* ── Privacy checkbox ── */
+  .privacy-label{ display:flex; align-items:flex-start; gap:12px; padding:14px 16px; border:2px solid var(--line); border-radius:14px; cursor:pointer; transition:border-color .15s, background .15s; }
+  .privacy-label:has(input:checked){ border-color:var(--accent); background:#fff5f5; }
+  .privacy-label input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--accent-dark); flex-shrink:0; cursor:pointer; margin-top:2px; }
+  .privacy-label-text{ font-size:14px; line-height:1.5; }
+  .privacy-label-text a{ color:var(--accent-dark); font-weight:600; }
+  .privacy-label-text a:hover{ text-decoration:underline; }
+
+  /* ── Buttons ── */
+  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-primary{ flex:1; min-width:160px; padding:14px 20px; background:var(--accent); color:#fff; border:none; border-radius:14px; font-size:15px; font-weight:700; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s, transform .1s; }
+  .btn-primary:hover{ background:var(--accent-dark); transform:translateY(-1px); }
+  .btn-primary:active{ transform:translateY(0); }
+  .btn-primary:disabled{ background:#aaa; cursor:not-allowed; transform:none; }
+  .btn-secondary{ flex:1; min-width:160px; padding:14px 20px; background:#2d2d4e; color:#fff; border:none; border-radius:14px; font-size:15px; font-weight:700; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s, transform .1s; }
+  .btn-secondary:hover{ background:#3d3d6a; transform:translateY(-1px); }
+  .btn-secondary:active{ transform:translateY(0); }
+  .btn-secondary:disabled{ background:#aaa; cursor:not-allowed; transform:none; }
+
+  /* ── Validation / Toast / Spinner / Success ── */
+  .field-error{ font-size:12px; color:var(--F); margin-top:4px; display:none; }
+  .field-error.show{ display:block; }
+  /* Hidden with visibility as well as the slide-off transform: the transform
+     alone can leave the empty toast peeking above the bottom edge on mobile,
+     where the bottom anchor is raised (below) to clear the browser toolbar but
+     the slide distance stays the same. visibility guarantees it's gone until
+     shown, on any viewport, and the delayed transition still lets it slide out. */
+  .toast{ position:fixed; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translateX(-50%) translateY(80px); visibility:hidden; background:var(--ink); color:#fff; padding:14px 22px; border-radius:14px; font-size:14px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,.2); z-index:999; transition:transform .3s cubic-bezier(.34,1.56,.64,1), visibility 0s linear .3s; max-width:min(92vw,440px); white-space:normal; text-align:center; line-height:1.35; }
+  .toast.show{ transform:translateX(-50%) translateY(0); visibility:visible; transition:transform .3s cubic-bezier(.34,1.56,.64,1), visibility 0s; }
+  .toast.success{ background:var(--accent-dark); }
+  .toast.error-toast{ background:var(--F); }
+  .success-screen{ text-align:center; padding:48px 24px; }
+  .success-icon{ font-size:56px; margin-bottom:16px; }
+  .success-screen h2{ font-family:'DM Serif Display',serif; font-size:28px; font-weight:400; margin-bottom:10px; }
+  /* Match the confirmation page heading (.confirm-card h1) size. */
+  .success-screen h2.success-title-lg{ font-size:44px; line-height:1.1; }
+  .success-screen p{ font-size:18px; color:var(--muted); margin-bottom:24px; }
+  .spinner{ width:16px; height:16px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .6s linear infinite; display:none; }
+  .spinner.show{ display:block; }
+
+  @media(max-width:600px){
+    /* Lift the toast clear of the mobile browser's bottom toolbar (e.g. iOS
+       Safari's ~50px bar), which otherwise overlaps a bottom:24px toast and
+       hides the lower half of a wrapped error message off the screen edge. */
+    .toast{ bottom:calc(76px + env(safe-area-inset-bottom, 0px)); }
+    .hero{ grid-template-columns:1fr; }
+    .hero-logo{ order:-1; margin-bottom:12px; }
+    .hero-text h1{ font-size:28px; }
+    .hero-text p{ font-size:16px; line-height:1.6; padding-right:0; }
+    .pledge-body > p{ font-size:16px; line-height:1.6; }
+    .contact-intro{ font-size:16px; line-height:1.6; }
+    .radio-card-desc{ font-size:16px; }
+    .constituency-detected{ font-size:15px; }
+    .success-screen p{ font-size:16px; }
+    .success-screen h2.success-title-lg{ font-size:28px; }
+    .btn-row{ flex-direction:column; }
+    .radio-card--rec{ flex-direction:column; align-items:stretch; }
+    .radio-card-main{ flex:0 0 auto; }
+    .radio-card--rec .radio-card-text{ white-space:normal; }
+    .radio-card-badge-wrap{ flex:none; justify-content:center; margin-top:8px; }
+  }
+
+  /* ── Privacy modal ── */
+  .modal-overlay{
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.55); z-index:200;
+    overflow-y:auto; padding:24px 16px;
+  }
+  .modal-overlay.show{ display:flex; align-items:flex-start; justify-content:center; }
+  .modal-box{
+    background:#fff; border-radius:16px;
+    max-width:660px; width:100%; margin:auto;
+    padding:36px 40px; position:relative;
+    box-shadow:0 12px 40px rgba(0,0,0,.2);
+  }
+  .modal-close{
+    position:absolute; top:14px; right:18px;
+    background:none; border:none; font-size:22px;
+    cursor:pointer; color:var(--muted); line-height:1;
+  }
+  .modal-close:hover{ color:var(--ink); }
+  .modal-box h1{ font-family:'DM Serif Display',serif; font-size:24px; font-weight:400; margin-bottom:4px; }
+  .modal-box .updated{ font-size:13px; color:var(--muted); margin-bottom:24px; display:block; }
+  .modal-box h2{ font-size:14px; font-weight:700; margin:18px 0 6px; }
+  .modal-box p{ font-size:13px; line-height:1.7; color:#333; margin-bottom:8px; }
+  .modal-box ul{ font-size:13px; line-height:1.7; color:#333; padding-left:18px; margin-bottom:8px; }
+  .modal-box li{ margin-bottom:3px; }
+  .modal-accept-bar{
+    margin-top:28px; padding-top:20px; border-top:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    gap:14px; flex-wrap:wrap;
+  }
+  .modal-accept-bar p{ margin:0; font-size:13px; color:var(--muted); }
+  .btn-accept{ padding:12px 24px; background:var(--accent); color:#fff; border:none; border-radius:12px; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer; transition:background .15s; white-space:nowrap; }
+  .btn-accept:hover{ background:var(--accent-dark); }
+  @media(max-width:540px){ .modal-box{ padding:24px 18px; } }
+}
+
+
+/* ===================== CONSTITUENCY MAP — overview.html (body.page-map) ===================== */
+/* Keyframes for the most-recent-signup celebration. These MUST stay at the top
+   level — @keyframes nested inside a style rule (e.g. body.page-map) are invalid
+   and get dropped, which silently kills the animation. */
+@keyframes asvaLatestPulse{
+  0%,100%{ transform:scale(1); }
+  50%    { transform:scale(1.14); }
+}
+/* Chevron simply fades in and out (no movement), peaking with the tile/glow
+   breath so the whole marker pulses as one. */
+@keyframes asvaChevronFade{
+  0%,100%{ opacity:0; }
+  50%    { opacity:1; }
+}
+/* Soft red glow that breathes in time with the tile (same 1.8s, same phase),
+   so the two read as one gentle breath. It never fully fades, giving the tile
+   a steady accent aura that stays legible when the map is fully zoomed out. */
+@keyframes asvaHaloBreath{
+  0%,100%{ transform:scale(1.02); opacity:0.20; }
+  50%    { transform:scale(1.20); opacity:0.52; }
+}
+body.page-map{
+  /* ── Page wrapper ── */
+  .page-wrap{
+    max-width:900px;
+    margin:0 auto;
+    padding:32px 14px 48px;
+  }
+  /* ── Header card ── */
+  .page-header{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:28px 28px 16px;
+    box-shadow:0 6px 18px rgba(0,0,0,.06);
+    margin-bottom:10px;
+  }
+  .page-header{ text-align:center; }
+  h1{
+    font-family:'DM Serif Display',serif;
+    font-size:68px;
+    font-weight:400;
+    line-height:1.1;
+    margin-bottom:20px;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:20px;
+    margin-bottom:12px;
+  }
+
+  /* ── Controls bar ── */
+  .controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    margin-bottom:0;
+  }
+  .toggle-group{
+    display:flex;
+    border:1px solid #ccc;
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .toggle-group button{
+    border:none;
+    background:#fff;
+    padding:7px 16px;
+    font-size:0.85rem;
+    cursor:pointer;
+    color:#444;
+    transition:background .15s, color .15s;
+  }
+  .toggle-group button.active{
+    background:#1a1a2e;
+    color:#fff;
+  }
+  .toggle-group button:not(:last-child){
+    border-right:1px solid #ccc;
+  }
+  #search-box{
+    flex:1;
+    min-width:180px;
+    padding:7px 12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:0.85rem;
+  }
+  #search-box:focus{ outline:none; border-color:#7c6af7; }
+  /* Autocomplete dropdown for the search box — mirrors the scorecard's, but
+     lists constituencies and MPs only (no candidates). */
+  .map-search-wrapper{ position:relative; flex:1; min-width:180px; }
+  .map-search-wrapper #search-box{ width:100%; min-width:0; }
+  #map-search-dropdown{
+    display:none; position:absolute; top:100%; left:0; right:0;
+    background:#fff; border:1px solid #ddd; border-radius:8px;
+    max-height:300px; overflow-y:auto; margin-top:4px;
+    box-shadow:0 4px 12px rgba(0,0,0,.15); z-index:500;
+    text-align:left;
+  }
+  .dropdown-item{ padding:10px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid #f0f0f0; color:var(--ink); }
+  .dropdown-item:hover{ background:#f8f9fa; }
+  .dropdown-item:last-child{ border-bottom:none; }
+  .dropdown-item.selected{ background:#e7f3ff; font-weight:600; }
+  .dropdown-group{ padding:7px 12px 5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#99a; background:#fafbfc; border-bottom:1px solid #f0f0f0; position:sticky; top:0; }
+  .dropdown-person{ font-size:14px; line-height:1.35; }
+  .dropdown-person .dp-name{ color:var(--ink); font-weight:600; }
+  .dropdown-person .dp-sub{ color:var(--muted); }
+  /* Colour-blind toggle: sits under the map, sized to match the view buttons,
+     and switches colour (grey = off, blue = on) to show its state. */
+  .map-underbar{
+    display:flex;
+    justify-content:center;
+    padding:10px;
+    border-top:1px solid var(--line);
+    background:var(--panel);
+  }
+  /* An author display rule beats the UA [hidden] rule, so restore hiding explicitly. */
+  .map-underbar[hidden]{ display:none; }
+  /* The colour-blind toggle and its blue–yellow sub-toggle sit side by side.
+     The sub-toggle stays collapsed (zero width, faded) until colour-blind mode
+     is on, then slides out to the right. */
+  .cb-group{
+    display:inline-flex;
+    align-items:center;
+  }
+  .cb-toggle{
+    border:1px solid #ccc;
+    border-radius:6px;
+    background:#eef0f3;
+    padding:7px 16px;
+    font-size:0.85rem;
+    cursor:pointer;
+    color:#444;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  /* Blue–yellow sub-toggle: collapsed by default, slides out when the group is
+     expanded (i.e. colour-blind mode is on). */
+  .cb-sub{
+    max-width:0;
+    min-width:0;
+    margin-left:0;
+    padding-left:0;
+    padding-right:0;
+    border-width:0;
+    opacity:0;
+    transform:translateX(-8px);
+    overflow:hidden;
+    pointer-events:none;
+    transition:max-width .25s ease, opacity .2s ease, transform .25s ease,
+               margin-left .25s ease, padding .25s ease, border-width .25s ease,
+               background .15s, color .15s, border-color .15s;
+  }
+  .cb-group.expanded .cb-sub{
+    max-width:260px;
+    margin-left:8px;
+    padding-left:16px;
+    padding-right:16px;
+    border-width:1px;
+    opacity:1;
+    transform:translateX(0);
+    pointer-events:auto;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .cb-sub{ transition:none; }
+  }
+  .cb-toggle::before{
+    content:'';
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    border:2px solid currentColor;
+    background:transparent;
+    flex-shrink:0;
+  }
+  .cb-toggle:hover{ background:#e4e7eb; }
+  .cb-toggle.active{ background:#2f6fd0; color:#fff; border-color:#2f6fd0; }
+  .cb-toggle.active:hover{ background:#2861bd; }
+  .cb-toggle.active::before{ background:currentColor; }
+  .cb-toggle:focus-visible{ outline:2px solid #7c6af7; outline-offset:2px; }
+
+  /* ── Main layout: map + panel ── */
+  .map-layout{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+
+  /* ── SVG map container ── */
+  .map-container{
+    flex:1;
+    background:var(--panel);
+    border-radius:16px;
+    border:1px solid var(--line);
+    box-shadow:0 6px 18px rgba(0,0,0,.06);
+    overflow:hidden;
+    position:relative;
+  }
+  #hex-svg{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+  #hex-svg polygon{
+    cursor:pointer;
+    stroke:#fff;
+    stroke-width:0.8;
+    transition:opacity .12s;
+  }
+  #hex-svg polygon:hover{ opacity:0.75; stroke-width:1.5; stroke:#fff; }
+  #hex-svg polygon.highlighted{ stroke:#ffeb3b !important; stroke-width:2.5 !important; opacity:1 !important; }
+  #hex-svg polygon.dimmed{ opacity:0.25; }
+  /* Thin black edge for coloured hexes in the blue–yellow palette, so grade
+     tiles read consistently and pale ones don't fade into the background.
+     Placed after :hover so the outline persists on hover; .highlighted keeps
+     its yellow selection ring via !important. */
+  #hex-svg polygon.cb-grade-outline{ stroke:#000; stroke-width:0.8; }
+  #hex-svg.zoomed{ cursor:grab; }
+  #hex-svg.grabbing{ cursor:grabbing; }
+
+  /* ── Most-recent-signup celebration (member view only) ──
+     The tile gently breathes larger and an up-chevron rises above it in a
+     satisfying loop — a nudge that the next person to sign up gets the marker
+     over their own constituency. */
+  #hex-svg polygon.latest-member{
+    transform-box:fill-box; transform-origin:center;
+    animation:asvaLatestPulse 1.8s ease-in-out infinite;
+    /* Permanent accent outline — marks the tile even at the pulse's low point
+       and at any zoom, using colour rather than extra motion. */
+    stroke:var(--accent, #CC1133); stroke-width:1.4;
+  }
+  /* Soft glow behind the tile (blurred fill, breathing opacity/scale). */
+  #hex-svg .latest-halo{
+    fill:var(--accent, #CC1133); stroke:none; pointer-events:none;
+    transform-box:fill-box; transform-origin:center;
+    filter:url(#latestGlow);
+    animation:asvaHaloBreath 1.8s ease-in-out infinite;
+  }
+  #hex-svg .latest-chevron{ pointer-events:none; }
+  #hex-svg .latest-chevron path{
+    stroke:var(--accent, #CC1133);
+    stroke-linecap:round; stroke-linejoin:round;
+    animation:asvaChevronFade 1.8s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion:reduce){
+    #hex-svg polygon.latest-member{ animation:none; }
+    #hex-svg .latest-chevron path{ animation:none; opacity:1; }
+    /* Keep a steady (non-animated) glow so the marker stays legible. */
+    #hex-svg .latest-halo{ animation:none; opacity:0.4; transform:scale(1.12); }
+  }
+
+  /* ── Zoom controls (overlay top-right of the map) ── */
+  .map-zoom{
+    position:absolute; top:10px; right:10px; z-index:5;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .map-zoom button{
+    width:38px; height:38px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    background:#fff; border:1px solid var(--line); border-radius:9px;
+    box-shadow:0 2px 6px rgba(0,0,0,.12);
+    font-size:22px; line-height:1; font-weight:600; color:#1a1a2e;
+    cursor:pointer; -webkit-user-select:none; user-select:none;
+    transition:background .12s, box-shadow .12s;
+  }
+  .map-zoom button:hover{ background:#f2f2f2; }
+  .map-zoom button:active{ box-shadow:0 1px 3px rgba(0,0,0,.12); }
+  .map-zoom button:disabled{ opacity:.4; cursor:default; box-shadow:none; }
+  #zoom-reset{ font-size:18px; }
+
+  /* ── Info panel ── */
+  .info-panel{
+    width:280px;
+    flex-shrink:0;
+  }
+  .info-card{
+    background:var(--panel);
+    border-radius:16px;
+    border:1px solid var(--line);
+    box-shadow:0 6px 18px rgba(0,0,0,.06);
+    padding:20px;
+    min-height:200px;
+  }
+  .info-card .placeholder{
+    color:#999;
+    font-size:0.9rem;
+    text-align:center;
+    padding-top:40px;
+  }
+  .info-card h3{
+    font-size:1.15rem;
+    font-weight:700;
+    margin-bottom:14px;
+    color:#1a1a2e;
+    line-height:1.3;
+  }
+  .info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:12px;
+    font-size:1rem;
+    gap:8px;
+  }
+  .info-label{ color:#444; flex-shrink:0; font-weight:600; }
+  .info-value{ font-weight:700; text-align:right; }
+  .party-dot{
+    display:inline-block;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-right:5px;
+    vertical-align:middle;
+  }
+  .grade-badge{
+    display:inline-block;
+    padding:1px 8px;
+    border-radius:4px;
+    font-weight:700;
+    font-size:0.85rem;
+  }
+  .info-card .scorecard-link,
+  .map-info-mobile .scorecard-link{
+    display:block;
+    margin-top:14px;
+    padding:7px 0;
+    text-align:center;
+    border:1px solid #7c6af7;
+    border-radius:6px;
+    color:#7c6af7;
+    text-decoration:none;
+    font-size:0.82rem;
+    font-weight:600;
+    transition:background .15s, color .15s;
+  }
+  .info-card .scorecard-link:hover,
+  .map-info-mobile .scorecard-link:hover{
+    background:#7c6af7;
+    color:#fff;
+  }
+  /* The mobile scorecard link stays laid out but invisible until a constituency
+     is picked, so revealing it never shifts the map below. */
+  .map-info-mobile .scorecard-link{ visibility:hidden; }
+  .map-info-mobile.has-selection .scorecard-link{ visibility:visible; }
+
+  /* ── Mobile-only selected-constituency details (under the search bar) ──
+     Hidden on desktop, where the side info-card is used instead. Shown and
+     populated on mobile by the map's fillMobileInfo(). */
+  .map-info-mobile{ display:none; }
+  .map-info-mobile h3{
+    font-size:1.15rem;
+    font-weight:700;
+    margin-bottom:14px;
+    color:#1a1a2e;
+    line-height:1.3;
+  }
+
+  /* ── Legend ── */
+  .legend{
+    background:var(--panel);
+    border-radius:16px;
+    border:1px solid var(--line);
+    box-shadow:0 6px 18px rgba(0,0,0,.06);
+    padding:12px 16px;
+    margin-bottom:14px;
+    font-size:0.78rem;
+    color:#555;
+  }
+  .legend-title{ font-weight:700; margin-bottom:3px; color:#1a1a2e; font-size:1.05rem; text-align:center; }
+  .legend-subtitle{ font-size:0.78rem; color:#cc6600; font-style:italic; margin-bottom:12px; text-align:center; }
+  .legend-subtitle-muted{ color:var(--muted); }
+  .legend-items{ display:flex; flex-direction:column; gap:10px; }
+  .legend-item{ display:flex; align-items:center; gap:10px; font-size:0.95rem; font-weight:600; color:#222; }
+  .legend-separator{ border:none; border-top:1px solid #ccc; margin:2px 0; }
+  /* "Newest member" key chevron — pulses in step with the map marker (1.8s)
+     so the legend entry and the tile on the map read as the same thing. */
+  .legend-chevron-mark{ animation:asvaChevronFade 1.8s ease-in-out infinite; }
+  @media (prefers-reduced-motion:reduce){
+    .legend-chevron-mark{ animation:none; opacity:1; }
+  }
+  .legend-info{ position:relative; margin-top:12px; text-align:center; }
+  .legend-info-link{ font-size:0.8rem; text-decoration:none; cursor:pointer; color:#1a6fc4; user-select:none; }
+  .legend-info-popup{
+    display:none; position:absolute; bottom:calc(100% + 6px); left:0;
+    background:#111; color:#fff; border-radius:8px;
+    padding:12px 14px; width:240px; font-size:0.78rem; line-height:1.6;
+    box-shadow:0 4px 16px rgba(0,0,0,.35); z-index:50;
+  }
+  .legend-info-popup p{ margin-bottom:8px; }
+  .legend-info-popup p:last-child{ margin-bottom:0; }
+  .legend-info:hover .legend-info-popup,
+  .legend-info-popup.show{ display:block; }
+
+  /* ── Tooltip ── */
+  #tooltip{
+    position:fixed;
+    background:rgba(20,20,40,0.92);
+    color:#fff;
+    padding:7px 11px;
+    border-radius:7px;
+    font-size:0.78rem;
+    pointer-events:none;
+    display:none;
+    z-index:9999;
+    max-width:200px;
+    line-height:1.5;
+  }
+  #tooltip strong{ display:block; }
+  /* Accent pill flagging the most-recent-signup constituency in the tooltip. */
+  .tip-latest-badge{
+    display:inline-block; margin-bottom:5px; padding:1px 7px;
+    border-radius:9px; background:var(--accent, #CC1133); color:#fff;
+    font-size:0.62rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  }
+
+  /* ── Loading / error ── */
+  .status-msg{
+    text-align:center;
+    color:#666;
+    padding:60px 20px;
+    font-size:0.9rem;
+  }
+
+  /* ── Responsive ── */
+  @media(max-width:640px){
+    .map-layout{ flex-direction:column; }
+    .map-container{ width:100%; }
+    .info-panel{ width:100%; }
+    h1{ font-size:28px; }
+    .subtitle{ font-size:16px; }
+
+    /* Candidate/Member toggle spans the full width, each button taking half. */
+    .toggle-group{ width:100%; }
+    .toggle-group button{ flex:1; }
+
+    /* Show the details under the search bar and drop the now-redundant side
+       card (the legend stays in the info-panel below the map). */
+    .map-info-mobile{
+      display:block;
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid var(--line);
+      text-align:left;
+    }
+    .map-info-mobile .info-row{ margin-bottom:12px; }
+    .info-panel .info-card{ display:none; }
+  }
+}
+
+
+/* ===================== FOUNDING STATEMENT — founding-statement.html (body.page-founding) ===================== */
+body.page-founding{
+  /* ── Page layout ── */
+  .page{ max-width:900px; margin:0 auto; padding:32px 14px 80px; }
+
+  /* ── Hero (logo hard-coded in HTML with reserved height to avoid layout shift) ── */
+  .fs-hero{ text-align:center; margin-bottom:48px; }
+  .fs-hero-logo{ height:150px; width:auto; display:block; margin:40px auto 0; }
+  .fs-hero-logo-fallback{ font-weight:900; font-size:48px; }
+  .fs-hero h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:8px; }
+  .fs-hero .org{ font-size:20px; font-weight:600; color:var(--muted); }
+
+  /* ── Charter content ── */
+  .charter{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px 52px 48px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+
+  .charter h2{
+    font-family:'DM Serif Display',serif;
+    font-size:26px;
+    font-weight:400;
+    margin:18px 0 6px;
+    padding-bottom:6px;
+  }
+  .charter h2:first-child{ margin-top:0; }
+
+  .charter h3{
+    font-size:15px;
+    font-weight:700;
+    margin:24px 0 6px;
+  }
+  .charter h2 + h3{ margin-top:6px; }
+
+  .charter p{
+    font-size:15px;
+    line-height:1.75;
+    color:#333;
+    margin-bottom:14px;
+  }
+
+  .charter ul{
+    margin:0 0 16px 20px;
+    padding:0;
+  }
+  .charter ul li{
+    font-size:15px;
+    line-height:1.7;
+    color:#333;
+    margin-bottom:6px;
+  }
+
+  .charter strong{ font-weight:700; }
+  .charter em{ font-style:italic; }
+
+  /* ── Grade guidance table ── */
+  .charter .grade-guide{
+    width:100%;
+    border-collapse:collapse;
+    margin:4px 0 20px;
+  }
+  .charter .grade-guide th,
+  .charter .grade-guide td{
+    text-align:left;
+    vertical-align:middle;
+    padding:10px 0;
+  }
+  .charter .grade-guide th{
+    width:60px;
+    padding-right:18px;
+    font-weight:400;
+  }
+  .charter .grade-guide td{
+    font-size:15px;
+    line-height:1.65;
+    color:#333;
+  }
+  .charter .grade-guide tr + tr th,
+  .charter .grade-guide tr + tr td{
+    border-top:1px solid var(--line);
+  }
+  .charter .gg-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:44px;
+    height:44px;
+    border-radius:11px;
+    font-family:'DM Serif Display',serif;
+    font-size:22px;
+    line-height:1;
+    color:#fff;
+  }
+
+  .closing-quote{
+    background:#f8f8f8;
+    border-left:4px solid #1a1a2e;
+    border-radius:0 8px 8px 0;
+    padding:20px 24px;
+    margin:24px 0;
+    font-size:15px;
+    line-height:1.75;
+    color:#333;
+    font-style:italic;
+  }
+
+  .pledge-block{
+    background:#f0f5ff;
+    border:1px solid #c8d8f0;
+    border-radius:10px;
+    padding:20px 24px;
+    margin:20px 0;
+  }
+  .pledge-block h4{
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:#1a1a2e;
+  }
+  .pledge-block p{
+    font-size:14px;
+    line-height:1.7;
+    font-style:italic;
+    color:#333;
+    margin:0 0 8px;
+  }
+  .pledge-block p:last-child{ margin-bottom:0; }
+
+  .return-link{
+    display:block;
+    text-align:center;
+    margin-top:40px;
+    color:#1a1a2e;
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+  }
+  .return-link:hover{ text-decoration:underline; }
+
+  @media(max-width:600px){
+    .charter{ padding:28px 20px; }
+    .fs-hero h1{ font-size:28px; }
+  }
+}
+
+
+/* ===================== ABOUT US — about.html (body.page-about) ===================== */
+body.page-about{
+  .app{ max-width:900px; margin:32px auto 60px; padding:0 14px; text-align:center; }
+  .about-content{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px 40px 60px; box-shadow:0 6px 18px rgba(0,0,0,.06); text-align:left; }
+  .about-content h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:20px; text-align:center; }
+  .about-content h2{ font-family:'DM Serif Display',serif; font-size:26px; font-weight:400; line-height:1.2; margin:28px 0 8px; }
+  .about-content p{ color:var(--muted); font-size:20px; line-height:1.6; margin-bottom:16px; }
+  .about-content ul{ margin:0 0 16px 22px; padding:0; }
+  .about-content li{ color:var(--muted); font-size:20px; line-height:1.6; margin-bottom:8px; }
+  .about-content a{ color:#1a6ef5; text-decoration:underline; }
+  .about-content table{ width:100%; border-collapse:collapse; margin:4px 0 20px; font-size:16px; }
+  .about-content th, .about-content td{ border:1px solid var(--line); padding:10px 14px; text-align:left; vertical-align:top; color:var(--muted); line-height:1.5; }
+  .about-content th{ background:#f6f6f6; color:var(--ink); font-weight:700; }
+  .about-content td:first-child{ white-space:nowrap; font-weight:700; color:var(--ink); }
+  @media(max-width:600px){
+    .about-content{ padding:28px 24px 40px; }
+    .about-content h1{ font-size:28px; }
+    .about-content h2{ font-size:22px; }
+    .about-content p, .about-content li{ font-size:16px; }
+    .about-content table{ font-size:14px; }
+    .about-content th, .about-content td{ padding:8px 10px; }
+  }
+}
+
+
+/* ===================== WHY AI SAFETY — why-ai-safety.html (body.page-concern) ===================== */
+body.page-concern{
+  .app{ max-width:900px; margin:32px auto 60px; padding:0 14px; text-align:center; }
+  .concern-content{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px 40px 60px; box-shadow:0 6px 18px rgba(0,0,0,.06); text-align:left; }
+  .concern-content h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:20px; text-align:center; }
+  .concern-content h2{ font-family:'DM Serif Display',serif; font-size:26px; font-weight:400; line-height:1.2; margin:28px 0 8px; }
+  .concern-content p{ color:var(--muted); font-size:20px; line-height:1.6; margin-bottom:16px; }
+  .concern-content a{ color:#1a6ef5; text-decoration:underline; }
+  --accent:#CC1133; --accent-dark:#a50f27; --accent-tint:#fff5f5;
+  .concern-content .concern-intro{ text-align:center; font-size:21px; color:var(--muted); max-width:620px; margin:0 auto 34px; }
+  .concern-content .concern-deeper{ text-align:center; font-size:16px; color:var(--muted); max-width:620px; margin:52px auto 0; padding-top:32px; border-top:1px solid var(--line); line-height:1.6; }
+
+  /* ── Expandable pathways (two audience routes) ── */
+  .pathways{ display:flex; flex-direction:column; gap:16px; }
+  .pathway{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff; transition:box-shadow .18s, border-color .18s; }
+  .pathway.open{ border-color:var(--accent); box-shadow:0 8px 24px rgba(204,17,51,.10); }
+
+  .pathway-head{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px;
+    background:none; border:0; cursor:pointer; text-align:left; padding:24px 26px; font-family:inherit; color:var(--ink); transition:background .15s; }
+  .pathway-head:hover{ background:var(--accent-tint); }
+  /* Expanded box stays white; the red border + shadow already mark it as open. */
+  .pathway.open .pathway-head{ background:#fff; }
+  .pathway-head-label{ font-family:'DM Serif Display',serif; font-size:25px; line-height:1.25; }
+  .pathway-chevron{ flex:0 0 auto; width:14px; height:14px; border-right:2.5px solid var(--accent); border-bottom:2.5px solid var(--accent);
+    transform:rotate(45deg); transition:transform .25s ease; margin-right:4px; }
+  .pathway.open .pathway-chevron{ transform:rotate(-135deg); }
+
+  /* Grid-rows trick: animate 0fr -> 1fr for smooth open/close */
+  .pathway-panel{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .28s ease; }
+  .pathway.open .pathway-panel{ grid-template-rows:1fr; }
+  /* visibility keeps collapsed controls out of the tab order / SR reach */
+  .pathway-panel-inner{ overflow:hidden; visibility:hidden; transition:visibility .28s; }
+  .pathway.open .pathway-panel-inner{ visibility:visible; }
+
+  .path{ padding:4px 26px 26px; }
+  /* The stage is a fixed viewport; the steps live on a horizontal track that
+     slides one full width at a time. The track (and therefore the stage) sizes
+     to the TALLEST step, so the nav row below never shifts as you move through,
+     and overflow:hidden clips the off-screen slides. touch-action:pan-y lets a
+     vertical drag scroll the page while a horizontal drag is ours to flick. */
+  .path-stage{ position:relative; overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:12px; min-height:170px; touch-action:pan-y; }
+  .path-stage:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .path-track{ display:flex; align-items:stretch; }
+  .path-track.animate{ transition:transform .42s cubic-bezier(.22,.61,.36,1); }
+  .path-step{ flex:0 0 100%; width:100%; min-width:0; box-sizing:border-box; padding:26px 26px 24px; text-align:left; }
+  .path-step h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:24px; line-height:1.25; margin-bottom:12px; color:var(--ink); }
+  .path-step p{ font-size:18px; line-height:1.6; color:var(--muted); margin-bottom:0; }
+
+  .path-cta-row{ margin-top:22px; display:flex; gap:12px; flex-wrap:wrap; justify-content:flex-start; }
+  .path-cta-row a.btn{ display:inline-block; padding:14px 24px; background:var(--accent); color:#fff !important; border-radius:14px;
+    font-weight:700; font-size:15px; text-decoration:none; transition:background .15s, transform .1s; }
+  .path-cta-row a.btn:hover{ background:var(--accent-dark); transform:translateY(-1px); }
+  .path-cta-row a.btn:active{ transform:translateY(0); }
+  .path-cta-row a.btn-alt{ background:#2d2d4e; }
+  .path-cta-row a.btn-alt:hover{ background:#3d3d6a; }
+  /* Dark-blue CTA (e.g. "Why is AI an extinction risk?"); red stays for the pledge. */
+  .path-cta-row a.btn-blue{ background:#0b2e42; }
+  .path-cta-row a.btn-blue:hover{ background:#0d3a54; }
+
+  /* Quick-actions rectangle under the pathways: three equal-width buttons. */
+  .action-rect{ border:1px solid var(--line); border-radius:14px; background:#fff; padding:20px 22px;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .action-rect a.btn-tri{ display:inline-flex; align-items:center; justify-content:center; text-align:center; padding:16px 14px;
+    border-radius:12px; color:#fff !important; font-weight:700; font-size:15px; line-height:1.25; text-decoration:none;
+    transition:background .15s, transform .1s; }
+  .action-rect a.btn-tri:hover{ transform:translateY(-1px); }
+  .action-rect a.btn-tri:active{ transform:translateY(0); }
+  .btn-tri-red{ background:var(--accent); }
+  .btn-tri-red:hover{ background:var(--accent-dark); }
+  .btn-tri-blue{ background:#0b2e42; }
+  .btn-tri-blue:hover{ background:#0d3a54; }
+
+  .path-nav{ position:relative; display:flex; align-items:center; gap:14px; margin-top:18px; }
+  /* Dots pinned to the true centre of the row, independent of the Back/Next
+     widths (and of Next being hidden on the last step). */
+  .path-dots{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    display:flex; gap:7px; margin:0; }
+  .path-next{ margin-left:auto; }
+  .path-dot{ width:8px; height:8px; border-radius:50%; background:var(--line); border:0; padding:0; cursor:pointer;
+    -webkit-appearance:none; appearance:none; transition:background .2s, transform .2s; }
+  .path-dot.on{ background:var(--accent); transform:scale(1.15); }
+  .path-dot:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+  .path-back, .path-next{ flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    border-radius:14px; font-family:inherit; font-weight:700; font-size:15px; cursor:pointer; transition:background .15s, opacity .15s, transform .1s; }
+  .path-back{ background:none; border:1px solid var(--line); color:var(--muted); padding:9px 15px; }
+  .path-back:hover{ background:var(--accent-tint); color:var(--ink); }
+  .path-back[disabled]{ opacity:0; pointer-events:none; }
+  .path-next{ background:var(--accent); border:0; color:#fff; padding:10px 20px; }
+  .path-next:hover{ background:var(--accent-dark); transform:translateY(-1px); }
+  .path-next:active{ transform:translateY(0); }
+  .path-next .arw{ font-size:17px; line-height:1; }
+  .path-next[hidden]{ display:none; }
+
+  @media(prefers-reduced-motion:reduce){
+    .pathway, .pathway-head, .pathway-chevron, .pathway-panel, .pathway-panel-inner,
+    .path-track, .path-step, .path-dot, .path-back, .path-next, .path-cta-row a.btn{ transition:none; animation:none; }
+  }
+
+  @media(max-width:600px){
+    .concern-content{ padding:28px 24px 40px; }
+    .concern-content h1{ font-size:28px; }
+    .concern-content h2{ font-size:22px; }
+    .concern-content p{ font-size:16px; }
+    .concern-content .concern-intro{ font-size:17px; }
+    .pathway-head{ padding:20px 18px; }
+    .pathway-head-label{ font-size:20px; }
+    .path{ padding:4px 16px 20px; }
+    .path-step{ padding:22px 18px; }
+    .path-step h3{ font-size:21px; }
+    .path-step p{ font-size:16px; }
+    .path-nav{ gap:10px; }
+    .path-back span.lbl{ display:none; }
+    .action-rect{ grid-template-columns:1fr; padding:16px; }
+  }
+}
+
+
+/* ===================== EMAIL CONFIRMATION — confirmed.html (body.page-confirmed) ===================== */
+body.page-confirmed{
+  --accent:#CC1133; --accent-dark:#a50f27;
+  /* Match the shared content-page layout (about / why-ai-safety / share):
+     same 32px top offset, 28px 40px 60px card padding, 68px DM Serif h1 and
+     20px body text, so this page lines up with the rest of the site. */
+  .app{ max-width:900px; margin:32px auto 60px; padding:0 14px; }
+  .confirm-card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px 40px 60px; box-shadow:0 6px 18px rgba(0,0,0,.06); text-align:center; }
+  .confirm-card h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:20px; }
+  .confirm-card p{ color:var(--muted); font-size:20px; line-height:1.6; margin-bottom:16px; }
+  .confirm-card .btn-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .confirm-card a.btn{ display:inline-block; padding:13px 24px; background:#CC1133; color:#fff; border-radius:12px; font-weight:700; font-size:15px; text-decoration:none; transition:background .15s; }
+  .confirm-card a.btn:hover{ background:#a50f27; }
+  .confirm-card a.btn-alt{ background:#2d2d4e; }
+  .confirm-card a.btn-alt:hover{ background:#3d3d6a; }
+
+  .confirm-card .confirm-update-note{ font-size:14px; color:var(--muted); margin-top:22px; }
+  @media(max-width:600px){ .confirm-card{ padding:28px 24px 40px; } .confirm-card h1{ font-size:28px; } .confirm-card p{ font-size:16px; } }
+
+  /* Share tools embedded in the success view. These component styles mirror the
+     share page (body.page-share in the SHARE ASVA section below); they are
+     repeated here, scoped to this page, so the shared markup renders the same
+     without altering the standalone share page. If you restyle the share
+     buttons there, mirror the change here too. */
+  /* One line break under the "do even more" paragraph, then the share tools. */
+  .confirm-share{ margin-top:6px; text-align:center; }
+  .confirm-share h2{ font-family:'DM Serif Display',serif; font-size:26px; font-weight:400; line-height:1.2; margin:34px 0 20px; text-align:center; color:var(--ink); }
+  .confirm-share h2:first-child{ margin-top:10px; }
+
+  .share-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; max-width:660px; margin:0 auto; }
+  .share-btn{
+    display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 16px;
+    border:2px solid var(--line); border-radius:14px; background:#fff;
+    color:var(--ink); font-size:16px; font-weight:600; font-family:inherit;
+    text-decoration:none; cursor:pointer; width:100%;
+    transition:border-color .15s, background .15s, transform .1s;
+  }
+  .share-btn:hover{ border-color:var(--accent); background:#fff5f5; transform:translateY(-1px); }
+  .share-btn .share-btn-ico{ display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--accent); flex:0 0 auto; }
+  .share-btn .share-btn-ico svg{ width:24px; height:24px; }
+
+  .share-message{
+    background:#fafafa; border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px; font-size:17px; line-height:1.6; color:#333;
+    white-space:pre-wrap; text-align:left; max-width:660px; margin:0 auto 16px;
+  }
+  .share-actions{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
+  .share-copy-btn{
+    display:inline-flex; align-items:center; gap:8px; padding:12px 20px;
+    background:var(--accent); color:#fff; border:none; border-radius:14px;
+    font-size:15px; font-weight:700; font-family:inherit; cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  .share-copy-btn:hover{ background:var(--accent-dark); transform:translateY(-1px); }
+  .share-copy-btn.copied{ background:#2D5A3D; }
+  .share-copy-btn svg{ width:18px; height:18px; }
+
+  /* QR-code modal */
+  .qr-modal{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); padding:20px; }
+  .qr-modal.open{ display:flex; }
+  .qr-box{ position:relative; background:#fff; border-radius:22px; padding:34px 36px 30px; max-width:440px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.3); }
+  .qr-canvas{ position:relative; margin:0 auto 18px; width:320px; max-width:100%; aspect-ratio:1/1; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+  .qr-canvas svg{ width:100%; height:100%; display:block; }
+  .qr-logo{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:24%; height:24%; padding:5px; background:none; display:flex; align-items:center; justify-content:center; }
+  .qr-logo img{ width:100%; height:100%; display:block; }
+  .qr-url{ font-size:13px; color:var(--muted); word-break:break-all; margin:0; }
+  .qr-close{ position:absolute; top:12px; right:14px; background:none; border:none; font-size:28px; line-height:1; color:var(--muted); cursor:pointer; padding:2px 10px; border-radius:8px; }
+  .qr-close:hover{ background:#f2f2f2; color:var(--ink); }
+
+  @media(max-width:600px){
+    .confirm-share h2{ font-size:22px; }
+    .share-message{ font-size:15px; }
+  }
+}
+
+
+/* ===================== DATA PRIVACY — privacy.html (body.page-privacy) ===================== */
+body.page-privacy{
+  .app{ max-width:900px; margin:32px auto 60px; padding:0 14px; }
+  .card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px 40px 36px; box-shadow:0 6px 18px rgba(0,0,0,.06); margin-bottom:14px; }
+  h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:20px; }
+  .updated{ font-size:13px; color:var(--muted); margin-bottom:28px; }
+  h2{ font-size:15px; font-weight:700; margin:22px 0 8px; }
+  p{ font-size:14px; line-height:1.7; color:#333; margin-bottom:10px; }
+  ul{ font-size:14px; line-height:1.7; color:#333; padding-left:20px; margin-bottom:10px; }
+  li{ margin-bottom:4px; }
+  @media(max-width:600px){ h1{ font-size:28px; } }
+  @media(max-width:540px){ .card{ padding:24px 20px; } }
+}
+
+
+/* ===================== BRAND-COLOURED SHARE ICONS (share.html + confirmed.html) =====
+   Option A: each share glyph in its platform's own colour, pills unchanged. Kept
+   top-level (not nested in a page block) and scoped by button id, so both the
+   share page and the confirmation page pick them up. The SVGs use
+   fill:currentColor, so `color` recolours the glyph; an id selector outranks the
+   per-page `.share-btn .share-btn-ico` default, so these win on both pages.
+   Brand-less options — Share…, Email, QR — keep the ASVA accent. Instagram has no
+   single colour, so its glyph carries an inline SVG gradient in the page markup. */
+#shareWhatsApp .share-btn-ico{ color:#25D366; }
+#shareX        .share-btn-ico{ color:#0f1419; }
+#shareFacebook .share-btn-ico{ color:#1877F2; }
+#shareLinkedIn .share-btn-ico{ color:#0A66C2; }
+
+/* "Share this scorecard" button in the scorecard header — sits where the ASVA
+   logo used to, as the header's right-hand item. The header is align-items:center,
+   so this single-line button centres on the midpoint of the constituency/Scorecard
+   text on the left. page-scorecard doesn't define --accent, so the ASVA red is set
+   literally here. */
+body.page-scorecard .sc-share-btn{
+  display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; white-space:nowrap;
+  align-self:flex-start;   /* top-align with the constituency title on the left */
+  background:#CC1133; color:#fff; border:none; border-radius:999px;
+  padding:8px 16px; font:inherit; font-size:13px; font-weight:700; cursor:pointer;
+  transition:background .15s, transform .1s;
+}
+body.page-scorecard .sc-share-btn:hover{ background:#a50f27; transform:translateY(-1px); }
+body.page-scorecard .sc-share-btn svg{ width:16px; height:16px; fill:currentColor; }
+body.page-scorecard .sc-share-btn.copied{ background:#1f9d55; }
+/* An author display rule beats the UA [hidden] rule, so restore hiding explicitly. */
+body.page-scorecard .sc-share-btn[hidden]{ display:none; }
+
+
+/* ===================== SHARE ASVA — share.html (body.page-share) ===================== */
+body.page-share{
+  --accent:#CC1133; --accent-dark:#a50f27;
+  /* Matches the other content pages (about / case-for-concern): 900px centred
+     column, same top offset, same card padding, same DM Serif heading sizes. */
+  .app{ max-width:900px; margin:32px auto 60px; padding:0 14px; text-align:center; }
+  .share-content{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:28px 40px 60px; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+  .share-content h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:20px; text-align:center; }
+  .share-content h2{ font-family:'DM Serif Display',serif; font-size:26px; font-weight:400; line-height:1.2; margin:44px 0 20px; text-align:center; }
+  .share-lead{ color:var(--muted); font-size:20px; line-height:1.6; max-width:640px; margin:0 auto; }
+
+  /* Share-button grid */
+  .share-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; max-width:660px; margin:0 auto; }
+  .share-btn{
+    display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 16px;
+    border:2px solid var(--line); border-radius:14px; background:#fff;
+    color:var(--ink); font-size:16px; font-weight:600; font-family:inherit;
+    text-decoration:none; cursor:pointer; width:100%;
+    transition:border-color .15s, background .15s, transform .1s;
+  }
+  .share-btn:hover{ border-color:var(--accent); background:#fff5f5; transform:translateY(-1px); }
+  .share-btn .share-btn-ico{ display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--accent); flex:0 0 auto; }
+  .share-btn .share-btn-ico svg{ width:24px; height:24px; }
+
+  /* Copyable message */
+  .share-message{
+    background:#fafafa; border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px; font-size:17px; line-height:1.6; color:#333;
+    white-space:pre-wrap; text-align:left; max-width:660px; margin:0 auto 16px;
+  }
+  .share-actions{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
+  .share-copy-btn{
+    display:inline-flex; align-items:center; gap:8px; padding:12px 20px;
+    background:var(--accent); color:#fff; border:none; border-radius:14px;
+    font-size:15px; font-weight:700; font-family:inherit; cursor:pointer;
+    transition:background .15s, transform .1s;
+  }
+  .share-copy-btn:hover{ background:var(--accent-dark); transform:translateY(-1px); }
+  .share-copy-btn.copied{ background:#2D5A3D; }
+  .share-copy-btn svg{ width:18px; height:18px; }
+
+  .share-note{ font-size:16px; color:var(--muted); line-height:1.6; max-width:640px; margin:44px auto 0; }
+  .share-note a{ color:#1a6ef5; text-decoration:underline; font-weight:600; }
+
+  /* QR-code modal */
+  .qr-modal{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); padding:20px; }
+  .qr-modal.open{ display:flex; }
+  .qr-box{ position:relative; background:#fff; border-radius:22px; padding:34px 36px 30px; max-width:440px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.3); }
+  .qr-box h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:28px; margin-bottom:22px; }
+  .qr-canvas{ position:relative; margin:0 auto 18px; width:320px; max-width:100%; aspect-ratio:1/1; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+  .qr-canvas svg{ width:100%; height:100%; display:block; }
+  /* ASVA shield + tick set into the middle of the code. Error-correction level
+     'H' lets the centre be covered while the code still scans; the white pad
+     gives the logo a clean quiet zone. */
+  /* The QR's centre is cleared to white, so the logo needs only a small white
+     inset (its padding) as breathing room — no wider halo. */
+  .qr-logo{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:24%; height:24%; padding:5px; background:none; display:flex; align-items:center; justify-content:center; }
+  .qr-logo img{ width:100%; height:100%; display:block; }
+  .qr-url{ font-size:13px; color:var(--muted); word-break:break-all; margin:0; }
+  .qr-close{ position:absolute; top:12px; right:14px; background:none; border:none; font-size:28px; line-height:1; color:var(--muted); cursor:pointer; padding:2px 10px; border-radius:8px; }
+  .qr-close:hover{ background:#f2f2f2; color:var(--ink); }
+
+  @media(max-width:600px){
+    .share-content{ padding:28px 24px 40px; }
+    .share-content h1{ font-size:28px; }
+    .share-content h2{ font-size:22px; }
+    .share-lead{ font-size:16px; }
+    .share-message{ font-size:15px; }
+  }
+}
+
+
+/* ── Logo link (shared): only the ASVA logo is clickable, not the blank
+   space beside it. The .sitenav-brand container still grows (flex:1) to keep
+   the centred link group aligned to the page centre; the anchor hugs the img. */
+.sitenav-logo-link{ display:inline-block; line-height:0; }
+
+
+/* ===================== HOME — index.html (body.page-home) ===================== */
+body.page-home{ --navy:#0d2c40; --red:#cc1133; --hmuted:#5a6b78; --hline:#e6eaee; background:#f6f7f8; }
+
+/* Hero */
+body.page-home .home-hero{ background:#0b2e42; color:#fff; padding:70px 0 82px; position:relative; overflow:hidden; }
+body.page-home .home-hero-in{ max-width:900px; margin:0 auto; padding:0 24px; display:grid; grid-template-columns:1.12fr .88fr; gap:52px; align-items:center; position:relative; }
+body.page-home .home-hero h1{ font-family:'DM Serif Display',Georgia,serif; font-weight:400; font-size:clamp(34px,5vw,52px); line-height:1.03; letter-spacing:-.015em; text-wrap:balance; }
+body.page-home .home-hero h1 em{ font-style:normal; color:var(--red); }
+body.page-home .home-hero p{ margin-top:18px; font-size:18px; color:#cdd9e2; max-width:34ch; }
+body.page-home .home-btns{ display:flex; gap:14px; margin-top:30px; flex-wrap:wrap; }
+body.page-home .home-btn{ padding:14px 24px; border-radius:10px; font-weight:700; font-size:16px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:background .15s; }
+body.page-home .home-btn-red{ background:var(--red); color:#fff; }
+body.page-home .home-btn-red:hover{ background:#e11b3b; }
+body.page-home .home-btn-ghost{ background:rgba(255,255,255,.06); color:#fff; border:1px solid rgba(255,255,255,.28); }
+body.page-home .home-btn-ghost:hover{ background:rgba(255,255,255,.12); }
+body.page-home .home-hero-why{ margin-top:16px; font-size:15px; color:#9fb4c2; }
+body.page-home .home-hero-why a{ color:#fff; font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+body.page-home .home-hero-why a:hover{ color:#cdd9e2; }
+body.page-home .home-trust{ margin-top:24px; display:flex; gap:22px; flex-wrap:wrap; font-size:13px; color:#9fb4c2; }
+body.page-home .home-trust b{ color:#fff; font-weight:700; }
+
+/* "Your MP" card */
+body.page-home .home-gcard-wrap{ position:relative; min-width:0; }
+/* Prev/next controls sit just outside the card and reveal on hover (desktop). */
+body.page-home .gc-nav{ position:absolute; top:50%; transform:translateY(-50%); z-index:2; width:34px; height:33.333%; border-radius:17px; background:#0b2e42; color:#fff; border:2px solid #fff; font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0 0 2px; box-shadow:0 4px 12px rgba(0,0,0,.28); opacity:0; transition:opacity .15s, background .15s; }
+body.page-home .home-gcard-wrap:hover .gc-nav{ opacity:1; }
+body.page-home .gc-nav:hover{ background:#123f5a; }
+body.page-home .gc-prev{ left:-46px; }
+body.page-home .gc-next{ right:-46px; }
+body.page-home .home-gcard{ width:100%; background:#fff; color:#12242f; border-radius:18px; padding:24px; box-shadow:0 30px 60px rgba(0,0,0,.34); }
+/* Only the contents crossfade on auto-advance; the white box stays put. */
+body.page-home .gc-fade{ transition:opacity .5s ease; }
+body.page-home .gc-fade.is-fading{ opacity:0; }
+body.page-home .home-gcard .gc-top{ display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--hline); padding-bottom:16px; }
+body.page-home .home-gcard .gc-who{ flex:1; min-width:0; }
+body.page-home .home-gcard .gc-name{ display:block; font-weight:700; font-size:22.5px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+body.page-home .home-gcard .gc-const{ display:block; color:var(--hmuted); font-weight:500; font-size:12.5px; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+body.page-home .home-gcard .gc-badge{ margin-left:auto; flex:0 0 auto; width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-family:'DM Serif Display',serif; font-size:30px; color:#fff; }
+body.page-home .home-gcard .gc-bullets{ margin:16px 0 0; padding:0; list-style:none; min-height:82px; display:flex; flex-direction:column; justify-content:center; gap:8px; overflow:hidden; }
+/* Bullets wrap to at most two tight lines — a wrapped second line sits
+   immediately under the first (line-height 18px). A bullet that would run onto a
+   third line is shrunk by fitToTwoLines in JS until it fits two, so nothing is
+   ever cut off. The list height is pinned per card in JS (equalizeBulletHeight)
+   so a two-line bullet never makes one card taller than the rest. */
+body.page-home .home-gcard .gc-bullets li{ position:relative; flex-shrink:0; padding-left:16px; font-size:13.5px; line-height:18px; max-height:36px; color:#3a4a56; overflow:hidden; }
+body.page-home .home-gcard .gc-bullets li::before{ content:"\2022"; position:absolute; left:2px; top:0; }
+body.page-home .home-gcard .gc-link{ display:block; text-align:center; margin-top:18px; font-size:14px; font-weight:700; color:#1a6ef5; text-decoration:underline; }
+body.page-home .home-gcard .gc-link:hover{ color:#0f57cc; }
+
+/* How-it-works + sticky map sidebar */
+body.page-home .home-layout{ max-width:900px; margin:0 auto; padding:60px 24px 8px; display:flex; gap:34px; align-items:flex-start; }
+body.page-home .home-main{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:14px; }
+body.page-home .home-hiw{ margin-bottom:4px; }
+body.page-home .home-hiw h2{ font-family:'DM Serif Display',serif; font-weight:400; font-size:30px; letter-spacing:-.01em; }
+body.page-home .home-hiw p{ color:var(--hmuted); margin-top:8px; font-size:15.5px; }
+body.page-home .home-step{ display:flex; align-items:center; gap:18px; background:#fff; border:1px solid var(--hline); border-radius:16px; padding:22px 24px; }
+body.page-home .home-step .st-num{ flex:0 0 auto; font-family:'DM Serif Display',serif; font-size:16px; color:#fff; background:var(--navy); width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+body.page-home .home-step h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:19px; margin-bottom:6px; letter-spacing:-.01em; }
+body.page-home .home-step p{ color:var(--hmuted); font-size:14.5px; }
+body.page-home .home-scale{ background:var(--navy); border-radius:16px; padding:24px 26px; color:#fff; margin-top:6px; text-align:center; }
+body.page-home .home-scale h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:18px; letter-spacing:-.01em; }
+body.page-home .home-scale h3 span{ color:#9fb4c2; font-weight:400; font-size:13.5px; display:block; margin-top:6px; }
+body.page-home .home-scale-row{ display:flex; gap:7px; margin-top:16px; }
+body.page-home .home-scale-row .g{ flex:1; text-align:center; }
+body.page-home .home-scale-row .g b{ display:block; border-radius:9px; padding:11px 0; font-family:'DM Serif Display',serif; font-size:20px; color:#fff; }
+body.page-home .home-scale-row .g small{ display:block; margin-top:7px; font-size:11px; color:#9fb4c2; letter-spacing:.04em; }
+
+/* Constituency-map ("National Overview") sidebar */
+body.page-home .home-aside{ flex:0 0 320px; position:sticky; top:88px; }
+body.page-home .home-mapmod{ background:#fff; border:1px solid var(--hline); border-radius:18px; overflow:hidden; box-shadow:0 20px 44px rgba(13,44,64,.12); }
+body.page-home .home-mapmod .mm-h{ padding:20px 20px 4px; text-align:center; }
+body.page-home .home-mapmod .mm-eye{ font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red); }
+body.page-home .home-mapmod h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:21px; margin-top:9px; letter-spacing:-.015em; line-height:1.12; }
+body.page-home .home-mini{ padding:16px 20px 10px; display:flex; justify-content:center; }
+body.page-home .home-mini svg{ display:block; width:150px; height:auto; }
+body.page-home .home-mapmod .mm-desc{ padding:12px 20px 0; color:var(--hmuted); font-size:13.5px; }
+body.page-home .home-mapmod .mm-leg{ padding:14px 20px 0; display:flex; align-items:center; justify-content:center; gap:8px; font-size:11px; color:var(--hmuted); }
+body.page-home .home-mapmod .mm-leg .lz{ display:flex; gap:3px; }
+body.page-home .home-mapmod .mm-leg .lz b{ width:12px; height:12px; border-radius:3px; display:block; }
+body.page-home .home-mapmod .mm-foot{ padding:16px 20px 20px; }
+body.page-home .home-mapmod .mm-go{ display:flex; align-items:center; justify-content:center; gap:8px; background:var(--red); color:#fff; border-radius:11px; padding:13px; font-weight:700; font-size:15px; text-decoration:none; transition:background .15s; }
+body.page-home .home-mapmod .mm-go:hover{ background:#e11b3b; }
+
+/* Closing CTA band */
+body.page-home .home-close{ max-width:900px; margin:56px auto 0; padding:0 24px 76px; }
+body.page-home .home-close-band{ background:linear-gradient(135deg,#cc1133,#a50f29); color:#fff; border-radius:20px; padding:52px 44px; text-align:center; }
+body.page-home .home-close-band h2{ font-family:'DM Serif Display',serif; font-weight:400; font-size:clamp(28px,4vw,38px); letter-spacing:-.015em; text-wrap:balance; }
+body.page-home .home-close-band p{ margin:14px auto 0; max-width:46ch; color:#ffdbe2; font-size:17px; }
+body.page-home .home-close-band .home-btn-white{ background:#fff; color:var(--red); margin-top:26px; }
+body.page-home .home-close-band .home-btn-white:hover{ background:#ffe9ee; }
+
+@media (max-width:820px){
+  body.page-home .home-hero{ padding:44px 0 52px; }
+  body.page-home .home-hero-in{ grid-template-columns:1fr; gap:32px; padding:0 18px; }
+  body.page-home .home-hero p{ font-size:16px; }
+  body.page-home .home-layout{ flex-direction:column; padding:40px 18px 4px; gap:22px; }
+  body.page-home .home-aside{ position:static; order:-1; flex:1 1 auto; width:100%; }
+  body.page-home .home-hiw h2{ font-size:25px; }
+  body.page-home .home-scale-row{ gap:5px; }
+  body.page-home .home-scale-row .g b{ font-size:17px; padding:9px 0; }
+  body.page-home .home-close{ padding:0 18px 56px; margin-top:44px; }
+  body.page-home .home-close-band{ padding:38px 24px; }
+}
+/* Phones use tap-left/right on the card instead of the flanking arrows. */
+@media (max-width:700px){
+  body.page-home .gc-nav{ display:none; }
+}

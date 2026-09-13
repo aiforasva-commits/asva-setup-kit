@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - AI Safety Voter Alliance</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:description" content="We've graded every UK MP on AI safety. See what mark your MP got and pledge your vote, to turn quiet concern into real pressure." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - AI Safety Voter Alliance" />
+  <meta name="twitter:description" content="We've graded every UK MP on AI safety. See what mark your MP got and pledge your vote, to turn quiet concern into real pressure." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="We've graded every UK MP on AI safety. See what mark your MP got and pledge your vote, to turn quiet concern into real pressure." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "ASVA - AI Safety Voter Alliance",
+    "alternateName": "AI Safety Voter Alliance",
+    "url": "https://aisafetyvoteralliance.co.uk/",
+    "logo": "https://aisafetyvoteralliance.co.uk/ASVA_Logo.png",
+    "description": "We've graded every UK MP on AI safety. See what mark your MP got and pledge your vote, to turn quiet concern into real pressure.",
+    "email": "contact@aisafetyvoteralliance.co.uk",
+    "areaServed": "GB"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ASVA - AI Safety Voter Alliance",
+    "url": "https://aisafetyvoteralliance.co.uk/"
+  }
+  </script>
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-home" data-nav-title="Welcome">
+
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────── -->
+<section class="home-hero">
+  <div class="home-hero-in">
+    <div class="home-hero-copy">
+      <h1>Make AI safety an issue they <em>can&rsquo;t ignore.</em></h1>
+      <p>We&rsquo;ve graded every MP on AI safety. See what mark your MP got and pledge your vote, to turn quiet concern into real pressure.</p>
+      <div class="home-btns">
+        <a class="home-btn home-btn-ghost" href="scorecard.html">Find your MP&rsquo;s grade</a>
+        <a class="home-btn home-btn-red" href="pledge.html">Sign the Pledge</a>
+      </div>
+      <p class="home-hero-why">New here? <a href="why-ai-safety.html">Why AI safety matters</a></p>
+    </div>
+
+    <!-- Live showcase: a real rated MP, cycling through five different grades.
+         Prev/next arrows (desktop) flank the card; on mobile a tap on the far
+         left/right of the card steps back/forward. -->
+    <div class="home-gcard-wrap" id="home-gcard-wrap" hidden>
+      <button class="gc-nav gc-prev" id="gc-prev" type="button" aria-label="Previous MP">&lsaquo;</button>
+      <div class="home-gcard" id="home-gcard">
+        <div class="gc-fade" id="gc-fade">
+          <div class="gc-top">
+            <div class="gc-who"><span class="gc-name" id="gc-name">&mdash;</span><span class="gc-const" id="gc-const">&mdash;</span></div>
+            <div class="gc-badge" id="gc-badge">&mdash;</div>
+          </div>
+          <ul class="gc-bullets" id="gc-bullets"></ul>
+          <a class="gc-link" id="gc-link" href="scorecard.html">View full scorecard</a>
+        </div>
+      </div>
+      <button class="gc-nav gc-next" id="gc-next" type="button" aria-label="Next MP">&rsaquo;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── How ASVA works + National Overview sidebar ────────────────────── -->
+<div class="home-layout">
+  <div class="home-main">
+    <div class="home-hiw">
+      <h2>How ASVA works:</h2>
+    </div>
+    <div class="home-step"><div class="st-num">1</div><div><h3>We grade every MP</h3><p>All 650 MPs are graded A to F on their AI safety record, from what they&rsquo;ve said to how they&rsquo;ve voted. This is backed by evidence you can see for yourself.</p></div></div>
+    <div class="home-step"><div class="st-num">2</div><div><h3>You pledge your vote</h3><p>Sign in two minutes, saying that this grade will affect how you vote. No expertise needed.</p></div></div>
+    <div class="home-step"><div class="st-num">3</div><div><h3>MPs feel the pressure</h3><p>Every MP will see that, in their own constituency, there are votes that depend directly on their AI safety record.</p></div></div>
+    <div class="home-scale">
+      <h3>One clear grade, A to F.</h3>
+      <div class="home-scale-row">
+        <div class="g"><b style="background:#2D5A3D">A</b></div>
+        <div class="g"><b style="background:#4CAF73">B</b></div>
+        <div class="g"><b style="background:#A8D5B0">C</b></div>
+        <div class="g"><b style="background:#F2A0A0">D</b></div>
+        <div class="g"><b style="background:#D94040">E</b></div>
+        <div class="g"><b style="background:#8B1A1A">F</b></div>
+      </div>
+    </div>
+  </div>
+  <aside class="home-aside">
+    <div class="home-mapmod">
+      <div class="mm-h">
+        <div class="mm-eye">The National Overview</div>
+        <h3>See how the whole country scores</h3>
+      </div>
+      <div class="home-mini" id="home-minimap" aria-hidden="true"></div>
+      <p class="mm-desc">Every constituency, coloured by its MP&rsquo;s grade. Find your area, spot the marginal seats and see where a pledge goes furthest.</p>
+      <div class="mm-foot"><a class="mm-go" href="overview.html">Explore the map</a></div>
+    </div>
+  </aside>
+</div>
+
+<!-- ── Closing CTA ──────────────────────────────────────────────────── -->
+<section class="home-close">
+  <div class="home-close-band">
+    <h2>Send the strongest signal you can.</h2>
+    <a class="home-btn home-btn-white" href="pledge.html">Sign the Pledge</a>
+  </div>
+</section>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+<script>
+  (function(){
+    // ── Decorative honeycomb teasing the National Overview map ───────────────
+    // A fixed five-hex cluster: a column of two flat-top hexes, tessellating
+    // with another column of two, tessellating with a single hex. One A, one F,
+    // one C, one D and one grey, shuffled each load, with a slight gap between
+    // hexes. Purely illustrative.
+    function hexPtsFlat(cx, cy, r){
+      var dy = r * 0.8660254; // r*√3/2, half the flat-to-flat height
+      return [ [cx + r, cy], [cx + r/2, cy + dy], [cx - r/2, cy + dy],
+               [cx - r, cy], [cx - r/2, cy - dy], [cx + r/2, cy - dy] ]
+             .map(function(p){ return p[0].toFixed(2) + ',' + p[1].toFixed(2); }).join(' ');
+    }
+    function fillMiniMap(){
+      var m = document.getElementById('home-minimap');
+      if(!m) return;
+      var R = 26, rD = 24, h = R * 0.8660254;              // h = half-row offset (drawn gap left by rD < R)
+      var colX = 1.5 * R, rowY = 2 * h, x0 = R, yA = 3 * h; // yA keeps the highest hex clear of the top
+      var centres = [
+        [x0, yA], [x0, yA + rowY],                                 // column of two (lowest)
+        [x0 + colX, yA - h], [x0 + colX, yA - h + rowY],           // tessellating column of two, stepped up
+        [x0 + 2 * colX, yA]                                        // single hex nestled between the middle pair
+      ];
+      var cols = ['#2D5A3D', '#8B1A1A', '#A8D5B0', '#F2A0A0', '#c9ced3']; // A, F, C, D, grey
+      for(var i = cols.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = cols[i]; cols[i] = cols[j]; cols[j] = t; }
+      var polys = centres.map(function(c, i){ return '<polygon points="' + hexPtsFlat(c[0], c[1], rD) + '" fill="' + cols[i] + '"/>'; }).join('');
+      // viewBox tightened to the hexes' visible extent so the SVG's edges are the hexes' edges.
+      m.innerHTML = '<svg viewBox="2 24.25 126 109.12" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">' + polys + '</svg>';
+      fitMiniToHeading();
+    }
+
+    // Size the honeycomb so its visible edges line up with the widest line of the
+    // heading above it (e.g. "See how the whole country").
+    function fitMiniToHeading(){
+      var svg = document.querySelector('#home-minimap svg');
+      var h3 = document.querySelector('.home-mapmod .mm-h h3');
+      var mini = document.getElementById('home-minimap');
+      if(!svg || !h3 || !mini) return;
+      var range = document.createRange();
+      range.selectNodeContents(h3);
+      var rects = range.getClientRects(), w = 0;
+      for(var i = 0; i < rects.length; i++){ if(rects[i].width > w) w = rects[i].width; }
+      if(!w) return;
+      var maxW = mini.clientWidth - 40;                    // stay within the module's side padding
+      if(maxW > 0 && w > maxW) w = maxW;
+      svg.style.width = Math.round(w) + 'px';
+    }
+
+    // ── Live MP showcase card ────────────────────────────────────────────────
+    // Cycles through five real, confirmed ratings — each a different grade and
+    // each with at least three evidence bullets. A ~1s crossfade between MPs;
+    // pauses on hover; prev/next arrows on desktop; on mobile a tap on the far
+    // left/right of the card steps back/forward.
+    var GRADE_COLOUR = { A:'#2D5A3D', B:'#4CAF73', C:'#A8D5B0', D:'#F2A0A0', E:'#D94040', F:'#8B1A1A', DNR:'#F0D080', '?':'#cccccc' };
+    var GRADE_DISPLAY = { DNR:'?' };                 // "No Response" shows as ? (in yellow)
+    var GRADE_DARK_TEXT = { C:1, D:1, DNR:1, '?':1 }; // light backgrounds need dark text
+    var cards = [], idx = 0, animating = false;
+
+    function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function stop(){ if(window.__homeCardTimer){ clearInterval(window.__homeCardTimer); window.__homeCardTimer = null; } }
+    function start(){ stop(); if(cards.length > 1){ window.__homeCardTimer = setInterval(function(){ fade(1); }, 5000); } }
+
+    // Bullets wrap to at most two tight lines. A one- or two-line bullet is left
+    // as-is; only a bullet whose text would spill onto a THIRD line is shrunk —
+    // just that bullet, until it fits within two lines — so no line is ever cut
+    // off. Card height stays constant across cards via equalizeBulletHeight, so a
+    // two-line bullet never makes one card taller than the rest.
+    var BULLET_LH = 18;                                  // px, matches .gc-bullets li line-height
+    function fitToTwoLines(ul){
+      Array.prototype.forEach.call(ul.children, function(li){
+        li.style.fontSize = '';                          // reset to the CSS base
+        var size = parseFloat(getComputedStyle(li).fontSize) || 13.5;
+        var guard = 0;
+        while(li.scrollHeight > BULLET_LH * 2 + 1 && size > 9 && guard < 40){
+          size -= 0.5; li.style.fontSize = size + 'px'; guard++;
+        }
+      });
+    }
+    function fitBullets(){
+      var ul = document.getElementById('gc-bullets');
+      if(ul) fitToTwoLines(ul);
+    }
+
+    // Pin the bullet list to ONE fixed height — the tallest card's fitted bullets
+    // at the current width — so the card never resizes as it rotates. Measured
+    // off-screen with the same two-line fit applied; the list is a centred flex
+    // column, so shorter cards sit neatly in the middle of that space. Re-run on
+    // load, font load, resize and when the local-MP card is injected.
+    function equalizeBulletHeight(){
+      var real = document.getElementById('gc-bullets');
+      if(!real || !cards.length) return;
+      real.style.height = '';                            // release the pin to read the natural width
+      var w = real.clientWidth;
+      if(!w) return;
+      var probe = document.createElement('ul');
+      probe.className = real.className;                  // inherit .gc-bullets styling (flex, gap, line-height)
+      probe.style.cssText = 'position:absolute; left:-9999px; top:0; visibility:hidden; height:auto; min-height:0; width:' + w + 'px;';
+      real.parentNode.appendChild(probe);
+      var max = 0;
+      cards.forEach(function(d){
+        probe.innerHTML = d.bullets.slice(0, 3).map(function(b){ return '<li>' + esc(b) + '</li>'; }).join('');
+        fitToTwoLines(probe);                            // same shrink the real list gets
+        if(probe.offsetHeight > max){ max = probe.offsetHeight; }
+      });
+      probe.parentNode.removeChild(probe);
+      if(max){ real.style.height = max + 'px'; }
+    }
+
+    function paint(){
+      var name = document.getElementById('gc-name');
+      if(!name || !cards.length) return;
+      var d = cards[idx];
+      name.textContent = d.mp_name;
+      document.getElementById('gc-const').textContent = d.constituency;
+      var badge = document.getElementById('gc-badge');
+      badge.textContent = GRADE_DISPLAY[d.grade] || d.grade;
+      badge.style.background = GRADE_COLOUR[d.grade] || '#0b2e42';
+      badge.style.color = GRADE_DARK_TEXT[d.grade] ? '#333' : '#fff';
+      document.getElementById('gc-bullets').innerHTML = d.bullets.slice(0,3).map(function(b){ return '<li>' + esc(b) + '</li>'; }).join('');
+      document.getElementById('gc-link').href = 'scorecard.html?constituency=' + encodeURIComponent(d.constituency);
+      fitBullets();
+    }
+
+    var fadeTimer = null;
+    function clearFade(){ if(fadeTimer){ clearTimeout(fadeTimer); fadeTimer = null; } }
+
+    // Auto-advance: crossfade the card's contents (the box itself stays white).
+    function fade(dir){
+      var f = document.getElementById('gc-fade');
+      if(!f || cards.length < 2 || animating) return;
+      animating = true;
+      f.classList.add('is-fading');
+      fadeTimer = setTimeout(function(){
+        idx = (idx + dir + cards.length) % cards.length;
+        paint();
+        f.classList.remove('is-fading');
+        fadeTimer = setTimeout(function(){ animating = false; fadeTimer = null; }, 500);
+      }, 500);
+    }
+    // Immediate step, no animation (arrow click / mobile tap); interrupts a fade.
+    function swap(dir){
+      if(cards.length < 2) return;
+      clearFade();
+      var f = document.getElementById('gc-fade');
+      if(f) f.classList.remove('is-fading');
+      animating = false;
+      idx = (idx + dir + cards.length) % cards.length;
+      paint();
+    }
+    // Manual step: move immediately and restart the auto-advance countdown.
+    function manual(dir){ swap(dir); start(); }
+
+    // One random MP from each of up to five distinct grades.
+    function pickFive(ratings){
+      var byGrade = {};
+      Object.keys(ratings).forEach(function(cons){
+        var r = ratings[cons] || {};
+        var g = (r.grade || '').trim().toUpperCase();
+        if(!GRADE_COLOUR[g] || g === '?' || g === 'DNR') return;  // showcase cycles A–F only
+        var bullets = Array.isArray(r.bullets) ? r.bullets.filter(function(b){ return (b || '').trim(); }) : [];
+        if(bullets.length < 3) return;
+        (byGrade[g] = byGrade[g] || []).push({ constituency: cons, mp_name: r.mp_name, grade: g, bullets: bullets });
+      });
+      var grades = Object.keys(byGrade);
+      for(var i = grades.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = grades[i]; grades[i] = grades[j]; grades[j] = t; }
+      var chosen = [];
+      for(var k = 0; k < grades.length && chosen.length < 5; k++){
+        var arr = byGrade[grades[k]];
+        chosen.push(arr[Math.floor(Math.random() * arr.length)]);
+      }
+      return chosen;
+    }
+
+    // Best-effort: ask the server for the visitor's likely constituency (from
+    // their approximate IP location) and slot that MP in as the second card so a
+    // passer-by might catch their own MP. Drawn regardless of how much info the
+    // MP has: a confirmed rating if there is one, otherwise the sheet data (the
+    // same source the scorecard uses), so it shows for any known constituency.
+    function normName(s){ return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+    function findKey(map, cons){ var nc = normName(cons), key = null; Object.keys(map || {}).forEach(function(k){ if(!key && normName(k) === nc) key = k; }); return key; }
+    function ratingCard(key, r){
+      if(!r || !r.mp_name) return null;
+      var bl = Array.isArray(r.bullets) ? r.bullets.filter(function(b){ return (b || '').trim(); }) : [];
+      return { constituency: key, mp_name: r.mp_name, grade: (r.grade || '').trim().toUpperCase(), bullets: bl };
+    }
+    function sheetCard(cons, data){
+      if(!data || !data.candidates) return null;
+      var key = findKey(data.candidates, cons);
+      if(!key) return null;
+      var list = data.candidates[key] || [], mp = null;
+      for(var i = 0; i < list.length; i++){ if(list[i].current_mp){ mp = list[i]; break; } }
+      if(!mp) mp = list[0];
+      if(!mp || !mp.name) return null;
+      var bl = [];
+      for(var n = 1; n <= 5; n++){ var t = (mp['bullet' + n] || '').trim(); if(t) bl.push(t); }
+      return { constituency: key, mp_name: mp.name, grade: (mp.grade || '').trim().toUpperCase(), bullets: bl };
+    }
+    function placeLocal(local){
+      if(!local) return;
+      var nc = normName(local.constituency);
+      cards = cards.filter(function(c){ return normName(c.constituency) !== nc; });   // drop any existing copy
+      cards.splice(Math.min(1, cards.length), 0, local);                              // insert at position 2
+      equalizeBulletHeight();                                                         // account for the injected card
+      if(cards.length > 1) start();                                                   // ensure the cycle runs
+    }
+    function injectLocalMP(ratings){
+      fetch('/api/local-mp', { cache: 'no-store' })
+        .then(function(res){ return res.ok ? res.json() : {}; })
+        .then(function(d){
+          var cons = d && d.constituency;
+          if(!cons) return;
+          var key = findKey(ratings, cons);
+          if(key){ placeLocal(ratingCard(key, ratings[key])); return; }
+          // Not in the confirmed ratings — fall back to the sheet data.
+          fetch('/data.json').then(function(r){ return r.ok ? r.json() : null; })
+            .then(function(data){ placeLocal(sheetCard(cons, data)); })
+            .catch(function(){ /* best-effort only */ });
+        })
+        .catch(function(){ /* best-effort only */ });
+    }
+
+    function initCard(){
+      var wrap = document.getElementById('home-gcard-wrap');
+      var card = document.getElementById('home-gcard');
+      if(!wrap || !card) return;
+      wrap.addEventListener('mouseenter', stop);       // pause while hovered
+      wrap.addEventListener('mouseleave', start);
+      var prevBtn = document.getElementById('gc-prev');
+      var nextBtn = document.getElementById('gc-next');
+      if(prevBtn) prevBtn.addEventListener('click', function(){ manual(-1); });
+      if(nextBtn) nextBtn.addEventListener('click', function(){ manual(1); });
+      card.addEventListener('click', function(e){
+        if(e.target.closest('a')) return;              // let the scorecard link work
+        if(window.innerWidth > 700) return;            // tap-to-cycle is mobile only
+        var rect = card.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        if(x < rect.width * 0.30){ manual(-1); }
+        else if(x > rect.width * 0.70){ manual(1); }
+      });
+      fetch('/api/current-ratings', { cache: 'no-store' })
+        .then(function(res){ return res.ok ? res.json() : { ratings: {} }; })
+        .then(function(data){
+          var ratings = data.ratings || {};
+          cards = pickFive(ratings);
+          if(!cards.length){ wrap.hidden = true; return; }
+          idx = 0; wrap.hidden = false; paint(); equalizeBulletHeight(); start();
+          injectLocalMP(ratings);
+        })
+        .catch(function(){ wrap.hidden = true; });
+    }
+
+    function boot(){
+      if(document.body && document.body.dataset.homeBooted === '1') return;
+      if(document.body) document.body.dataset.homeBooted = '1';
+      cards = []; idx = 0; animating = false;
+      fillMiniMap();
+      initCard();
+      // Re-measure once the web fonts are in, since text widths change with them.
+      if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ fitMiniToHeading(); fitBullets(); equalizeBulletHeight(); }); }
+    }
+
+    if(!window.__homeBound){
+      window.__homeBound = true;
+      document.addEventListener('turbo:load', boot);
+      document.addEventListener('turbo:before-cache', stop);
+      var rzT;
+      window.addEventListener('resize', function(){ clearTimeout(rzT); rzT = setTimeout(function(){ fitBullets(); fitMiniToHeading(); equalizeBulletHeight(); }, 150); });
+    }
+    boot();
+  })();
+</script>
+
+</body>
+</html>

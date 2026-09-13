@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /goldenpath
+Disallow: /api/
+
+Sitemap: https://aisafetyvoteralliance.co.uk/sitemap.xml

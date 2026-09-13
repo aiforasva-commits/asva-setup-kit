@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASVA - Sign the Pledge</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ASVA - AI Safety Voter Alliance" />
+  <meta property="og:title" content="ASVA - Sign the Pledge" />
+  <meta property="og:description" content="Sign the pledge to factor AI safety into how you vote at the next election." />
+  <meta property="og:url" content="https://aisafetyvoteralliance.co.uk/pledge" />
+  <meta property="og:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="ASVA logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ASVA - Sign the Pledge" />
+  <meta name="twitter:description" content="Sign the pledge to factor AI safety into how you vote at the next election." />
+  <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
+  <meta name="description" content="Sign the pledge to factor AI safety into how you vote at the next election." />
+  <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/pledge" />
+  <meta name="turbo-cache-control" content="no-cache">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script type="module" src="turbo.js"></script>
+</head>
+<body class="page-pledge">
+
+<!-- Site navigation -->
+<nav class="sitenav" id="sitenav" data-turbo-permanent>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
+  <div class="sitenav-links" id="sitenavLinks">
+    <a class="sitenav-welcome" href="index.html">Welcome</a>
+    <a href="why-ai-safety.html">Why AI Safety</a>
+    <span class="sitenav-sep">|</span>
+    <a href="pledge.html">Sign the Pledge</a>
+    <span class="sitenav-sep">|</span>
+    <a href="overview.html">National Overview</a>
+    <span class="sitenav-sep">|</span>
+    <a href="scorecard.html">Local Scorecard</a>
+    <span class="sitenav-sep">|</span>
+    <a href="founding-statement.html">Founding Statement</a>
+    <span class="sitenav-sep">|</span>
+    <a href="about.html">About Us</a>
+  </div>
+  <div class="sitenav-right">
+    <a href="share.html" class="sitenav-share-link" aria-label="Share this site" title="Share this site"><svg class="sitenav-share-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg></a>
+  </div>
+  <button class="sitenav-toggle" id="sitenavToggle" type="button" aria-label="Show menu" aria-expanded="false" aria-controls="sitenavLinks"></button>
+  <script>
+    (function(){
+      function normPage(p){ return (p || '').split('?')[0].split('#')[0].split('/').pop().replace(/\.html$/, '') || 'index'; }
+      var nav = document.getElementById('sitenav');
+      var toggle = document.getElementById('sitenavToggle');
+      var currentEl = document.getElementById('sitenavCurrent');
+      function closeMenu(){ if(nav) nav.classList.remove('open'); if(toggle) toggle.setAttribute('aria-expanded','false'); }
+      function setActive(page){
+        var current = normPage(page || location.pathname);
+        var activeText = '';
+        document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){
+          var on = normPage(a.getAttribute('href')) === current;
+          a.classList.toggle('active', on);
+          if(on) activeText = a.textContent;
+        });
+        if(!activeText){ var nt = document.body.getAttribute('data-nav-title'); if(nt){ activeText = nt; } else { var h = document.querySelector('h1'); if(h) activeText = h.textContent.trim(); } }
+        if(currentEl) currentEl.textContent = activeText;
+      }
+      if(toggle){ toggle.addEventListener('click', function(){ var open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); }); }
+      document.querySelectorAll('#sitenav .sitenav-links a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+      setActive();
+      document.addEventListener('DOMContentLoaded', function(){ setActive(); });
+      document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
+      document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+    })();
+  </script>
+</nav>
+
+<div class="app">
+
+  <!-- Hero -->
+  <div class="hero" id="pledgeHero" style="display:block;text-align:center;">
+    <div class="hero-text">
+      <h1>Sign the Pledge</h1>
+      <p>Become a member of ASVA and help push for responsible AI policy.</p>
+    </div>
+  </div>
+
+  <!-- Pledge level selection -->
+  <div class="pledge-card" id="pledgeCard">
+    <div class="pledge-header">
+      <div class="pledge-header-text">
+      </div>
+    </div>
+    <div class="pledge-body">
+      <p>I am a registered UK voter. I recognise that frontier AI poses catastrophic risks.</p>
+      <div class="radio-group">
+        <label class="radio-card" style="align-items:center;">
+          <input type="radio" name="pledge_level" value="L1" />
+          <div class="radio-card-text">
+            <div class="radio-card-desc"><strong>I pledge to vote for AI safety</strong>, guided by ASVA's recommendation.</div>
+          </div>
+        </label>
+        <label class="radio-card" style="align-items:center;">
+          <input type="radio" name="pledge_level" value="L2" />
+          <div class="radio-card-text">
+            <div class="radio-card-desc"><strong>I pledge to meaningfully consider</strong> ASVA's recommendations when voting.</div>
+          </div>
+        </label>
+      </div>
+      <div class="field-error" id="err-pledge_level" style="margin-top:8px;">Please select a pledge.</div>
+    </div>
+  </div>
+
+  <!-- Member form — revealed after pledge ticked -->
+  <div id="memberForm" style="opacity:0; pointer-events:none; transition:opacity .35s;">
+
+    <div class="form-card" id="formCard">
+
+      <!-- Personal details -->
+      <div class="form-section">
+        <div class="section-label">Your Details</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First name <span class="req">*</span></label>
+            <input type="text" id="firstName" autocomplete="given-name" />
+            <div class="field-error" id="err-firstName">Please enter your first name.</div>
+          </div>
+          <div class="field">
+            <label for="lastName">Last name <span class="req">*</span></label>
+            <input type="text" id="lastName" autocomplete="family-name" />
+            <div class="field-error" id="err-lastName">Please enter your last name.</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Email address <span class="req">*</span></label>
+          <input type="email" id="email" autocomplete="email" />
+          <div class="field-error" id="err-email">Please enter a valid email address.</div>
+        </div>
+      </div>
+
+      <!-- Honeypot — hidden from real users, bots fill it in -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <!-- Your Constituency -->
+      <div class="form-section">
+        <div class="section-label">Your Constituency</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button type="button" id="modeAddrBtn" style="flex:1;padding:10px 14px;border-radius:14px;border:2px solid var(--accent,#c0392b);background:#fce4e4;color:var(--ink,#1a1a1a);font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;">Enter my address</button>
+          <button type="button" id="modeConstBtn" style="flex:1;padding:10px 14px;border-radius:14px;border:2px solid var(--line,#e0e0e0);background:#fff;color:var(--ink,#1a1a1a);font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;">Select my constituency</button>
+        </div>
+
+        <!-- Address panel -->
+        <div id="addressPanel">
+          <div class="field">
+            <label for="addressLine1">Address line 1 <span class="req">*</span></label>
+            <input type="text" id="addressLine1" autocomplete="address-line1" />
+            <div class="field-error" id="err-addressLine1">Please enter your address.</div>
+          </div>
+          <div class="field">
+            <label for="addressLine2">Address line 2 <span class="hint">(optional)</span></label>
+            <input type="text" id="addressLine2" autocomplete="address-line2" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="city">Town / City</label>
+              <input type="text" id="city" autocomplete="address-level2" />
+            </div>
+            <div class="field">
+              <label for="postcode">Postcode <span class="req">*</span></label>
+              <input type="text" id="postcode" maxlength="8" autocomplete="postal-code" style="width:100%;box-sizing:border-box;" />
+              <div class="field-error" id="err-postcode">Please enter your postcode.</div>
+            </div>
+          </div>
+          <div class="constituency-detected" id="constituencyDetected" style="margin-top:4px;">
+            <span id="detectedName"></span>
+          </div>
+        </div>
+
+        <!-- Constituency panel -->
+        <div id="constituencyPanel" style="display:none;">
+          <div class="field">
+            <label for="constituencyFilter">Search for your constituency <span class="req">*</span></label>
+            <input type="text" id="constituencyFilter" placeholder="Type to filter…" autocomplete="off"
+              style="width:100%;box-sizing:border-box;" />
+            <div id="constituencyDropdown"
+              style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;max-height:340px;overflow-y:auto;margin-top:4px;box-shadow:0 4px 16px rgba(0,0,0,.12);">
+            </div>
+            <div class="field-error" id="err-constituencyFilter">Please select a constituency.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact preference -->
+      <div class="form-section" id="contactSection" style="display:none;">
+        <div class="section-label">Contact Preference <span style="color:var(--F);font-weight:700">*</span></div>
+        <p class="contact-intro">As part of signing, you'll receive occasional updates from ASVA to help keep you and your MP accountable to your pledge. You can additionally choose to receive AI safety news.</p>
+        <div class="radio-group">
+          <label class="radio-card radio-card--rec">
+            <div class="radio-card-main">
+              <input type="radio" name="contact" value="urgent_and_updates" />
+              <div class="radio-card-text">
+                <div class="radio-card-desc">Send me updates from ASVA and <span style="text-decoration:none;color:#1a6ef5;cursor:default;position:relative;white-space:nowrap;" id="aiSafetyNewsSpan">AI safety news</span>.</div>
+              </div>
+            </div>
+            <div class="radio-card-badge-wrap"><div class="radio-card-badge">Recommended</div></div>
+          </label>
+          <label class="radio-card" style="align-items:center;">
+            <input type="radio" name="contact" value="urgent_only" />
+            <div class="radio-card-text">
+              <div class="radio-card-desc">Send me updates from ASVA only.</div>
+            </div>
+          </label>
+        </div>
+        <div class="field-error" id="err-contact" style="margin-top:8px;">Please select a contact preference.</div>
+      </div>
+
+      <!-- Data privacy notice -->
+      <div class="form-section" id="privacySection" style="display:none;">
+        <div class="section-label">Data Privacy Notice <span style="color:var(--F);font-weight:700">*</span></div>
+        <label class="privacy-label">
+          <input type="checkbox" id="privacyCheck" />
+          <div class="privacy-label-text">
+            I have read and accept the <a href="privacy.html" target="_blank" id="privacyLink">Data Privacy Notice</a>.
+          </div>
+        </label>
+        <div class="field-error" id="err-privacy" style="margin-top:8px;">You must accept the Data Privacy Notice to continue.</div>
+      </div>
+
+      <!-- Turnstile bot challenge -->
+      <div class="form-section" id="turnstileSection" style="display:none;padding-bottom:8px;">
+        <div style="display:flex;justify-content:center;"><div class="cf-turnstile" data-sitekey="0x4AAAAAAC-cqDIJPgoSaXFu" data-theme="light"
+          data-callback="onTurnstileSuccess"
+          data-expired-callback="onTurnstileExpired"
+          data-timeout-callback="onTurnstileExpired"
+          data-error-callback="onTurnstileError"></div></div>
+        <div class="field-error" id="err-turnstile" style="margin-top:6px;">Please complete the security check.</div>
+      </div>
+
+      <!-- Submit buttons -->
+      <div class="form-section" id="submitSection" style="display:none;">
+        <div class="btn-row">
+          <button class="btn-primary" id="submitBtn" type="button">
+            <span class="spinner" id="spinner1"></span>
+            <span id="submitLabel">Sign the Pledge</span>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /formCard -->
+
+    <!-- Success screen -->
+    <div class="form-card" id="successCard" style="display:none;">
+      <div class="success-screen">
+        <div class="success-icon"></div>
+        <h2 id="successTitle">Thank you for signing!</h2>
+        <p id="successMsg">You're now part of the ASVA movement. We'll be in touch based on your contact preference.</p>
+        <div id="scorecardBtnRow" class="btn-row" style="justify-content:center;">
+          <a id="scorecardLink" href="scorecard.html" class="btn-primary" style="text-decoration:none; flex:0; min-width:auto; font-size:20px; padding:18px 28px;">View the Scorecard →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /memberForm -->
+
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<!-- Privacy modal -->
+<!-- KEEP IN SYNC: this notice is duplicated in privacy.html — update both copies together. -->
+<div class="modal-overlay" id="privacyModal" role="dialog" aria-modal="true" aria-label="Data Privacy Notice">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+    <h1 style="text-align:center">Data Privacy Notice</h1>
+
+    <h2>1. Who we are</h2>
+    <p>The AI Safety Voter Alliance (ASVA) is a campaign organisation dedicated to promoting responsible AI governance in the United Kingdom. References to "we", "us" or "our" refer to ASVA.</p>
+
+    <h2>2. What data we collect</h2>
+    <p>When you sign the pledge, we collect your:</p>
+    <ul>
+      <li>First name and last name</li>
+      <li>Email address</li>
+      <li>Home address including postcode (if given)</li>
+      <li>Parliamentary constituency</li>
+      <li>Pledge level and contact preference</li>
+    </ul>
+    <p>When you load the homepage, we use your IP address to estimate your constituency via postcodes.io. This is used only to show you the scorecard for your estimated MP and is not stored or in any way retained.</p>
+    <p>Our website also uses Cloudflare for security purposes, which may involve processing technical data such as your IP address. Cloudflare is based in the United States; where data is transferred internationally, this is done under UK GDPR-approved safeguards (the UK Addendum to the EU Standard Contractual Clauses, or the UK extension to the EU-US Data Privacy Framework).</p>
+
+    <h2>3. Why we collect it</h2>
+    <ul>
+      <li>To record your pledge and count members by constituency</li>
+      <li>To send you occasional essential updates from ASVA, and, if you opt in, to share your name and email address with our partner campaign organisations (<strong>ControlAI</strong> and <strong>PauseAI</strong>) so they can send you AI safety news</li>
+      <li>To report aggregate (anonymised) membership numbers publicly</li>
+    </ul>
+
+    <h2>4. Legal basis</h2>
+    <p>We process your data on the basis of your explicit consent. Essential ASVA updates are a core part of membership and cannot be individually opted out of, but you may withdraw consent to all processing at any time by notifying us that consent is withdrawn. This can be done by emailing your withdrawal of consent to <a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>, which will remove you from our records.</p>
+
+    <h2>5. How we store and share your data</h2>
+    <p>Your data is stored securely in an encrypted database. We do not sell or rent your data.</p>
+    <p>If you opt in to receive AI safety news, we share your name and email address with our partner campaign organisations; <strong>ControlAI</strong> and <strong>PauseAI</strong>, solely so they can send you their newsletters. These partners act as independent data controllers and process your data under their own privacy policies. You can withdraw this consent at any time (see "Legal basis" above), and we will ask them to remove you. We do not otherwise share your data with third parties except where required by law.</p>
+
+    <h2>6. Retention</h2>
+    <p>We retain your data for as long as you remain a member, or until you request deletion.</p>
+
+    <h2>7. Your rights</h2>
+    <p>Under UK GDPR you have the right to access, correct, or delete your data, restrict or object to its processing, and request it in a portable format. You also have the right to lodge a complaint with the ICO.</p>
+
+    <h2>8. Contact</h2>
+    <p>For any queries, email <a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>.</p>
+
+    <div class="modal-accept-bar">
+      <p>By clicking Accept you confirm you have read and understood this notice.</p>
+      <button class="btn-accept" id="modalAccept">Accept</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  // ── Constituency list — loaded from data.json so the sheet stays the single
+  //    source of truth (same source as the scorecard and map) ─────────────────
+  let ALL_CONSTITUENCIES = [];
+  let constituenciesFailed = false;
+  (async function loadConstituencies() {
+    try {
+      const res = await fetch('/data.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      ALL_CONSTITUENCIES = (data.constituencies || []).map(c => c.name);
+      if (!ALL_CONSTITUENCIES.length) throw new Error('empty constituency list');
+    } catch (e) {
+      constituenciesFailed = true;
+      console.warn('Could not load constituency list:', e);
+    }
+  })();
+
+  // ── Address mode toggle ───────────────────────────────────────────────────
+  let addressMode = 'address'; // 'address' | 'constituency'
+  let selectedConstituency = '';
+
+  const modeAddrBtn   = document.getElementById('modeAddrBtn');
+  const modeConstBtn  = document.getElementById('modeConstBtn');
+  const addressPanel  = document.getElementById('addressPanel');
+  const constituencyPanel = document.getElementById('constituencyPanel');
+
+  const BASE_BTN    = 'flex:1;padding:10px 14px;border-radius:14px;border:2px solid;font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;color:var(--ink,#1a1a1a);';
+  const ACTIVE_STYLE   = BASE_BTN + 'border-color:var(--accent,#c0392b);background:#fce4e4;';
+  const INACTIVE_STYLE = BASE_BTN + 'border-color:var(--line,#e0e0e0);background:#fff;';
+  const HOVER_STYLE    = BASE_BTN + 'border-color:#e8a0a8;background:#fff5f5;';
+
+  function applyModeStyles(activeBtn, inactiveBtn) {
+    activeBtn.style.cssText   = ACTIVE_STYLE;
+    inactiveBtn.style.cssText = INACTIVE_STYLE;
+    inactiveBtn.onmouseenter = () => { if (inactiveBtn.style.cssText !== ACTIVE_STYLE) inactiveBtn.style.cssText = HOVER_STYLE; };
+    inactiveBtn.onmouseleave = () => { if (inactiveBtn.style.cssText !== ACTIVE_STYLE) inactiveBtn.style.cssText = INACTIVE_STYLE; };
+    activeBtn.onmouseenter = null;
+    activeBtn.onmouseleave = null;
+  }
+
+  function setAddressMode(mode) {
+    addressMode = mode;
+    if (mode === 'address') {
+      applyModeStyles(modeAddrBtn, modeConstBtn);
+      addressPanel.style.display = '';
+      constituencyPanel.style.display = 'none';
+    } else {
+      applyModeStyles(modeConstBtn, modeAddrBtn);
+      addressPanel.style.display = 'none';
+      constituencyPanel.style.display = '';
+      setTimeout(() => constituencyFilter.focus(), 50);
+    }
+    checkProgressiveReveal();
+    setTimeout(() => {
+      const panel = mode === 'address' ? addressPanel : constituencyPanel;
+      const navH = document.querySelector('.sitenav')?.offsetHeight || 60;
+      const bottom = panel.getBoundingClientRect().bottom + window.scrollY + 16;
+      window.scrollTo({ top: bottom - window.innerHeight + navH, behavior: 'smooth' });
+    }, 50);
+  }
+
+  // initial hover wiring for inactive button (modeConstBtn starts inactive)
+  modeConstBtn.onmouseenter = () => { modeConstBtn.style.cssText = HOVER_STYLE; };
+  modeConstBtn.onmouseleave = () => { modeConstBtn.style.cssText = INACTIVE_STYLE; };
+
+  modeAddrBtn.addEventListener('click',  () => setAddressMode('address'));
+  modeConstBtn.addEventListener('click', () => setAddressMode('constituency'));
+
+  // ── Constituency searchable dropdown ──────────────────────────────────────
+  const constituencyFilter   = document.getElementById('constituencyFilter');
+  const constituencyDropdown = document.getElementById('constituencyDropdown');
+
+  function renderDropdown(filter) {
+    const q = filter.toLowerCase();
+    const matches = q ? ALL_CONSTITUENCIES.filter(c => c.toLowerCase().includes(q)) : ALL_CONSTITUENCIES;
+    constituencyDropdown.innerHTML = '';
+    if (!matches.length) {
+      const none = document.createElement('div');
+      none.textContent = constituenciesFailed
+        ? 'Could not load the constituency list. Please use "Enter my address" instead'
+        : (ALL_CONSTITUENCIES.length ? 'No matches' : 'Loading constituency list…');
+      none.style.cssText = 'padding:10px 14px;color:#888;font-size:14px;';
+      constituencyDropdown.appendChild(none);
+    } else {
+      matches.forEach(name => {
+        const item = document.createElement('div');
+        item.textContent = name;
+        item.style.cssText = 'padding:10px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--line);';
+        // Select on BOTH pointerdown and click. pointerdown fires first and its
+        // preventDefault keeps the input focused so the mobile keyboard doesn't
+        // close and reflow the page out from under the finger. click is a
+        // fallback for browsers/in-app webviews where the pointerdown on a
+        // dropdown row can be lost — without it, a tap could silently fail to
+        // select and leave the signer stuck. selectConstituency is idempotent,
+        // so running both is harmless.
+        const pick = e => { e.preventDefault(); selectConstituency(name); };
+        item.addEventListener('pointerdown', pick);
+        item.addEventListener('click', pick);
+        item.addEventListener('mouseover',  () => { item.style.background = '#f0f4ff'; });
+        item.addEventListener('mouseout',   () => { item.style.background = ''; });
+        constituencyDropdown.appendChild(item);
+      });
+    }
+    constituencyDropdown.style.display = 'block';
+  }
+
+  function selectConstituency(name) {
+    selectedConstituency = name;
+    constituencyFilter.value = name;
+    constituencyDropdown.style.display = 'none';
+    clearFieldError('err-constituencyFilter');
+    checkProgressiveReveal();
+  }
+
+  // The constituencies the current filter text could refer to: an exact
+  // (case-insensitive) match wins outright; otherwise every substring match.
+  function constituencyMatches() {
+    const low = constituencyFilter.value.trim().toLowerCase();
+    if (!low) return [];
+    const exact = ALL_CONSTITUENCIES.find(c => c.toLowerCase() === low);
+    if (exact) return [exact];
+    return ALL_CONSTITUENCIES.filter(c => c.toLowerCase().includes(low));
+  }
+
+  // The constituency the user intends — WITHOUT mutating the input (so it is
+  // safe to call on every keystroke for the progressive-reveal gate). It is,
+  // in order of preference: an explicit dropdown selection; text that exactly
+  // matches a constituency; or text that narrows the list to exactly ONE
+  // constituency. That last case is the key robustness fix: a signer who has
+  // typed enough to uniquely identify their seat is honoured even if the
+  // dropdown tap that would normally set `selectedConstituency` was lost —
+  // which happens on some mobile browsers, where tapping a dropdown row can
+  // blur the field, close the keyboard, reflow the page and drop the tap,
+  // leaving the old code with `selectedConstituency` empty, the Submit button
+  // hidden, and no error shown. Address mode has no dropdown, which is why it
+  // kept working while constituency mode silently failed on mobile.
+  function constituencyIntent() {
+    if (selectedConstituency) return selectedConstituency;
+    const m = constituencyMatches();
+    return m.length === 1 ? m[0] : '';
+  }
+
+  // Lock in the intended constituency (on blur and at submit): set
+  // selectedConstituency and normalise the visible text to the full name.
+  // Never called during live typing, so it never fights the cursor.
+  function commitConstituency() {
+    const name = constituencyIntent();
+    if (name) {
+      selectedConstituency = name;
+      if (constituencyFilter.value !== name) constituencyFilter.value = name;
+      clearFieldError('err-constituencyFilter');
+    }
+    return name;
+  }
+
+  // A specific reason the constituency isn't accepted yet, so the signer knows
+  // exactly what to fix rather than a generic "select a constituency". Only
+  // meaningful when commitConstituency() returned '' (no usable selection):
+  //   • nothing typed          → prompt them to type and pick
+  //   • no matching seat       → likely a typo
+  //   • more than one match    → too vague; pick the exact one
+  // (An exact or unique match never reaches here — commitConstituency succeeds.)
+  function constituencyError() {
+    const typed = constituencyFilter.value.trim();
+    if (!typed) return 'Please type your constituency and pick it from the list.';
+    const matches = constituencyMatches();
+    if (matches.length === 0)
+      return `We couldn't find a constituency matching "${typed}". Check the spelling, or type a few letters and choose yours from the list.`;
+    return `"${typed}" matches ${matches.length} constituencies — please pick the exact one from the list.`;
+  }
+
+  constituencyFilter.addEventListener('focus', () => renderDropdown(constituencyFilter.value));
+  constituencyFilter.addEventListener('input', () => {
+    // Typing changes intent: drop any prior explicit selection and let the
+    // reveal gate re-derive it from the text (exact or unique match). Don't
+    // rewrite the value here — that would move the cursor mid-word. Clear any
+    // standing error so it doesn't linger while they're fixing it.
+    selectedConstituency = '';
+    clearFieldError('err-constituencyFilter');
+    renderDropdown(constituencyFilter.value);
+    checkProgressiveReveal();
+  });
+  constituencyFilter.addEventListener('blur', () => {
+    // Defer so a dropdown row tap/click — which fires just after blur — resolves
+    // first (this also gives a slower mobile tap time to land on a row before
+    // the list is hidden). Only then decide whether to flag a problem: if the
+    // field still holds text that doesn't resolve to a single seat, say exactly
+    // why (ambiguous or unrecognised) instead of silently leaving Submit hidden.
+    setTimeout(() => {
+      constituencyDropdown.style.display = 'none';
+      if (commitConstituency()) {
+        clearFieldError('err-constituencyFilter');
+      } else if (constituencyFilter.value.trim()) {
+        showFieldError('err-constituencyFilter', constituencyError());
+      }
+      checkProgressiveReveal();
+    }, 250);
+  });
+
+  // ── Progressive reveal ────────────────────────────────────────────────────
+  function detailsFilled() {
+    const fn = document.getElementById('firstName').value.trim();
+    const ln = document.getElementById('lastName').value.trim();
+    const em = document.getElementById('email').value.trim();
+    return fn && ln && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+  }
+
+  function constituencyFilled() {
+    if (addressMode === 'address') {
+      return !!(document.getElementById('addressLine1').value.trim() &&
+                document.getElementById('postcode').value.trim());
+    }
+    return !!constituencyIntent();
+  }
+
+  function checkProgressiveReveal() {
+    const showContact = detailsFilled() && constituencyFilled();
+    document.getElementById('contactSection').style.display = showContact ? '' : 'none';
+    const contactChosen = !!document.querySelector('input[name="contact"]:checked');
+    const showPrivacy = showContact && contactChosen;
+    document.getElementById('privacySection').style.display  = showPrivacy ? '' : 'none';
+    document.getElementById('turnstileSection').style.display = showPrivacy ? '' : 'none';
+    document.getElementById('submitSection').style.display    = showPrivacy ? '' : 'none';
+  }
+
+  // wire up reveal checks
+  ['firstName','lastName','email'].forEach(id => {
+    document.getElementById(id).addEventListener('input', checkProgressiveReveal);
+  });
+  ['addressLine1','postcode'].forEach(id => {
+    document.getElementById(id).addEventListener('input', checkProgressiveReveal);
+  });
+  document.querySelectorAll('input[name="contact"]').forEach(r => {
+    r.addEventListener('change', checkProgressiveReveal);
+  });
+
+  // ── Pledge reveal — triggered by selecting a pledge level ─────────────────
+  const memberForm = document.getElementById('memberForm');
+
+  document.querySelectorAll('input[name="pledge_level"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      memberForm.style.opacity = '1';
+      memberForm.style.pointerEvents = 'auto';
+      setTimeout(() => {
+        const label = document.querySelector('#formCard .section-label');
+        const navH = document.querySelector('.sitenav')?.offsetHeight || 60;
+        const target = label || memberForm;
+        const y = target.getBoundingClientRect().top + window.scrollY - navH - 4;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }, 50);
+    });
+  });
+
+  // ── Privacy modal ─────────────────────────────────────────────────────────
+  const privacyCheck  = document.getElementById('privacyCheck');
+  const privacyModal  = document.getElementById('privacyModal');
+  const modalClose    = document.getElementById('modalClose');
+  const modalAccept   = document.getElementById('modalAccept');
+
+  function openModal()  { privacyModal.classList.add('show');    document.body.style.overflow = 'hidden'; }
+  function closeModal() { privacyModal.classList.remove('show'); document.body.style.overflow = ''; }
+
+  document.getElementById('privacyLink').addEventListener('click', e => { e.preventDefault(); openModal(); });
+  modalClose.addEventListener('click', closeModal);
+  privacyModal.addEventListener('click', e => { if (e.target === privacyModal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  modalAccept.addEventListener('click', () => {
+    privacyCheck.checked = true;
+    clearFieldError('err-privacy');
+    closeModal();
+  });
+
+  // ── Postcode → constituency lookup ────────────────────────────────────────
+  const postcodeInput        = document.getElementById('postcode');
+  const constituencyDetected = document.getElementById('constituencyDetected');
+  const detectedName         = document.getElementById('detectedName');
+  let   detectedConstituency = '';
+
+  async function lookupConstituency(showErrors) {
+    const raw = postcodeInput.value.trim().toUpperCase().replace(/\s+/g, '');
+    if (!raw) return;
+    clearFieldError('err-postcode');
+    try {
+      const res  = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`);
+      const data = await res.json();
+      if (data.status === 200) {
+        const con = data.result.parliamentary_constituency_2024 || data.result.parliamentary_constituency || '';
+        if (con) {
+          detectedConstituency = con;
+          detectedName.textContent = con;
+          constituencyDetected.classList.add('show');
+        } else {
+          detectedConstituency = '';
+          constituencyDetected.classList.remove('show');
+          if (showErrors) showToast('Constituency not found for this postcode', 'error-toast');
+        }
+      } else {
+        detectedConstituency = '';
+        constituencyDetected.classList.remove('show');
+        if (showErrors) showToast('Postcode not found. Please check and try again', 'error-toast');
+      }
+    } catch {
+      if (showErrors) showToast('Could not reach postcode service. Please try again', 'error-toast');
+    }
+  }
+
+  postcodeInput.addEventListener('input', () => {
+    const raw = postcodeInput.value.trim().replace(/\s+/g, '');
+    if (raw.length >= 5) lookupConstituency(false);
+  });
+
+  postcodeInput.addEventListener('blur', () => {
+    const raw = postcodeInput.value.trim().toUpperCase().replace(/\s+/g, '');
+    if (raw.length > 3) postcodeInput.value = raw.slice(0, -3) + ' ' + raw.slice(-3);
+    else postcodeInput.value = raw;
+    if (raw) lookupConstituency(true);
+  });
+
+  // ── Validation ────────────────────────────────────────────────────────────
+  function showFieldError(id, msg) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.classList.add('show'); }
+    const inp = document.getElementById(id.replace('err-', ''));
+    if (inp) inp.classList.add('error');
+  }
+  function clearFieldError(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+    const inp = document.getElementById(id.replace('err-', ''));
+    if (inp) inp.classList.remove('error');
+  }
+  function clearAll() {
+    ['firstName','lastName','email','addressLine1','postcode','constituencyFilter','pledge_level','contact','privacy']
+      .forEach(f => clearFieldError('err-' + f));
+  }
+  function validate() {
+    clearAll();
+    let ok = true;
+    if (!document.getElementById('firstName').value.trim())
+      { showFieldError('err-firstName', 'Please enter your first name.'); ok = false; }
+    if (!document.getElementById('lastName').value.trim())
+      { showFieldError('err-lastName', 'Please enter your last name.'); ok = false; }
+    const email = document.getElementById('email').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      { showFieldError('err-email', 'Please enter a valid email address.'); ok = false; }
+    if (addressMode === 'address') {
+      if (!document.getElementById('addressLine1').value.trim())
+        { showFieldError('err-addressLine1', 'Please enter your address.'); ok = false; }
+      if (!document.getElementById('postcode').value.trim())
+        { showFieldError('err-postcode', 'Please enter your postcode.'); ok = false; }
+    } else {
+      if (!commitConstituency())
+        { showFieldError('err-constituencyFilter', constituencyError()); ok = false; }
+    }
+    if (!document.querySelector('input[name="pledge_level"]:checked'))
+      { showFieldError('err-pledge_level', 'Please select a pledge level.'); ok = false; }
+    if (!document.querySelector('input[name="contact"]:checked'))
+      { showFieldError('err-contact', 'Please select a contact preference.'); ok = false; }
+    if (!document.getElementById('privacyCheck').checked)
+      { showFieldError('err-privacy', 'You must accept the Data Privacy Notice to continue.'); ok = false; }
+    return ok;
+  }
+
+  // ── Turnstile token state ─────────────────────────────────────────────────
+  // Track the current Cloudflare Turnstile token via the widget's callbacks so
+  // we always know whether verification has completed — and can continue a
+  // submission that was clicked while the widget was still verifying.
+  let turnstileToken   = '';
+  let turnstileWidgetId = null;
+  let pendingSubmitNav = null;   // navigateAfter value stored while awaiting token
+  let pendingSubmitTimer;
+
+  function onTurnstileSuccess(token) {
+    turnstileToken = token || '';
+    document.getElementById('err-turnstile').classList.remove('show');
+    if (pendingSubmitNav !== null) {          // user was waiting on verification
+      const nav = pendingSubmitNav;
+      pendingSubmitNav = null;
+      clearTimeout(pendingSubmitTimer);
+      doSubmit(nav);
+    }
+  }
+  // On expiry/error/timeout just drop the token; Turnstile auto-refreshes and
+  // fires onTurnstileSuccess again with a fresh one (which also resumes any
+  // pending submit).
+  function onTurnstileExpired() { turnstileToken = ''; }
+  function onTurnstileError()   { turnstileToken = ''; }
+
+  // Expose for the widget's data-*-callback attributes (implicit render).
+  window.onTurnstileSuccess = onTurnstileSuccess;
+  window.onTurnstileExpired = onTurnstileExpired;
+  window.onTurnstileError   = onTurnstileError;
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  async function doSubmit(navigateAfter) {
+    if (!document.querySelector('input[name="pledge_level"]:checked')) {
+      showToast('Please select a pledge level first', 'error-toast');
+      return;
+    }
+    if (!validate()) return;
+
+    const btn1 = document.getElementById('submitBtn');
+    const s1   = document.getElementById('spinner1');
+    const lbl1 = document.getElementById('submitLabel');
+
+    // Turnstile may still be verifying when the user clicks — the widget and its
+    // "Sign the Pledge" button both appear before the token lands. Rather than
+    // reject the click and make them press Sign a second time (which looked like
+    // the form was broken), remember their intent and let onTurnstileSuccess
+    // resume the submission automatically the moment the token arrives.
+    const token = turnstileToken || (document.querySelector('[name="cf-turnstile-response"]')?.value || '');
+    if (!token) {
+      document.getElementById('err-turnstile').classList.remove('show');
+      pendingSubmitNav = navigateAfter;
+      btn1.disabled = true;
+      s1.classList.add('show'); lbl1.textContent = 'Verifying…';
+      clearTimeout(pendingSubmitTimer);
+      pendingSubmitTimer = setTimeout(() => {
+        if (pendingSubmitNav === null) return;      // already resumed
+        pendingSubmitNav = null;
+        btn1.disabled = false;
+        s1.classList.remove('show'); lbl1.textContent = 'Sign the Pledge';
+        document.getElementById('err-turnstile').classList.add('show');
+      }, 15000);
+      return;
+    }
+    clearTimeout(pendingSubmitTimer);
+    document.getElementById('err-turnstile').classList.remove('show');
+
+    btn1.disabled = true;
+    s1.classList.add('show'); lbl1.textContent = 'Saving…';
+
+    // validate() already ran commitConstituency(), so selectedConstituency is
+    // set in constituency mode; fall back to constituencyIntent() defensively.
+    const finalConstituency = addressMode === 'constituency'
+      ? (selectedConstituency || constituencyIntent())
+      : detectedConstituency;
+
+    const payload = addressMode === 'address' ? {
+      first_name:    document.getElementById('firstName').value.trim(),
+      last_name:     document.getElementById('lastName').value.trim(),
+      email:         document.getElementById('email').value.trim(),
+      address_line1: document.getElementById('addressLine1').value.trim(),
+      address_line2: document.getElementById('addressLine2').value.trim(),
+      city:          document.getElementById('city').value.trim(),
+      postcode:      document.getElementById('postcode').value.trim(),
+      constituency:  finalConstituency,
+      pledge_level:  document.querySelector('input[name="pledge_level"]:checked')?.value || '',
+      contact_pref:  document.querySelector('input[name="contact"]:checked')?.value || '',
+      pledge_signed: true,
+      'cf-turnstile-response': token,
+      website: document.getElementById('website').value,
+    } : {
+      first_name:    document.getElementById('firstName').value.trim(),
+      last_name:     document.getElementById('lastName').value.trim(),
+      email:         document.getElementById('email').value.trim(),
+      constituency:  finalConstituency,
+      pledge_level:  document.querySelector('input[name="pledge_level"]:checked')?.value || '',
+      contact_pref:  document.querySelector('input[name="contact"]:checked')?.value || '',
+      pledge_signed: true,
+      'cf-turnstile-response': token,
+      website: document.getElementById('website').value,
+    };
+
+    try {
+      const res = await fetch('/api/pledge', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        // Give a specific reason for the failures a legitimate submission can
+        // actually hit, so the signer knows what to do; anything else falls
+        // back to the generic message in the catch below.
+        let userMessage = '';
+        if (res.status === 429)
+          userMessage = 'Too many attempts from your connection. Please wait a few minutes, then try again.';
+        else if (res.status === 403 || /security check/i.test(err.error || ''))
+          userMessage = 'The security check didn’t pass. Please complete it again and re-submit.';
+        else if (res.status >= 500)
+          userMessage = 'We couldn’t save your signature just now. Please try again in a moment.';
+        const e = new Error(err.error || 'Server error');
+        e.userMessage = userMessage;
+        throw e;
+      }
+      const result = await res.json().catch(() => ({}));
+      // When an email confirmation is pending — a new signup or an existing
+      // member's edit — always show the on-page "check your email" message so
+      // that step is never skipped, even if the user clicked "Sign & view
+      // scorecard" (e.g. a misclick). Only jump straight to the scorecard when
+      // there's nothing left to confirm.
+      const confirmationPending = result.confirmation_sent || result.update_confirmation_sent;
+      if (navigateAfter && !confirmationPending) {
+        window.location.href = finalConstituency
+          ? `scorecard.html?constituency=${encodeURIComponent(finalConstituency)}`
+          : 'scorecard.html';
+      } else {
+        if (result.update_confirmation_sent) {
+          document.getElementById('successTitle').textContent = 'Almost done, check your email';
+          document.getElementById('successMsg').textContent =
+            `You're already a member, so we've sent a confirmation link to ${document.getElementById('email').value.trim()}. ` +
+            'We’ll update your details as soon as you click it. If it doesn’t arrive, check spam or sign the pledge again for a fresh link.';
+        } else if (result.already_member) {
+          document.getElementById('successTitle').textContent = 'You’re already a member';
+          document.getElementById('successMsg').textContent =
+            'This email address is already registered with ASVA, so you’re all set. There’s no need to sign again. Thank you for your support!';
+        } else if (result.confirmation_sent) {
+          const successTitle = document.getElementById('successTitle');
+          successTitle.textContent = 'One more step: confirm your email';
+          // Match the confirmation page heading size.
+          successTitle.classList.add('success-title-lg');
+          const successMsg = document.getElementById('successMsg');
+          successMsg.textContent = '';
+          // Start the confirmation line one line further down.
+          successMsg.append(document.createElement('br'));
+          const emailStrong = document.createElement('strong');
+          emailStrong.textContent = document.getElementById('email').value.trim();
+          successMsg.append("We've sent a confirmation link to ", emailStrong, '.');
+          successMsg.append(document.createElement('br'), document.createElement('br'));
+          // Smaller so the fallback note fits on a single line.
+          const fallbackNote = document.createElement('span');
+          fallbackNote.style.fontSize = '14px';
+          fallbackNote.textContent =
+            "If you don't recieve an email, check your spam folder or sign the pledge again to generate a new link.";
+          successMsg.append(fallbackNote);
+          // On the new-joiner confirmation page, hide the "View the Scorecard" box.
+          const scorecardBtnRow = document.getElementById('scorecardBtnRow');
+          if (scorecardBtnRow) scorecardBtnRow.style.display = 'none';
+          // Trim the empty space at the top and bottom of the content box.
+          const successScreen = document.querySelector('#successCard .success-screen');
+          if (successScreen) successScreen.style.padding = '20px 24px';
+          const successIcon = document.querySelector('#successCard .success-icon');
+          if (successIcon) successIcon.style.display = 'none';
+          successMsg.style.marginBottom = '0';
+        }
+        document.getElementById('scorecardLink').href = finalConstituency
+          ? `scorecard.html?constituency=${encodeURIComponent(finalConstituency)}`
+          : 'scorecard.html';
+        document.getElementById('formCard').style.display    = 'none';
+        document.getElementById('successCard').style.display = 'block';
+        document.getElementById('pledgeCard').style.display  = 'none';
+        document.getElementById('pledgeHero').style.display  = 'none';
+      }
+    } catch (err) {
+      console.error(err);
+      // A network failure (fetch rejects) carries no userMessage — if the
+      // browser reports we're offline, say so; otherwise fall back to generic.
+      const offlineMsg = (typeof navigator !== 'undefined' && navigator.onLine === false)
+        ? 'You appear to be offline. Please check your connection and try again.'
+        : 'Something went wrong. Please try again';
+      showToast(err.userMessage || offlineMsg, 'error-toast');
+      btn1.disabled = false;
+      s1.classList.remove('show');
+      lbl1.textContent = 'Sign the Pledge';
+      turnstileToken = '';
+      if (window.turnstile) {
+        try { window.turnstile.reset(turnstileWidgetId ?? undefined); } catch (e) {}
+      }
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => doSubmit(false));
+
+  // ── AI safety news tooltip ───────────────────────────────────────────────
+  (function() {
+    const span = document.getElementById('aiSafetyNewsSpan');
+    const tip = document.createElement('div');
+    tip.textContent = 'Newsletters provided by ControlAI and PauseAI';
+    tip.style.cssText = 'display:none;position:fixed;background:#111;color:#fff;font-size:13px;padding:6px 10px;border-radius:6px;pointer-events:none;z-index:9999;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+    document.body.appendChild(tip);
+    // Keep the tip on screen by flipping/clamping against the viewport edges
+    // (matters on mobile taps near the right or bottom edge).
+    function positionTip(x, y) {
+      const margin = 8;
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      let left = x + 12;
+      if (left + tw > window.innerWidth - margin) left = x - 12 - tw;
+      left = Math.max(margin, Math.min(left, window.innerWidth - tw - margin));
+      let top = y + 12;
+      if (top + th > window.innerHeight - margin) top = y - 12 - th;
+      top = Math.max(margin, Math.min(top, window.innerHeight - th - margin));
+      tip.style.left = left + 'px';
+      tip.style.top  = top + 'px';
+    }
+    span.addEventListener('mouseenter', e => { tip.style.display = 'block'; positionTip(e.clientX, e.clientY); });
+    span.addEventListener('mousemove', e => { positionTip(e.clientX, e.clientY); });
+    span.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  })();
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, cls = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${cls} show`;
+    clearTimeout(toastTimer);
+    // Error toasts often carry an action ("wait a few minutes", "complete the
+    // security check") and wrap to two or three lines on a phone — give them
+    // longer to be read, and let a tap dismiss early.
+    const isError = /error-toast/.test(cls);
+    t.onclick = () => { clearTimeout(toastTimer); t.classList.remove('show'); };
+    toastTimer = setTimeout(() => t.classList.remove('show'), isError ? 7000 : 3500);
+  }
+
+  // ── Turnstile: (re)render on Turbo navigations ────────────────────────────
+  // Turnstile's api.js auto-renders the widget only when it first loads. Under
+  // Turbo Drive the <head> script isn't re-run on a repeat visit, so the fresh
+  // widget div would otherwise never render. This body script re-runs on every
+  // Turbo navigation; the guard skips the first load (where api.js has already
+  // auto-rendered) and any already-rendered widget.
+  (function renderTurnstile() {
+    const el = document.querySelector('.cf-turnstile');
+    if (!el || el.querySelector('iframe')) return; // absent or already rendered
+    if (window.turnstile) {
+      try {
+        turnstileWidgetId = window.turnstile.render(el, {
+          sitekey: el.getAttribute('data-sitekey'),
+          theme: el.getAttribute('data-theme') || 'light',
+          callback: onTurnstileSuccess,
+          'expired-callback': onTurnstileExpired,
+          'timeout-callback': onTurnstileExpired,
+          'error-callback': onTurnstileError,
+        });
+      } catch (e) { /* already rendered — ignore */ }
+    }
+  })();
+
+})();
+</script>
+
+<!-- Site footer -->
+<footer class="sitefooter">
+  <a href="privacy.html" target="_blank">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+</footer>
+
+</body>
+</html>

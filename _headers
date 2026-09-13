@@ -1,0 +1,85 @@
+# Cloudflare Pages headers (served from repo root — pages_build_output_dir = ".")
+#
+# HTML pages must always revalidate. Cloudflare applies a multi-hour default
+# cache TTL to responses, so without this an edited page keeps serving its old
+# version for hours — in the browser AND at Cloudflare's edge — which is why a
+# renamed/updated page can look "unchanged" long after it deployed.
+# max-age=0 + must-revalidate makes the browser (and edge) recheck on every
+# load: an unchanged page comes back as a cheap 304, a real change is served at
+# once.
+#
+# NOTE ON MATCHING: _headers matches the *request* path, and when two rules set
+# the same header the values are JOINED with commas (not overridden). That means
+# we can't use one broad /* rule and give assets a longer cache — they'd get a
+# mangled Cache-Control. So we scope revalidation to HTML only:
+#   * /*.html covers every page reached by the site's .html links (and any new
+#     page automatically — no maintenance needed).
+#   * The extensionless entries below cover the "clean" URLs people type or
+#     bookmark (e.g. /goldenpath). Add a new page's clean URL here only if you
+#     expect people to visit it directly rather than via a link.
+# Static assets (JS/CSS/images/JSON) keep the long default cache and are
+# cache-busted with a ?v= query string when they change (see app.css below).
+
+# Security headers — applied to every response. These set header names the
+# caching rules below never touch, so the comma-join behaviour noted above
+# doesn't apply. (A full Content-Security-Policy is intentionally NOT set here:
+# the pages use inline scripts/styles and would need a tailored policy — that's
+# a separate follow-up.)
+#   * X-Frame-Options: DENY — the site is never meant to be framed; blocks
+#     clickjacking of the pledge form and the admin login.
+#   * X-Content-Type-Options: nosniff — stop MIME-type sniffing.
+#   * Referrer-Policy — don't leak full URLs (incl. confirm-token links) to
+#     third-party sites the user navigates to.
+#   * Permissions-Policy — deny powerful browser features the site never uses.
+#   * Strict-Transport-Security — force HTTPS for a year (no preload, to keep
+#     it reversible). Cloudflare serves this site over HTTPS on a fixed domain.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/goldenpath
+  Cache-Control: public, max-age=0, must-revalidate
+/about
+  Cache-Control: public, max-age=0, must-revalidate
+/scorecard
+  Cache-Control: public, max-age=0, must-revalidate
+/pledge
+  Cache-Control: public, max-age=0, must-revalidate
+/overview
+  Cache-Control: public, max-age=0, must-revalidate
+/founding-statement
+  Cache-Control: public, max-age=0, must-revalidate
+/why-ai-safety
+  Cache-Control: public, max-age=0, must-revalidate
+/case-for-concern
+  Cache-Control: public, max-age=0, must-revalidate
+/privacy
+  Cache-Control: public, max-age=0, must-revalidate
+/confirmed
+  Cache-Control: public, max-age=0, must-revalidate
+/share
+  Cache-Control: public, max-age=0, must-revalidate
+
+# app.css is referenced by a stable URL on every page, so when it changes we
+# need returning visitors to pick the new one up immediately. Same revalidation
+# behaviour as HTML above.
+/app.css
+  Cache-Control: public, max-age=0, must-revalidate
+
+# robots.txt / sitemap.xml / llms.txt are re-fetched by crawlers on their own
+# schedule, but a long default edge cache would delay them picking up an
+# update after we edit one. Same revalidation behaviour as HTML above.
+/robots.txt
+  Cache-Control: public, max-age=0, must-revalidate
+/sitemap.xml
+  Cache-Control: public, max-age=0, must-revalidate
+/llms.txt
+  Cache-Control: public, max-age=0, must-revalidate

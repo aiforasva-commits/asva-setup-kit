@@ -1,0 +1,11 @@
+{
+  "name": "ASVA - AI Safety Voter Alliance",
+  "short_name": "ASVA",
+  "icons": [
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ],
+  "theme_color": "#0f2c44",
+  "background_color": "#ffffff",
+  "display": "browser"
+}
