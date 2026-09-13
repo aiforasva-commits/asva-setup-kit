@@ -1,0 +1,29 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Irregular schedule across the week — varied times between 9am–5pm BST, 1–2 day gaps
+    - cron: '17 9  * * 1'   # Monday    10:17 BST
+    - cron: '43 13 * * 2'   # Tuesday   14:43 BST
+    - cron: '51 8  * * 4'   # Thursday  09:51 BST
+    - cron: '28 14 * * 5'   # Friday    15:28 BST
+    - cron: '05 10 * * 6'   # Saturday  11:05 BST
+  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase database
+        # Pings the aggregate-only constituency_counts view, never the members
+        # table. members holds PII (name, email, home address, postcode); this
+        # job runs with the semi-public anon key, so it must not touch that
+        # table even to read a count. constituency_counts exposes only
+        # (constituency, member_count) and keeps the project just as alive.
+        run: |
+          curl -sf \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/constituency_counts?select=constituency&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            && echo "Supabase is alive" \
+            || echo "Ping failed — check secrets"

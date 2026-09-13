@@ -1,0 +1,69 @@
+# PauseAI open letter to Sir Demis Hassabis (Google DeepMind) — signatory roster.
+# Source: https://pauseai.info/dear-sir-demis-2025  (captured 2026-08-26)
+# One signatory per line as "Name, Role" where Role is MP / MSP / MS / MLA / Peer /
+# Bishop. Only "..., MP" lines are used (MP-only scope); the rest are kept for
+# context. To refresh: open the page, copy the signatory list, replace the lines
+# below, then run: node scripts/build-signatory-snapshot.js
+Clare Adamson, MSP
+Baroness Foster of Aghadrumsee, Peer
+Dr Rosena Allin-Khan, MP
+Lee Barron, MP
+Doug Beattie MC, MLA
+Siân Berry, MP
+Miles Briggs, MSP
+Keith Buchanan, MLA
+Ariane Burgess, MSP
+Lord Campbell-Savours, Peer
+Gerry Carroll, MLA
+Finlay Carson, MSP
+Lord Cashman, Peer
+Baroness Chakrabarti, Peer
+Ellie Chowns, MP
+Alex Cole-Hamilton, MSP
+Viscount Colville of Culross, Peer
+Baroness D'Souza, Peer
+Ann Davies, MP
+Carla Denyer, MP
+Stewart Dickson, MLA
+Baroness Miller of Chilthorne Domer, Peer
+Baroness Ritchie of Downpatrick, Peer
+Connie Egan, MLA
+Deborah Erskine, MLA
+Baroness Featherstone, Peer
+Luke Fletcher, MS
+George Freeman, MP
+Heledd Fychan, MS
+Harry Harvey, MLA
+Mike Hedges, MS
+Delyth Jewell, MS
+Bill Kidd, MSP
+Baroness Kidron, Peer
+Lord Browne of Ladyton, Peer
+Ben Lake, MP
+The Lord Bishop of Leeds, Bishop
+Naomi Long, MLA
+Peter Martin, MLA
+Sinéad McLaughlin, MLA
+Stuart McMillan, MSP
+Lord McNally, Peer
+Llinos Medi, MP
+Iqbal Mohamed, MP
+The Lord Bishop of Oxford, Bishop
+Baroness Prashar, Peer
+Yasmin Qureshi, MP
+Adrian Ramsay, MP
+Jenny Rathbone, MS
+Willie Rennie, MSP
+Baroness Harris of Richmond, Peer
+Liz Saville Roberts, MP
+Baroness Kennedy of The Shaws, Peer
+Lord Strasburger, Peer
+Sir Desmond Swayne TD, MP
+Carolyn Thomas, MS
+Michelle Thomson, MSP
+Baroness Uddin, Peer
+Lee Waters, MS
+Lord Knight of Weymouth, Peer
+Elena Whitham, MSP
+Lord Singh of Wimbledon, Peer
+Baroness Morris of Yardley, Peer

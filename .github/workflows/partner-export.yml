@@ -1,0 +1,37 @@
+name: Partner member export
+
+# Sends the NEW opted-in members since the last run to the partner newsletter distributions
+# (ControlAI, PauseAI) by calling /api/partners/export, which emails the list to
+# the address(es) in PARTNER_EXPORT_EMAILS and stamps each member so they are
+# never sent twice. Cloudflare Pages Functions cannot self-schedule (only
+# Workers have cron), so this Action is the scheduler.
+#
+# Required GitHub secret:
+#   AGENT_INGEST_SECRET  — same value as the Cloudflare env var of that name.
+# Optional GitHub variable:
+#   SITE_BASE_URL        — defaults to the production domain below.
+
+on:
+  schedule:
+    - cron: '10 8 1 * *'   # monthly, 1st at 08:10 UTC (09:10 BST)
+  workflow_dispatch:        # allow a manual run from the Actions tab
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send new members to partners
+        env:
+          BASE_URL: ${{ vars.SITE_BASE_URL || 'https://aisafetyvoteralliance.co.uk' }}
+          SECRET: ${{ secrets.AGENT_INGEST_SECRET }}
+        run: |
+          if [ -z "$SECRET" ]; then
+            echo "AGENT_INGEST_SECRET is not set — aborting."; exit 1
+          fi
+          # -f makes curl exit non-zero on a 4xx/5xx so a failed export fails the job.
+          resp=$(curl -sf -X POST \
+            "$BASE_URL/api/partners/export" \
+            -H "Authorization: Bearer $SECRET") || {
+              echo "Export request failed"; exit 1;
+            }
+          echo "Export response: $resp"

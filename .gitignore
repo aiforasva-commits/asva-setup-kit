@@ -1,0 +1,9 @@
+node_modules/
+.dev.vars
+data.json
+
+# Unused assets kept locally as backup — not deployed (recoverable from git history)
+pledge-icon.png
+pledge-icon.svg
+hex-constituencies.csv
+sitting-mps-2024.csv

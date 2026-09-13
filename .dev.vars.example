@@ -1,0 +1,89 @@
+# --- Scorecard (build-time only, never sent to the browser) ---
+# In Google Sheets: File → Share → Publish to web → pick each tab → CSV → Publish → copy URL
+
+# Published CSV URL for the "Candidates" tab
+# In Google Sheets: File → Share → Publish to web → Candidates tab → CSV → Publish → copy URL here
+GOOGLE_SHEET_CANDIDATES_URL=https://docs.google.com/spreadsheets/d/e/YOUR_SHEET_ID/pub?gid=0&single=true&output=csv
+
+# Published CSV URL for the "Constituencies" tab
+# Same process as above but select the Constituencies tab
+GOOGLE_SHEET_CONSTITUENCIES_URL=https://docs.google.com/spreadsheets/d/e/YOUR_SHEET_ID/pub?gid=YOUR_GID&single=true&output=csv
+
+# --- Pledge form (Cloudflare Function at runtime) ---
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+
+# --- MP rating agent (see docs/mp-rating-agent.md) ---
+# Shared secret the research skill sends as "Authorization: Bearer <secret>" to
+# /api/recommendations/ingest and /api/research/queue. Generate any long random
+# string; set the SAME value here (Cloudflare) and as ASVA_AGENT_SECRET in the
+# Claude Code environment that runs the research skill.
+AGENT_INGEST_SECRET=
+
+# --- Partner newsletter export (see .github/workflows/partner-export.yml) ---
+# Comma-separated address(es) the daily new-members list is emailed to (the
+# ControlAI / PauseAI designated newsletter inboxes). /api/partners/export sends
+# the batch here and stamps each member so they're only ever sent once. Uses the
+# SAME email sender configured below (Gmail SMTP / Gmail API / Resend), and is
+# authorised by AGENT_INGEST_SECRET above (the scheduled job) or an admin
+# session (a manual run from /goldenpath.html). If unset, the export reports that
+# no recipients are configured and sends nothing. Run supabase/partner_export.sql
+# once before enabling.
+PARTNER_EXPORT_EMAILS=
+
+# Address the /goldenpath.html magic-link login is emailed to. Defaults to
+# contact@aisafetyvoteralliance.co.uk if unset. The login uses the SAME email
+# sender configured below (Gmail SMTP / Gmail API / Resend).
+ADMIN_EMAIL=contact@aisafetyvoteralliance.co.uk
+
+# Cloudflare Pages "Deploy Hook" URL for the "Redeploy site" button on
+# /goldenpath.html (POST /api/admin/redeploy triggers it, admin-session only).
+# Create it in Cloudflare Pages -> your project -> Settings -> Builds &
+# deployments -> Deploy hooks (target the production branch), then paste the
+# generated URL here. Store it as a SECRET variable — anyone with this URL can
+# trigger a build. If unset, the button reports that redeploy isn't configured.
+CF_DEPLOY_HOOK_URL=
+
+# NOTE: confirmed ratings are overlaid onto the scorecard/map at RUNTIME by
+# /api/current-ratings (which uses SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY above),
+# so no extra Cloudflare variable is needed for the live site. scripts/fetch-data.js
+# can ALSO overlay at build time if you run a local/self-hosted build with
+# SUPABASE_URL + SUPABASE_ANON_KEY set — optional, mainly for regenerating a
+# baked data.json offline.
+SUPABASE_ANON_KEY=your-anon-key-here
+
+# --- Confirmation emails / double opt-in (optional) ---
+# Setup order matters:
+#   1) Run supabase/email_confirmation.sql in the Supabase SQL editor
+#   2) Set up ONE sender backend below. They're tried in order (Option 1 ->
+#      2 -> 3), falling through if a backend errors, so it's fine to leave
+#      more than one configured.
+# While none are configured, confirmation emails are disabled and signups
+# are stored as confirmed immediately (the original behaviour).
+
+# --- Option 1 (recommended): Gmail SMTP + App Password ---
+# Sends genuinely from your @gmail.com address. No Google Cloud project, no
+# OAuth, no expiry — just a Google Account "App Password" (needs 2-Step
+# Verification turned on first). ~5 minute setup:
+#   docs/gmail-confirmation-setup.md
+GMAIL_USER=contact@aisafetyvoteralliance.co.uk
+GMAIL_APP_PASSWORD=
+
+# --- Option 2: Gmail API via OAuth (advanced, has a 7-day-token caveat) ---
+# Also sends genuinely from your @gmail.com address, but the refresh token
+# expires exactly 7 days after you generate it unless you complete Google's
+# full app-verification review — prefer Option 1 unless you have a specific
+# reason to use this. See docs/gmail-confirmation-setup.md "Alternative"
+# section. All four must be set together or this tier is skipped.
+GMAIL_CLIENT_ID=
+GMAIL_CLIENT_SECRET=
+GMAIL_REFRESH_TOKEN=
+GMAIL_FROM_ADDRESS=contact@aisafetyvoteralliance.co.uk
+
+# --- Option 3: Resend (needs a verified domain, not a Gmail address) ---
+RESEND_API_KEY=
+# From address — must be on your verified Resend domain, e.g. "ASVA <noreply@yourdomain.org>".
+# The onboarding@resend.dev default works for testing but only delivers to your
+# own Resend account email.
+EMAIL_FROM=ASVA <onboarding@resend.dev>
+
