@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS members (
   email           TEXT,
   email_canonical TEXT,                    -- normalised email; unique index below (see email_canonical.sql)
   pledge_level    TEXT,
-  contact_pref    TEXT,
+  contact_pref    TEXT,                    -- 'urgent_and_updates' | 'urgent_only' | 'election_only' (see functions/api/pledge.js validPrefs); only 'urgent_and_updates' is shared with partners (see partner_export.sql)
   address_line1   TEXT,                    -- nullable: constituency-only signups carry no address (see nullable_address.sql)
   address_line2   TEXT,
   city            TEXT,

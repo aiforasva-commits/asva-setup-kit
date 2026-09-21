@@ -12,7 +12,8 @@
   <title>ASVA - Golden Path</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="turbo-cache-control" content="no-cache">
-  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script>(function(){try{var t=localStorage.getItem('asva-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="stylesheet" href="app.css?v=20260914b" data-turbo-track="reload">
   <style>
     /* Pre-login "Golden Path" screen: a full-viewport blank white overlay with
        just a centred title and a single golden button, plus the site nav (which
@@ -109,18 +110,35 @@
     .sigfix-badge { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.02em;
       padding:1px 7px; border-radius:999px; background:#eef4ff; color:#2b5f7a; border:1px solid #cfe0f0; }
 
-    /* Member Submissions tab: current-vs-proposed diff shown above the
-       (editable) proposed bullets/sources on each card. */
-    .ms-diff-grade { font-size:15px; margin-top:2px; }
-    .ms-diff-grade .arrow { color:#889; margin:0 6px; }
-    .ms-diff-row { display:flex; gap:16px; flex-wrap:wrap; margin:10px 0; }
-    .ms-diff-col { flex:1 1 220px; min-width:0; background:#f7f8fa; border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
-    .ms-diff-col label { display:block; font-size:11px; font-weight:700; letter-spacing:.02em; text-transform:uppercase; color:#889; margin-bottom:6px; }
-    .ms-diff-list { list-style:none; margin:0; padding:0; font-size:13px; line-height:1.7; color:#334; }
-    .ms-diff-list li { word-break:break-word; }
-    .ms-diff-list a { color:#2b5f7a; }
     .ms-diff-empty { color:#aab; font-style:italic; }
+    .cv-value { font-size:15px; font-weight:700; color:var(--ink); }
+    /* Current/Proposed toggle: on Pending review and Member submissions cards,
+       flips the Grade/Bullets/Sources area between the live rating (read-only)
+       and the draft/suggested one (editable) — same field order in both, so
+       flicking the toggle compares like-for-like. The toggle itself is a wide,
+       centred segmented control sitting below the panel, above the
+       Confirm/Reject row. */
+    .cv-panel { display:none; }
+    .cv-panel.active { display:block; }
+    /* Current's bullets/sources lists reuse editableList's own classes
+       (.edit-list/.edit-item/…, see app.css) so text size/position match the
+       Proposed side exactly — .ro just turns off the interactive affordances
+       while keeping their layout space, so nothing shifts on toggle. */
+    .edit-item.ro { cursor:default; }
+    .edit-item.ro .drag-handle,
+    .edit-item.ro .edit-remove { visibility:hidden; }
+    .edit-item.ro .editable { cursor:default; }
+    .edit-item.ro .editable:hover { background:none; box-shadow:none; }
+    .edit-item.ro.empty .edit-marker { visibility:hidden; }
+    .edit-add.ro { visibility:hidden; pointer-events:none; }
+    .cv-toggle { display:flex; justify-content:center; margin-top:14px; }
+    .cv-toggle-group { display:flex; width:100%; max-width:520px; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    .cv-toggle-btn { flex:1 1 50%; font:inherit; font-size:13px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+      padding:12px 10px; border:none; background:#f7f8fa; color:#667; cursor:pointer; }
+    .cv-toggle-btn + .cv-toggle-btn { border-left:1px solid var(--line); }
+    .cv-toggle-btn.active { background:var(--ink); color:#fff; }
     .member-note { background:#fffdf0; border:1px solid #eadfa8; border-radius:9px; padding:8px 12px; font-size:13px; color:#5a4a10; margin:10px 0; }
+    .member-tags { font-size:12px; font-weight:600; color:#888; }
     .reject-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; flex:1 1 260px; }
     .reject-reason-input { flex:1 1 200px; font:inherit; font-size:13px; padding:9px 11px; border:1px solid var(--line); border-radius:9px; }
 
@@ -263,6 +281,7 @@
     <button class="tab" id="tab-live">Live Claude Ratings</button>
     <button class="tab" id="tab-human">Live Human Reviewed</button>
     <button class="tab" id="tab-comms">Communications</button>
+    <button class="tab" id="tab-style">Style Guidance</button>
   </div>
 
   <!-- Recommendations list -->
@@ -393,15 +412,35 @@
     <div class="comms-picker" id="commsPicker"></div>
     <div id="commsDetail"></div>
   </div>
+
+  <!-- Style Guidance: the same house style/grading rubric shown to members on
+       /member-edit-guide.html, pulled in here so a reviewer can check a bullet,
+       source or grade against it without leaving this page. Fetched and inlined
+       (not framed — X-Frame-Options: DENY in _headers blocks embedding it, and
+       a second rule for just this path would only join with that DENY, not
+       override it) so member-edit-guide.html stays the single source of truth. -->
+  <div id="styleView" hidden>
+    <div id="styleContent" class="admin-note">Loading…</div>
+  </div>
 </div>
 
 <footer class="sitefooter">
-  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+  <a href="privacy.html">Data Privacy Notice</a>
 </footer>
 
-<script src="editable-list.js"></script>
+<script src="editable-list.js" id="editableListScript"></script>
 <script>
-(function () {
+// Turbo (turbo.js) can navigate here client-side from another page without a
+// full browser load. On a full load the browser guarantees editable-list.js
+// above finishes executing before this block runs; under a Turbo visit that
+// guarantee does NOT hold for a script that's new to this session — Turbo
+// activates body scripts in order but does not await an external one's fetch
+// before moving on to the next, so on a slow/cold connection this block could
+// run before window.ASVAEditableList exists and throw, breaking the whole
+// page (see the same fix and fuller explanation in scorecard.html). Gate on
+// the script's own load event, with an immediate-run fallback in case it's
+// already loaded.
+function ASVAGoldenPathMain() {
   var editableList = window.ASVAEditableList.editableList;
   var GRADES = ['A', 'B', 'C', '?', 'DNR', 'D', 'E', 'F'];
   var cs = getComputedStyle(document.body);
@@ -457,6 +496,7 @@
   var liveView    = document.getElementById('liveView');
   var humanView   = document.getElementById('humanView');
   var commsView   = document.getElementById('commsView');
+  var styleView   = document.getElementById('styleView');
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -532,6 +572,170 @@
     }).join('');
   }
 
+  // Read-only markup for a bullets/sources list, built from the exact same
+  // classes as editableList() (editable-list.js) — same marker/border/text
+  // size/spacing — so the "Current" side of the toggle looks just like the
+  // "Proposed" side instead of the plain diff-list this used to be. No drag
+  // handle interaction, no remove button, and a source's link is always shown
+  // (never the toggle-to-edit affordance an editable row uses while blank).
+  function readOnlyListHTML(kind, items) {
+    var isSrc = kind === 'srcs';
+    var arr = items || [];
+    var rows = arr.map(function (it) {
+      if (isSrc) {
+        var title = (it && (it.title || it.url)) || '';
+        var url   = (it && it.url) || '';
+        return (
+          '<li class="edit-item ro">' +
+            '<span class="drag-handle" aria-hidden="true">⠿</span>' +
+            '<div class="edit-body">' +
+              '<div class="edit-line"><span class="edit-marker src-title-marker" aria-hidden="true"></span>' +
+                '<span class="editable src-title">' + esc(title) + '</span></div>' +
+              '<div class="edit-line"><span class="edit-marker src-url-marker" aria-hidden="true"></span>' +
+                (url
+                  ? '<a class="src-url-link" target="_blank" rel="noopener noreferrer" href="' + esc(url) + '">' + esc(url) + '</a>'
+                  : '<span class="editable url muted">No link</span>') +
+              '</div>' +
+            '</div>' +
+          '</li>'
+        );
+      }
+      return (
+        '<li class="edit-item ro">' +
+          '<span class="drag-handle" aria-hidden="true">⠿</span>' +
+          '<span class="edit-marker bullet-marker" aria-hidden="true"></span>' +
+          '<span class="editable bullet-text">' + esc(it) + '</span>' +
+        '</li>'
+      );
+    });
+    if (!rows.length) {
+      rows.push('<li class="edit-item ro empty"><span class="editable muted">' + (isSrc ? 'No sources yet' : 'Nothing yet') + '</span></li>');
+    }
+    // A same-size, invisible stand-in for editableList's "+ Add …" button —
+    // keeps that bit of vertical space reserved here too, so the card doesn't
+    // change height just from toggling Current/Proposed.
+    var addSpacer = '<div class="edit-add ro" aria-hidden="true">' + (isSrc ? '+ Add source' : '+ Add bullet') + '</div>';
+    return '<ul class="edit-list ro ' + kind + '">' + rows.join('') + '</ul>' + addSpacer;
+  }
+
+  // Read-only "current" fields (Grade/Bullets/Sources), used by both Pending
+  // review (looked up live by constituency, `live` may be null/loading) and
+  // Member submissions (the base_* snapshot taken at submission time). Field
+  // order/labels match proposedFieldsNode() below field-for-field, and the
+  // lists render with the same classes as the editable ones, so flicking the
+  // toggle compares like-for-like without the card changing size or shape.
+  function currentFieldsHTML(live) {
+    return (
+      '<div class="rec-field"><label>Grade</label><div class="cv-value">' +
+        (live && live.grade ? esc(live.grade) : '<span class="muted">Not yet rated</span>') + '</div></div>' +
+      '<div class="rec-field"><label>Bullets</label>' + readOnlyListHTML('bullets', live && live.bullets) + '</div>' +
+      '<div class="rec-field"><label>Sources</label>' + readOnlyListHTML('srcs', live && live.sources) + '</div>'
+    );
+  }
+
+  // The editable "proposed" fields node: Grade mirrors the grade <select>
+  // that sits above the toggle (read-only display here — the select is the
+  // one actually submitted), Bullets/Sources are the passed-in editable list
+  // widgets. Laid out to match currentFieldsHTML() field-for-field.
+  function proposedFieldsNode(select, bulletsList, sourcesList) {
+    var node = document.createElement('div');
+    node.innerHTML =
+      '<div class="rec-field"><label>Grade</label><div class="cv-value cv-proposed-grade"></div></div>' +
+      '<div class="rec-field"><label>Bullets <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label><div class="bullets-mount"></div></div>' +
+      '<div class="rec-field"><label>Sources <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label><div class="sources-mount"></div></div>';
+    node.querySelector('.bullets-mount').appendChild(bulletsList);
+    node.querySelector('.sources-mount').appendChild(sourcesList);
+    var display = node.querySelector('.cv-proposed-grade');
+    var sync = function () {
+      var opt = select.options[select.selectedIndex];
+      display.textContent = opt ? opt.text : select.value;
+    };
+    sync();
+    select.addEventListener('change', sync);
+    return node;
+  }
+
+  // A Current/Proposed toggle for a card's Grade/Bullets/Sources: `currentHTML`
+  // is static read-only markup (see currentFieldsHTML), `proposedNode` is the
+  // (already-built, editable) node from proposedFieldsNode(). Current is shown
+  // first and by default. Returns a DOM node to mount; call the returned
+  // node's .setCurrentHTML(html) later if the current side loads
+  // asynchronously (see the pending-review "Current" lookup below).
+  //
+  // `opts.card` + `opts.getProposedGrade` (a fn returning the live <select>
+  // value) let the toggle also own the card's grade-coloured left border: it
+  // tracks whichever grade is actually on screen, so flicking Current/Proposed
+  // re-colours the border to match rather than leaving it stuck on one grade.
+  // `opts.currentGrade` seeds the Current-side grade when known synchronously
+  // (member submissions' base_grade); call the returned node's
+  // .setCurrentGrade(grade) once it resolves otherwise (the pending-review
+  // live-rating lookup, which is async).
+  function buildCurrentProposedToggle(currentHTML, proposedNode, opts) {
+    opts = opts || {};
+    var card = opts.card;
+    var getProposedGrade = opts.getProposedGrade;
+    var currentGrade = opts.currentGrade != null ? opts.currentGrade : null;
+    var activeView = 'current';
+
+    function repaintBorder() {
+      if (!card) return;
+      var g = activeView === 'current' ? currentGrade : (getProposedGrade ? getProposedGrade() : null);
+      card.style.borderLeftColor = colourFor(g);
+    }
+
+    var currentPanel = document.createElement('div');
+    currentPanel.className = 'cv-panel active';
+    currentPanel.innerHTML = currentHTML;
+
+    proposedNode.classList.add('cv-panel');
+
+    var toggle = document.createElement('div');
+    toggle.className = 'cv-toggle';
+    toggle.innerHTML =
+      '<div class="cv-toggle-group">' +
+        '<button type="button" class="cv-toggle-btn active" data-view="current">Current</button>' +
+        '<button type="button" class="cv-toggle-btn" data-view="proposed">Proposed</button>' +
+      '</div>';
+    toggle.addEventListener('click', function (e) {
+      var btn = e.target.closest('.cv-toggle-btn');
+      if (!btn || btn.classList.contains('active')) return;
+      var showCurrent = btn.getAttribute('data-view') === 'current';
+      toggle.querySelectorAll('.cv-toggle-btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
+      currentPanel.classList.toggle('active', showCurrent);
+      proposedNode.classList.toggle('active', !showCurrent);
+      activeView = showCurrent ? 'current' : 'proposed';
+      repaintBorder();
+    });
+
+    repaintBorder(); // paint for the default "current" view straight away
+
+    var wrap = document.createElement('div');
+    wrap.className = 'cv-block';
+    wrap.appendChild(currentPanel);
+    wrap.appendChild(proposedNode);
+    wrap.appendChild(toggle);
+    wrap.setCurrentHTML = function (html) { currentPanel.innerHTML = html; };
+    wrap.setCurrentGrade = function (grade) { currentGrade = grade; repaintBorder(); };
+    wrap.repaintBorder = repaintBorder;
+    return wrap;
+  }
+
+  // Read-only lookup of the live rating for a constituency, used by the
+  // pending-review "Current" panel (agent drafts carry no base_* snapshot the
+  // way member submissions do). Fetched once and cached; a stale value here
+  // just means a live edit made elsewhere won't show until the page reloads,
+  // which is fine for a comparison view.
+  var liveByConsPromise = null;
+  function liveRatingsByConstituency() {
+    if (!liveByConsPromise) {
+      liveByConsPromise = fetch('/api/ratings/list', { cache: 'no-store' })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { return (data && data.ratings) || {}; })
+        .catch(function () { return {}; });
+    }
+    return liveByConsPromise;
+  }
+
 
   function renderCard(rec) {
     var card = document.createElement('div');
@@ -557,10 +761,7 @@
       '</div>' +
       (flagged ? '<div class="rec-flag">⚑ Borderline — worth a closer look</div>' : '') +
       (rationaleText ? '<div class="rec-rationale">' + esc(rationaleText) + '</div>' : '') +
-      '<div class="rec-field"><label>Justification bullets <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
-        '<div class="bullets-mount"></div></div>' +
-      '<div class="rec-field"><label>Sources <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
-        '<div class="sources-mount"></div></div>' +
+      '<div class="cv-mount"></div>' +
       '<div class="btn-row">' +
         '<button class="btn-confirm">Confirm & publish</button>' +
         '<button class="btn-reject">Reject</button>' +
@@ -569,13 +770,27 @@
 
     var select = card.querySelector('.grade-select');
     var pill   = card.querySelector('.grade-pill');
+    var cvBlock; // assigned below; referenced by the listener once it fires
     paintPill(pill, card, rec.recommended_grade);
-    select.addEventListener('change', function () { paintPill(pill, card, select.value); });
+    select.addEventListener('change', function () {
+      paintPill(pill, card, select.value);
+      if (cvBlock) cvBlock.repaintBorder(); // re-assert the border for whichever view is showing
+    });
 
     var bulletsList = editableList('bullets', rec.bullets || []);
     var sourcesList = editableList('srcs', rec.sources || []);
-    card.querySelector('.bullets-mount').appendChild(bulletsList);
-    card.querySelector('.sources-mount').appendChild(sourcesList);
+    var proposedNode = proposedFieldsNode(select, bulletsList, sourcesList);
+
+    cvBlock = buildCurrentProposedToggle('<div class="ms-diff-empty">Loading current rating…</div>', proposedNode, {
+      card: card,
+      getProposedGrade: function () { return select.value; },
+    });
+    card.querySelector('.cv-mount').replaceWith(cvBlock);
+    liveRatingsByConstituency().then(function (map) {
+      var live = map[rec.constituency];
+      cvBlock.setCurrentHTML(currentFieldsHTML(live));
+      cvBlock.setCurrentGrade(live && live.grade);
+    });
 
     var toast = card.querySelector('.card-toast');
     var confirmBtn = card.querySelector('.btn-confirm');
@@ -706,31 +921,25 @@
     catch (e) { return ''; }
   }
 
-  function diffList(items, isSrc) {
-    var arr = items || [];
-    if (!arr.length) return '<li class="ms-diff-empty">Nothing yet</li>';
-    return arr.map(function (it) {
-      return isSrc
-        ? '<li>' + esc(it.title || it.url) + '</li>'
-        : '<li>' + esc(it) + '</li>';
-    }).join('');
-  }
-
   function renderMemberCard(sub) {
     var card = document.createElement('div');
     card.className = 'rec-card';
 
-    var gradeChanged = (sub.base_grade || null) !== sub.proposed_grade;
-    var gradeDiffHTML = sub.base_grade
-      ? esc(sub.base_grade) + (gradeChanged ? '<span class="arrow">→</span><strong>' + esc(sub.proposed_grade) + '</strong>' : ' <span class="muted">(no change proposed)</span>')
-      : '<span class="muted">not yet rated</span><span class="arrow">→</span><strong>' + esc(sub.proposed_grade) + '</strong>';
+    var tags = [];
+    if (sub.is_new_candidate) tags.push('New candidate');
+    if (sub.party) tags.push(esc(sub.party));
+    tags.push(sub.current_mp ? 'Current MP' : 'Not the current MP');
 
     card.innerHTML =
       '<div class="rec-top">' +
         '<div>' +
-          '<div class="rec-name">' + esc(sub.mp_name) + '</div>' +
+          '<div class="rec-name">' + esc(sub.mp_name) +
+            ' <span class="member-tags">(' + tags.join(' · ') + ')</span></div>' +
           '<div class="rec-meta">' + esc(sub.constituency) + ' · submitted by ' + esc(sub.member_name) +
             ' (' + esc(sub.member_email) + ') · ' + esc(fmtDate(sub.created_at)) + '</div>' +
+          (sub.current_mp ? '' :
+            '<div class="member-note">Not the current MP — confirming will mark this reviewed but ' +
+            'won’t publish live. Add ' + esc(sub.mp_name) + ' to the Candidates sheet by hand to make it public.</div>') +
         '</div>' +
         '<div class="rec-grade-row">' +
           '<span class="grade-pill"></span>' +
@@ -738,15 +947,7 @@
         '</div>' +
       '</div>' +
       (sub.note ? '<div class="member-note">Note from member: ' + esc(sub.note) + '</div>' : '') +
-      '<div class="rec-field"><label>Current vs proposed grade</label><div class="ms-diff-grade">' + gradeDiffHTML + '</div></div>' +
-      '<div class="ms-diff-row">' +
-        '<div class="ms-diff-col"><label>Current bullets</label><ul class="ms-diff-list">' + diffList(sub.base_bullets, false) + '</ul></div>' +
-        '<div class="ms-diff-col"><label>Current sources</label><ul class="ms-diff-list">' + diffList(sub.base_sources, true) + '</ul></div>' +
-      '</div>' +
-      '<div class="rec-field"><label>Proposed bullets (editable) <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
-        '<div class="bullets-mount"></div></div>' +
-      '<div class="rec-field"><label>Proposed sources (editable) <span class="edit-hint">tap to edit · drag ⠿ to reorder</span></label>' +
-        '<div class="sources-mount"></div></div>' +
+      '<div class="cv-mount"></div>' +
       '<div class="btn-row">' +
         '<button class="btn-confirm">Confirm & publish</button>' +
         '<div class="reject-row">' +
@@ -758,13 +959,26 @@
 
     var select = card.querySelector('.grade-select');
     var pill   = card.querySelector('.grade-pill');
+    var cvBlock; // assigned below; referenced by the listener once it fires
     paintPill(pill, card, sub.proposed_grade);
-    select.addEventListener('change', function () { paintPill(pill, card, select.value); });
+    select.addEventListener('change', function () {
+      paintPill(pill, card, select.value);
+      if (cvBlock) cvBlock.repaintBorder(); // re-assert the border for whichever view is showing
+    });
 
     var bulletsList = editableList('bullets', sub.bullets || []);
     var sourcesList = editableList('srcs', sub.sources || []);
-    card.querySelector('.bullets-mount').appendChild(bulletsList);
-    card.querySelector('.sources-mount').appendChild(sourcesList);
+    var proposedNode = proposedFieldsNode(select, bulletsList, sourcesList);
+
+    var currentHTML = currentFieldsHTML(sub.base_grade
+      ? { grade: sub.base_grade, bullets: sub.base_bullets, sources: sub.base_sources }
+      : null);
+    cvBlock = buildCurrentProposedToggle(currentHTML, proposedNode, {
+      card: card,
+      currentGrade: sub.base_grade || null,
+      getProposedGrade: function () { return select.value; },
+    });
+    card.querySelector('.cv-mount').replaceWith(cvBlock);
 
     var toast      = card.querySelector('.card-toast');
     var confirmBtn = card.querySelector('.btn-confirm');
@@ -783,9 +997,14 @@
         .then(function (res) {
           if (!res.ok) throw new Error(res.d && res.d.error || 'Failed');
           card.style.opacity = '.5';
-          var amendedNote = res.d && res.d.amended ? ' (the member was told it was published with amendments)' : '';
-          toast.innerHTML = '<div class="toast ok">Published as <strong>' + esc((res.d && res.d.grade) || select.value) +
-            '</strong>' + amendedNote + '. Live on the site now.</div>';
+          if (res.d && res.d.published_live) {
+            var amendedNote = res.d.amended ? ' (the member was told it was published with amendments)' : '';
+            toast.innerHTML = '<div class="toast ok">Published as <strong>' + esc(res.d.grade || select.value) +
+              '</strong>' + amendedNote + '. Live on the site now.</div>';
+          } else {
+            toast.innerHTML = '<div class="toast ok">Marked reviewed. Not the current MP, so it wasn’t ' +
+              'published live — add ' + esc(sub.mp_name) + ' to the Candidates sheet to make it public.</div>';
+          }
           liveLoaded = false; // both live tabs should refetch when next opened
           setTimeout(function () { card.remove(); removeMemberEntry(sub.id); refreshMembersCount(); }, 1500);
         })
@@ -1082,14 +1301,38 @@
     liveView.hidden    = which !== 'live';
     humanView.hidden   = which !== 'human';
     commsView.hidden   = which !== 'comms';
+    styleView.hidden   = which !== 'style';
     document.getElementById('tab-pending').classList.toggle('active', which === 'pending');
     document.getElementById('tab-members').classList.toggle('active', which === 'members');
     document.getElementById('tab-live').classList.toggle('active', which === 'live');
     document.getElementById('tab-human').classList.toggle('active', which === 'human');
     document.getElementById('tab-comms').classList.toggle('active', which === 'comms');
+    document.getElementById('tab-style').classList.toggle('active', which === 'style');
     if (which === 'members' && !membersLoaded) loadMembers();
     if ((which === 'live' || which === 'human') && !liveLoaded) loadLive();
     if (which === 'comms' && !commsLoaded) loadComms();
+    if (which === 'style' && !styleLoaded) loadStyle();
+  }
+
+  // ── Style Guidance tab: pull in the member-facing style/rubric guide ──────
+  var styleLoaded = false;
+  function loadStyle() {
+    styleLoaded = true;
+    var el = document.getElementById('styleContent');
+    fetch('member-edit-guide.html', { cache: 'no-store' })
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var content = doc.querySelector('.about-content');
+        el.innerHTML = content ? content.innerHTML
+          : '<p>Could not load the style guide — <a href="member-edit-guide.html" target="_blank" rel="noopener">open it directly</a>.</p>';
+        el.classList.remove('admin-note');
+        if (content) el.classList.add('about-content');
+      })
+      .catch(function () {
+        styleLoaded = false;
+        el.innerHTML = '<p>Could not load the style guide — <a href="member-edit-guide.html" target="_blank" rel="noopener">open it directly</a>.</p>';
+      });
   }
 
   // ── Membership tally ──────────────────────────────────────────────────────
@@ -1269,6 +1512,7 @@
       document.getElementById('tab-live').addEventListener('click', function () { showTab('live'); });
       document.getElementById('tab-human').addEventListener('click', function () { showTab('human'); });
       document.getElementById('tab-comms').addEventListener('click', function () { showTab('comms'); });
+      document.getElementById('tab-style').addEventListener('click', function () { showTab('style'); });
 
       pendingEntries = (data.recommendations || []).map(function (rec) { return { rec: rec }; });
       renderPendingList();
@@ -1277,7 +1521,13 @@
     .catch(function () {
       loadingView.innerHTML = 'Could not load recommendations. Please refresh.';
     });
-})();
+}
+
+if (window.ASVAEditableList) {
+  ASVAGoldenPathMain();
+} else {
+  document.getElementById('editableListScript').addEventListener('load', ASVAGoldenPathMain, { once: true });
+}
 </script>
 
 </body>

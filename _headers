@@ -68,6 +68,12 @@
 /share
   Cache-Control: public, max-age=0, must-revalidate
 
+# Per-constituency pages (scripts/build-constituency-pages.js) — one wildcard
+# rule rather than one line per constituency, since there are hundreds of
+# these and the list changes with every General Election.
+/scorecard/*
+  Cache-Control: public, max-age=0, must-revalidate
+
 # app.css is referenced by a stable URL on every page, so when it changes we
 # need returning visitors to pick the new one up immediately. Same revalidation
 # behaviour as HTML above.

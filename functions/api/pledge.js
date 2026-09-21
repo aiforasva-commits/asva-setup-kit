@@ -234,7 +234,7 @@ export async function onRequest(context) {
       { status: 400, headers: corsHeaders }
     );
   }
-  const validPrefs = ['urgent_and_updates', 'urgent_only'];
+  const validPrefs = ['urgent_and_updates', 'urgent_only', 'election_only'];
   if (!validPrefs.includes(contact_pref)) {
     return new Response(
       JSON.stringify({ error: 'Invalid contact preference' }),

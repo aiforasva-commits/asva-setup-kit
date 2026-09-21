@@ -26,13 +26,14 @@
   <meta name="twitter:image" content="https://aisafetyvoteralliance.co.uk/og-banner.png" />
   <meta name="description" content="Who we are and why we built the AI Safety Voter Alliance — grading every UK MP on AI safety." />
   <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/about" />
-  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script>(function(){try{var t=localStorage.getItem('asva-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="stylesheet" href="app.css?v=20260914b" data-turbo-track="reload">
   <script type="module" src="turbo.js"></script>
 </head>
 <body class="page-about">
 
 <nav class="sitenav" id="sitenav" data-turbo-permanent>
-  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" class="sitenav-logo-light" style="height:52px;width:auto;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"><img src="ASVA_Logo_FS_Dark.png?v=3" alt="ASVA" class="sitenav-logo-dark" style="height:52px;width:auto;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
   <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
   <div class="sitenav-links" id="sitenavLinks">
     <a class="sitenav-welcome" href="index.html">Welcome</a>
@@ -76,6 +77,39 @@
       document.addEventListener('DOMContentLoaded', function(){ setActive(); });
       document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
       document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+
+      // ── Dark mode toggle ───────────────────────────────────────
+      var THEME_KEY = 'asva-theme';
+      function storedTheme(){ try{ return localStorage.getItem(THEME_KEY); }catch(e){ return null; } }
+      function systemTheme(){ return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'; }
+      function effectiveTheme(){ return storedTheme() || systemTheme(); }
+      function paintToggle(theme){
+        document.querySelectorAll('.theme-toggle').forEach(function(btn){
+          btn.classList.toggle('is-dark', theme === 'dark');
+          btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        });
+      }
+      function bindToggle(){
+        document.querySelectorAll('.theme-toggle').forEach(function(btn){
+          if(btn.dataset.bound) return;
+          btn.dataset.bound = '1';
+          btn.addEventListener('click', function(){
+            var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+            paintToggle(next);
+          });
+        });
+      }
+      function refreshToggle(){ bindToggle(); paintToggle(effectiveTheme()); }
+      refreshToggle();
+      document.addEventListener('DOMContentLoaded', refreshToggle);
+      document.addEventListener('turbo:load', refreshToggle);
+      if(window.matchMedia){
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){
+          if(!storedTheme()) paintToggle(systemTheme());
+        });
+      }
     })();
   </script>
 </nav>
@@ -102,7 +136,11 @@
 
 <!-- Site footer -->
 <footer class="sitefooter">
-  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+  <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle dark mode">
+    <svg class="theme-toggle-icon theme-toggle-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
+  <div class="sitefooter-links"><a href="privacy.html">Data Privacy Notice</a></div>
 </footer>
 
 </body>

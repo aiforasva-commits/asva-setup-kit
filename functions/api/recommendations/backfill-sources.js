@@ -10,7 +10,7 @@
 //   • CORRECT a draft's own clear claim that contradicts the authoritative roster.
 // It never removes substantive content, never rewrites an entangled bullet (those
 // come back under `flagged`), reports anything that won't fit the ≤5-bullet /
-// ≤6-source caps under `capped`, and is idempotent — a draft that already states
+// ≤4-source caps under `capped`, and is idempotent — a draft that already states
 // both campaigns correctly is left untouched. It only ever touches pending rows,
 // so nothing is published; the drafts stay for human review at /goldenpath.html.
 //

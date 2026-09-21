@@ -41,7 +41,7 @@ export async function onRequest(context) {
 
   const { data: sub, error: subError } = await supabase
     .from('member_submissions')
-    .select('id, constituency, mp_name, member_email, member_name, proposed_grade, bullets, sources, status')
+    .select('id, constituency, mp_name, member_email, member_name, proposed_grade, bullets, sources, status, is_new_candidate, party, current_mp')
     .eq('id', id)
     .maybeSingle();
 
@@ -63,22 +63,32 @@ export async function onRequest(context) {
                   !sameValue(bullets, sub.bullets) ||
                   !sameValue(sources, sub.sources);
 
-  const { error: upsertError } = await supabase
-    .from('mp_ratings')
-    .upsert({
-      constituency:      sub.constituency,
-      mp_name:           sub.mp_name,
-      grade,
-      bullets,
-      sources,
-      updated_by:        'member-confirmed',
-      updated_at:        now,
-      human_reviewed_at: now,
-    }, { onConflict: 'constituency' });
+  // mp_ratings holds one row per constituency — the live overlay for that
+  // seat's CURRENT MP only (see supabase/mp_ratings.sql). A submission for a
+  // candidate who isn't the current MP can't be upserted here: that would
+  // either collide with or silently replace the actual MP's live rating. The
+  // rest of the candidate roster is sheet-sourced (scripts/fetch-data.js), so
+  // those go no further than this review queue — the admin adds them to the
+  // Candidates sheet by hand, same as any other non-MP candidate detail.
+  const publishesLive = !!sub.current_mp;
+  if (publishesLive) {
+    const { error: upsertError } = await supabase
+      .from('mp_ratings')
+      .upsert({
+        constituency:      sub.constituency,
+        mp_name:           sub.mp_name,
+        grade,
+        bullets,
+        sources,
+        updated_by:        'member-confirmed',
+        updated_at:        now,
+        human_reviewed_at: now,
+      }, { onConflict: 'constituency' });
 
-  if (upsertError) {
-    console.error('member submission confirm upsert error:', upsertError.message || upsertError);
-    return json({ error: 'Failed to save rating' }, 500);
+    if (upsertError) {
+      console.error('member submission confirm upsert error:', upsertError.message || upsertError);
+      return json({ error: 'Failed to save rating' }, 500);
+    }
   }
 
   const { error: markError } = await supabase
@@ -97,12 +107,12 @@ export async function onRequest(context) {
         context.env,
         sub.member_email,
         SUBJECTS.memberConfirmed,
-        memberSubmissionConfirmedHTML(sub.member_name, sub.mp_name, amended)
+        memberSubmissionConfirmedHTML(sub.member_name, sub.mp_name, amended, publishesLive)
       );
     }
   } catch (e) {
     console.error('member submission confirm-email failed:', e?.message || e);
   }
 
-  return json({ success: true, constituency: sub.constituency, grade, amended });
+  return json({ success: true, constituency: sub.constituency, grade, amended, published_live: publishesLive });
 }

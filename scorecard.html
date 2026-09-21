@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!--
+    This file doubles as the template for scripts/build-constituency-pages.js,
+    which generates one static page per constituency (scorecard/<slug>/) by
+    string-splicing known anchors in this file's head and body markup so that
+    crawlers which don't run JavaScript can still read the current MP's name,
+    grade and evidence. If you restructure the title/OG/canonical tags, the
+    sheetWrap/noConstituencyPrompt/titleConstituency/cards markup, or the
+    share button's `hidden` attribute, update the ANCHORS in that script to
+    match — an anchor it can no longer find fails the build on purpose,
+    rather than silently shipping stale or broken constituency pages.
+  -->
   <meta charset="utf-8" />
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
@@ -27,7 +38,8 @@
   <meta name="description" content="Find your MP's AI safety grade and the evidence behind it, then pledge your vote." />
   <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/scorecard" />
   <meta name="turbo-cache-control" content="no-cache">
-  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script>(function(){try{var t=localStorage.getItem('asva-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="stylesheet" href="app.css?v=20260914b" data-turbo-track="reload">
   <script type="module" src="turbo.js"></script>
 </head>
 
@@ -35,7 +47,7 @@
 
 <!-- Site navigation -->
 <nav class="sitenav" id="sitenav" data-turbo-permanent>
-  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" class="sitenav-logo-light" style="height:52px;width:auto;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"><img src="ASVA_Logo_FS_Dark.png?v=3" alt="ASVA" class="sitenav-logo-dark" style="height:52px;width:auto;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
   <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
   <div class="sitenav-links" id="sitenavLinks">
     <a class="sitenav-welcome" href="index.html">Welcome</a>
@@ -79,6 +91,39 @@
       document.addEventListener('DOMContentLoaded', function(){ setActive(); });
       document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
       document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+
+      // ── Dark mode toggle ───────────────────────────────────────
+      var THEME_KEY = 'asva-theme';
+      function storedTheme(){ try{ return localStorage.getItem(THEME_KEY); }catch(e){ return null; } }
+      function systemTheme(){ return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'; }
+      function effectiveTheme(){ return storedTheme() || systemTheme(); }
+      function paintToggle(theme){
+        document.querySelectorAll('.theme-toggle').forEach(function(btn){
+          btn.classList.toggle('is-dark', theme === 'dark');
+          btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        });
+      }
+      function bindToggle(){
+        document.querySelectorAll('.theme-toggle').forEach(function(btn){
+          if(btn.dataset.bound) return;
+          btn.dataset.bound = '1';
+          btn.addEventListener('click', function(){
+            var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+            paintToggle(next);
+          });
+        });
+      }
+      function refreshToggle(){ bindToggle(); paintToggle(effectiveTheme()); }
+      refreshToggle();
+      document.addEventListener('DOMContentLoaded', refreshToggle);
+      document.addEventListener('turbo:load', refreshToggle);
+      if(window.matchMedia){
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){
+          if(!storedTheme()) paintToggle(systemTheme());
+        });
+      }
     })();
   </script>
 </nav>
@@ -100,7 +145,7 @@
   </div>
 </div>
 
-<div id="noConstituencyPrompt" style="max-width:calc(900px - 28px);margin:12px auto 0;background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06);padding:20px;text-align:center;font-size:20px;color:var(--ink);">Find your constituency above, or conduct a search.</div>
+<div id="noConstituencyPrompt" style="max-width:calc(900px - 28px);margin:12px auto 0;background:var(--panel);border-radius:16px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.06);padding:20px;text-align:center;font-size:20px;color:var(--ink);">Find your constituency above, or conduct a search.</div>
 
 <!-- Scorecard -->
 <div class="app">
@@ -118,6 +163,11 @@
       </div>
       <div class="cards" id="cards">
         <div class="loading">Loading...</div>
+      </div>
+      <div class="scorecard-member-edit-cta" id="scorecardMemberEditCta" hidden>
+        <button type="button" class="member-edit-trigger member-edit-trigger-global" id="scorecardMemberEditBtn">
+          Submit a Member edit →
+        </button>
       </div>
     </div>
   </div>
@@ -154,6 +204,23 @@
     <div id="meStepForm" hidden>
       <a href="member-edit-guide.html" target="_blank" rel="noopener noreferrer" class="member-edit-guide-link">Read the style guide before you start →</a>
       <div class="member-edit-field">
+        <label for="meCandidate">Who is this for?</label>
+        <select id="meCandidate"></select>
+      </div>
+      <div id="meNewCandidateFields" hidden>
+        <div class="member-edit-field">
+          <label for="meNewName">Candidate name</label>
+          <input type="text" id="meNewName" placeholder="Full name">
+        </div>
+        <div class="member-edit-field">
+          <label for="meNewParty">Party</label>
+          <input type="text" id="meNewParty" placeholder="Party">
+        </div>
+        <div class="member-edit-field member-edit-checkbox-field">
+          <label><input type="checkbox" id="meNewCurrentMp"> This candidate is the current MP</label>
+        </div>
+      </div>
+      <div class="member-edit-field">
         <label for="meGrade">Grade</label>
         <select id="meGrade">
           <option value="A">A</option>
@@ -187,9 +254,19 @@
   </div>
 </div>
 
-<script src="editable-list.js"></script>
+<script src="editable-list.js" id="editableListScript"></script>
 <script>
-(function() {
+// Turbo (turbo.js) can navigate here client-side from another page (e.g. the
+// National Overview map's "View on Scorecard" link) without a full browser
+// load. On a full load the browser guarantees editable-list.js above finishes
+// executing before this block runs; under a Turbo visit that guarantee does
+// NOT hold for a script that's new to this session — Turbo activates body
+// scripts in order but does not await an external one's fetch before moving
+// on to the next, so on a slow/cold connection this block could run before
+// window.ASVAEditableList exists and throw, breaking the whole page. Gate on
+// the script's own load event (with an immediate-run fallback in case it's
+// already loaded) so this works regardless of how the page was reached.
+function ASVAScorecardMain() {
 
   // ── Grade colours / order ─────────────────────────────────────────────────
   const COLOUR = {
@@ -305,16 +382,50 @@
   const noConstituencyPrompt = document.getElementById('noConstituencyPrompt');
   const scShareBtn           = document.getElementById('scShareBtn');
   const scShareLabel         = document.getElementById('scShareLabel');
+  const scMemberEditCta      = document.getElementById('scorecardMemberEditCta');
+  const scMemberEditBtn      = document.getElementById('scorecardMemberEditBtn');
 
   let allConstituencies = [];
   let selectedConstituency = '';
+
+  // In-flight (or last-attempted) constituency load, so a slow or failed
+  // fetch can be retried just by the user interacting with the search box
+  // again — rather than depending on the one attempt made at page load ever
+  // succeeding, with no way to recover from a transient failure short of a
+  // full page refresh. Deduped so concurrent callers (init() and the search
+  // box) share the same request instead of firing it twice.
+  let constituenciesRequest = null;
+  function loadConstituencies() {
+    if (!constituenciesRequest) {
+      constituenciesRequest = fetchConstituencies().then(list => {
+        allConstituencies = list;
+        buildPeopleIndex();
+      }).catch(err => {
+        constituenciesRequest = null; // allow the next call to retry
+        throw err;
+      });
+    }
+    return constituenciesRequest;
+  }
 
   // ── Shareable per-constituency link ─────────────────────────────────────────
   // A scorecard's address is the page URL with ?constituency=<name> (the same
   // param the init deep-link already reads). We keep the address bar in sync as
   // the user browses, so copying the URL — or the "Share this scorecard" button —
   // always points at the scorecard on screen.
+  // Set only on a static per-constituency page generated by
+  // build-constituency-pages.js (via the data-ssr-constituency body
+  // attribute) — empty string on the plain, search-driven scorecard page.
+  const ssrConstituency = document.body.getAttribute('data-ssr-constituency') || '';
   function shareUrlFor(name) {
+    // The static page's own pathname already encodes its constituency, so
+    // while we're still showing that same one, keep the clean URL as-is
+    // instead of also appending the old ?constituency= form on top of it —
+    // otherwise the very first render() call after JS boots would mangle a
+    // clean shared link back into a messy hybrid one. Searching to a
+    // *different* constituency from here still falls back to the normal
+    // query-string form below, same as it always has.
+    if (ssrConstituency && name === ssrConstituency) return location.origin + location.pathname;
     const base = location.origin + location.pathname;
     return name ? base + '?constituency=' + encodeURIComponent(name) : base;
   }
@@ -444,14 +555,31 @@
   function filterAndShowDropdown(term) {
     term = (term || '').trim();
 
-    // On first load the search box can be focused before fetchConstituencies()
-    // resolves, when allConstituencies is still empty — without this check that
-    // looked identical to a real zero-result search and showed "No matches
-    // found" until the page was refreshed (and a refresh usually "fixed" it
-    // only because /data.json was then served from cache almost instantly).
+    // On first load the search box can be focused before the constituency
+    // list has loaded, when allConstituencies is still empty — without this
+    // check that looked identical to a real zero-result search and showed
+    // "No matches found" permanently. Actively (re)triggering the load here,
+    // rather than only waiting on the one attempt made at page init, also
+    // means a slow or outright failed initial fetch recovers the moment the
+    // user interacts with the search box again, instead of leaving it stuck
+    // however long the failure lasts.
     if (!allConstituencies.length) {
       constituencyDropdown.innerHTML = '<div class="dropdown-item" style="color:#999">Loading constituencies…</div>';
       constituencyDropdown.style.display = 'block';
+      loadConstituencies().then(() => {
+        if (document.activeElement === constituencySearch) {
+          filterAndShowDropdown(constituencySearch.value.toLowerCase());
+        }
+      }).catch(() => {
+        if (document.activeElement !== constituencySearch) return;
+        constituencyDropdown.innerHTML = '';
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        item.style.color = '#999';
+        item.textContent = 'Couldn’t load constituencies — tap to try again';
+        item.addEventListener('click', () => filterAndShowDropdown(constituencySearch.value.toLowerCase()));
+        constituencyDropdown.appendChild(item);
+      });
       return;
     }
 
@@ -502,12 +630,14 @@
       sheetWrap.style.display = 'none';
       noConstituencyPrompt.style.display = '';
       if (scShareBtn) scShareBtn.hidden = true;
+      if (scMemberEditCta) scMemberEditCta.hidden = true;
       syncShareUrl('');
       return;
     }
     sheetWrap.style.display = '';
     noConstituencyPrompt.style.display = 'none';
     if (scShareBtn) scShareBtn.hidden = false;
+    if (scMemberEditCta) scMemberEditCta.hidden = true;
     syncShareUrl(constituency);
     cards.innerHTML = '<div class="loading">Loading candidates...</div>';
     try {
@@ -515,6 +645,7 @@
       currentListData = list;
       if (!list.length) {
         cards.innerHTML = '<div class="empty">No candidates found for this constituency.</div>';
+        if (scMemberEditCta) scMemberEditCta.hidden = false; // still let a member propose the first candidate for this seat
         return;
       }
       cards.innerHTML = list.map(r => {
@@ -581,16 +712,12 @@
                    onclick="event.stopPropagation()">
                   Something to add or something we got wrong? Let us know by email →
                 </a>
-                <button type="button" class="member-edit-trigger"
-                        data-constituency="${escHTML(constituency)}" data-mp="${escHTML(r.name)}"
-                        onclick="event.stopPropagation(); window.openMemberEditModal(this.dataset.constituency, this.dataset.mp)">
-                  Submit a Member edit →
-                </button>
               </div>
             </div>
           </div>
         `;
       }).join('');
+      if (scMemberEditCta) scMemberEditCta.hidden = false;
 
       // If we arrived by searching a person, reveal and highlight their card.
       if (focusName) {
@@ -608,6 +735,7 @@
       }
     } catch {
       cards.innerHTML = '<div class="error">Error loading candidates.</div>';
+      if (scMemberEditCta) scMemberEditCta.hidden = true;
     }
   }
 
@@ -628,6 +756,11 @@
   const meLoginBtn       = document.getElementById('meLoginBtn');
   const meLoginStatus    = document.getElementById('meLoginStatus');
   const meMailtoFallback = document.getElementById('meMailtoFallback');
+  const meCandidate       = document.getElementById('meCandidate');
+  const meNewFields       = document.getElementById('meNewCandidateFields');
+  const meNewName         = document.getElementById('meNewName');
+  const meNewParty        = document.getElementById('meNewParty');
+  const meNewCurrentMp    = document.getElementById('meNewCurrentMp');
   const meGrade          = document.getElementById('meGrade');
   const meBulletsWrap    = document.getElementById('meBullets');
   const meSourcesWrap    = document.getElementById('meSources');
@@ -637,7 +770,8 @@
   const meFormStatus     = document.getElementById('meFormStatus');
   const meClose          = document.getElementById('meClose');
 
-  let meContext       = null; // { constituency, mpName }
+  const NEW_CANDIDATE = '__new__';
+  let meContext       = null; // { constituency }
   let meBulletsEditor = null;
   let meSourcesEditor = null;
 
@@ -669,6 +803,54 @@
     return { grade: (data.grade || '?').toUpperCase(), bullets, sources };
   }
 
+  // Populates the "Who is this for?" select from the constituency's current
+  // cards, plus a trailing "+ Add a new candidate" option. `preferredName`
+  // (if it matches a listed candidate) is preselected; otherwise the current
+  // MP, then the first candidate, then "add new" if the seat has none yet.
+  function meBuildCandidateOptions(preferredName) {
+    const norm = s => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    meCandidate.innerHTML = '';
+    currentListData.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.name;
+      opt.textContent = r.name + (r.current_mp ? ' (current MP)' : '') + (r.party ? ' — ' + r.party : '');
+      meCandidate.appendChild(opt);
+    });
+    const newOpt = document.createElement('option');
+    newOpt.value = NEW_CANDIDATE;
+    newOpt.textContent = '+ Add a new candidate';
+    meCandidate.appendChild(newOpt);
+
+    const want  = norm(preferredName);
+    const match = want && currentListData.find(r => norm(r.name) === want);
+    if (match) meCandidate.value = match.name;
+    else {
+      const currentMp = currentListData.find(r => r.current_mp);
+      meCandidate.value = currentMp ? currentMp.name : (currentListData[0] ? currentListData[0].name : NEW_CANDIDATE);
+    }
+  }
+
+  function meSyncNewFieldsVisibility() {
+    meNewFields.hidden = meCandidate.value !== NEW_CANDIDATE;
+  }
+
+  function meValuesForSelection() {
+    return meCandidate.value === NEW_CANDIDATE
+      ? { grade: '?', bullets: [], sources: [] }
+      : meCurrentValuesFor(meCandidate.value);
+  }
+
+  meCandidate.addEventListener('change', () => {
+    meSyncNewFieldsVisibility();
+    if (meCandidate.value === NEW_CANDIDATE) {
+      meNewName.value = '';
+      meNewParty.value = '';
+      meNewCurrentMp.checked = false;
+      meNewName.focus();
+    }
+    meRenderForm(meValuesForSelection());
+  });
+
   function meRenderForm(values) {
     meGrade.value = values.grade || '?';
     meBulletsWrap.innerHTML = '';
@@ -678,6 +860,9 @@
     meSourcesEditor = editableList('srcs', values.sources || []);
     meSourcesWrap.appendChild(meSourcesEditor);
     meNote.value = values.note || '';
+    meNewName.value = values.newName || '';
+    meNewParty.value = values.newParty || '';
+    meNewCurrentMp.checked = !!values.newCurrentMp;
   }
 
   function meShowLoginStep() {
@@ -698,25 +883,37 @@
     meRenderForm(values);
   }
 
-  window.openMemberEditModal = function (constituency, mpName) {
-    meContext = { constituency, mpName };
+  window.openMemberEditModal = function (constituency, preferredMpName) {
+    meContext = { constituency };
     meTitle.textContent = 'Suggest an edit';
-    meSubtitle.textContent = mpName + ' — ' + constituency;
+    meSubtitle.textContent = constituency;
     meMailtoFallback.href = 'mailto:contact@aisafetyvoteralliance.co.uk?subject=' +
-      encodeURIComponent('Scorecard update for ' + mpName);
+      encodeURIComponent('Scorecard update for ' + constituency);
+    meBuildCandidateOptions(preferredMpName);
+    meSyncNewFieldsVisibility();
     meOverlay.classList.add('show');
     document.body.style.overflow = 'hidden';
     meShowLoginStep(); // default while the session check below resolves
     fetch('/api/member/session?constituency=' + encodeURIComponent(constituency), { credentials: 'same-origin' })
       .then(r => r.json())
       .then(session => {
-        // A newer click on a different card superseded this check.
-        if (!meContext || meContext.constituency !== constituency || meContext.mpName !== mpName) return;
+        // A newer click superseded this check.
+        if (!meContext || meContext.constituency !== constituency) return;
         if (!session.authenticated) { meShowLoginStep(); return; }
         const p = session.pending_submission;
-        meShowFormStep(p
-          ? { grade: p.proposed_grade, bullets: p.bullets || [], sources: p.sources || [], note: p.note || '' }
-          : meCurrentValuesFor(mpName));
+        if (!p) { meShowFormStep(meValuesForSelection()); return; }
+        const norm = s => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        if (p.is_new_candidate) {
+          meCandidate.value = NEW_CANDIDATE;
+        } else {
+          const match = currentListData.find(r => norm(r.name) === norm(p.mp_name));
+          if (match) meCandidate.value = match.name;
+        }
+        meSyncNewFieldsVisibility();
+        meShowFormStep({
+          grade: p.proposed_grade, bullets: p.bullets || [], sources: p.sources || [], note: p.note || '',
+          newName: p.is_new_candidate ? p.mp_name : '', newParty: p.party || '', newCurrentMp: !!p.current_mp,
+        });
       })
       .catch(() => meShowLoginStep());
   };
@@ -726,6 +923,12 @@
     document.body.style.overflow = '';
     meContext = null;
   }
+  if (scMemberEditBtn) {
+    scMemberEditBtn.addEventListener('click', () => {
+      if (selectedConstituency) window.openMemberEditModal(selectedConstituency);
+    });
+  }
+
   meClose.addEventListener('click', meCloseModal);
   meCancelBtn.addEventListener('click', meCloseModal);
   meOverlay.addEventListener('click', e => { if (e.target === meOverlay) meCloseModal(); });
@@ -747,7 +950,11 @@
     fetch('/api/member/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, constituency: meContext && meContext.constituency, mp_name: meContext && meContext.mpName }),
+      body: JSON.stringify({
+        email,
+        constituency: meContext && meContext.constituency,
+        mp_name: meCandidate && meCandidate.value !== NEW_CANDIDATE ? meCandidate.value : undefined,
+      }),
     })
       .then(() => {
         meShowStatus(meLoginStatus, "If that email matches an ASVA member, we've sent a login link — check your inbox.", 'ok');
@@ -762,6 +969,22 @@
 
   meSubmitBtn.addEventListener('click', () => {
     if (!meContext) return;
+    const isNew = meCandidate.value === NEW_CANDIDATE;
+    let mpName, party, currentMp;
+    if (isNew) {
+      mpName    = meNewName.value.trim();
+      party     = meNewParty.value.trim();
+      currentMp = meNewCurrentMp.checked;
+      if (!mpName) { meShowStatus(meFormStatus, 'Please enter the candidate’s name.', 'err'); return; }
+      if (!party)  { meShowStatus(meFormStatus, 'Please enter the candidate’s party.', 'err'); return; }
+    } else {
+      mpName = meCandidate.value;
+      if (!mpName) { meShowStatus(meFormStatus, 'Please choose who this edit is for.', 'err'); return; }
+      const norm = s => (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      const row  = currentListData.find(r => norm(r.name) === norm(mpName));
+      party     = '';
+      currentMp = !!(row && row.current_mp);
+    }
     const bullets = meBulletsEditor ? meBulletsEditor.getValues() : [];
     const sources = meSourcesEditor ? meSourcesEditor.getValues() : [];
     meSubmitBtn.disabled = true;
@@ -771,8 +994,10 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         constituency: meContext.constituency,
-        mp_name:      meContext.mpName,
-        grade:        meGrade.value,
+        mp_name: mpName,
+        is_new_candidate: isNew,
+        party, current_mp: currentMp,
+        grade: meGrade.value,
         bullets, sources,
         note: meNote.value.trim(),
       }),
@@ -807,20 +1032,24 @@
   // ── Init ──────────────────────────────────────────────────────────────────
   (async function init() {
     try {
-      allConstituencies = await fetchConstituencies();
-      buildPeopleIndex();
+      await loadConstituencies();
       sheetWrap.style.display = 'none';
       noConstituencyPrompt.style.display = '';
 
       // If the user focused the search box before this resolved, it's showing
-      // the "Loading constituencies…" placeholder — refresh it now so the real
-      // list appears without needing another click.
+      // the "Loading constituencies…" placeholder (or, on a slow/failed first
+      // attempt, its own retry driven from filterAndShowDropdown) — refresh it
+      // now so the real list appears without needing another click.
       if (document.activeElement === constituencySearch) {
         filterAndShowDropdown(constituencySearch.value.toLowerCase());
       }
 
       const params   = new URLSearchParams(window.location.search);
-      const deepLink = params.get('constituency');
+      // A query-string deep link (a shared ?constituency= link) always wins;
+      // otherwise fall back to the constituency this static page was built
+      // for, so it self-initialises into the same rendered state a shared
+      // link would produce.
+      const deepLink = params.get('constituency') || ssrConstituency;
       // Returning from the member-login email link (functions/api/member/verify.js
       // redirects here with these params): reopen the right card AND the edit
       // form automatically, instead of dropping the member on a blank scorecard.
@@ -854,12 +1083,22 @@
     }
   })();
 
-})();
+}
+
+if (window.ASVAEditableList) {
+  ASVAScorecardMain();
+} else {
+  document.getElementById('editableListScript').addEventListener('load', ASVAScorecardMain, { once: true });
+}
 </script>
 
 <!-- Site footer -->
 <footer class="sitefooter">
-  <a href="privacy.html">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+  <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle dark mode">
+    <svg class="theme-toggle-icon theme-toggle-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
+  <div class="sitefooter-links"><a href="privacy.html">Data Privacy Notice</a></div>
 </footer>
 
 </body>

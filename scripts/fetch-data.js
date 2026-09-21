@@ -204,9 +204,26 @@ const [candidatesText, constituenciesText, ge2024, confirmedRatings] = await Pro
 
 // ── Parse Constituencies tab ──────────────────────────────────────────────────
 const [_conHeader, ...conRows] = parseCSV(constituenciesText);
-const constituencies = conRows
-  .map(row => (row[0] || '').trim())
-  .filter(Boolean)
+const conNamesRaw = conRows.map(row => fixMojibake((row[0] || '').trim())).filter(Boolean);
+
+// A row that only differed by mojibake corruption (e.g. a stray re-paste of
+// "Ynys Môn" as "Ynys MÃ´n") now collapses onto the same name as its correctly
+// -encoded twin once fixMojibake normalises both — collapse duplicates here,
+// with a warning, rather than letting build-constituency-pages hard-crash on
+// the resulting slug collision and take the whole site build down over one
+// stray row in the sheet. The sheet itself should still get the extra row
+// removed when noticed.
+const conNameSeen = new Set();
+const conNameDupes = new Set();
+for (const n of conNamesRaw) {
+  if (conNameSeen.has(n)) conNameDupes.add(n);
+  conNameSeen.add(n);
+}
+if (conNameDupes.size) {
+  console.warn(`  [DUPLICATE CONSTITUENCY] appears more than once in the Constituencies tab, collapsed to one: ${[...conNameDupes].map(d => `"${d}"`).join(', ')}`);
+}
+
+const constituencies = [...conNameSeen]
   .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
   .map(name => ({ name }));
 
@@ -255,7 +272,7 @@ console.log(`Candidates CSV: ev4 col=${COL.ev4}, ev4url col=${COL.ev4url}, lastU
 const candidatesMap = {};
 
 for (const row of candRows) {
-  const constituency  = (row[COL.constituency]  || '').trim();
+  const constituency  = fixMojibake((row[COL.constituency]  || '').trim());
   const name          = fixMojibake((row[COL.name] || '').trim());
   const party         = (row[COL.party]         || '').trim();
   const rawGrade      = (row[COL.grade]         || '?').trim().toUpperCase();
@@ -315,11 +332,33 @@ for (const row of candRows) {
 let byElecCount  = 0;
 let noMpCount    = 0;
 let noGradeCount = 0;
+let noConMatch   = 0;
+
+// Normalised indexes so a hex whose hex-layout.json name differs even
+// slightly in spelling/punctuation from the Google Sheet (an apostrophe
+// style, "&" vs "and", stray whitespace, a missing diacritic) still resolves
+// to the same seat, the way every other join in this file already does via
+// normName(). Without this, an exact-string hex.name lookup here silently
+// returns no candidates for that seat, and — see `name:` below — the hexMap
+// entry keeps hex-layout.json's own spelling instead of the sheet's, which
+// is what the scorecard's deep-link matching and the static /scorecard/<slug>/
+// pages are built from. That mismatch is what breaks "View on Scorecard"
+// from the National Overview map for exactly the seats where the two
+// spellings disagree.
+const candidatesByKey = {};
+for (const [k, v] of Object.entries(candidatesMap)) candidatesByKey[normName(k)] = v;
+const constituencyByKey = {};
+for (const c of constituencies) constituencyByKey[normName(c.name)] = c.name;
 
 const hexMap = hexLayout.map(hex => {
   const key        = normName(hex.name);
   const ge         = ge2024[key] || {};
-  const candidates = candidatesMap[hex.name] || [];
+  const candidates = candidatesByKey[key] || [];
+  const canonicalName = constituencyByKey[key];
+  if (!canonicalName) {
+    noConMatch++;
+    console.warn(`  [NO CONSTITUENCY MATCH] "${hex.name}" — not found in the Constituencies tab; the scorecard link for this seat will be broken`);
+  }
 
   // Check if the sheet explicitly marks a current MP (column 'currentMp' = 'C')
   const sheetMP = candidates.find(c => c.current_mp);
@@ -368,7 +407,7 @@ const hexMap = hexLayout.map(hex => {
   }
 
   return {
-    name:     hex.name,
+    name:     canonicalName || hex.name,
     code:     hex.code,
     gss:      hex.gss,
     cx:       hex.cx,
@@ -388,6 +427,7 @@ if (byElecCount)  console.log(`${byElecCount} by-election seat(s) detected from 
 
 if (noMpCount)    console.warn(`${noMpCount} hex(es) had no MP data`);
 if (noGradeCount) console.warn(`${noGradeCount} MP(s) in sheet whose name didn't match — check spelling`);
+if (noConMatch)   console.warn(`${noConMatch} hex(es) had no match in the Constituencies tab — check spelling`);
 
 // ── Apply the confirmed-ratings overlay ───────────────────────────────────────
 // A confirmed rating overrides the current MP's sheet grade for its seat and

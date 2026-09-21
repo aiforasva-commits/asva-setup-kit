@@ -33,6 +33,11 @@ export async function onRequest(context) {
   const mpName        = String(body.mp_name ?? '').trim().slice(0, 200);
   if (!constituency || !mpName) return json({ error: 'Missing constituency or MP name' }, 400);
 
+  const isNewCandidate = !!body.is_new_candidate;
+  const party          = isNewCandidate ? String(body.party ?? '').trim().slice(0, 200) : '';
+  if (isNewCandidate && !party) return json({ error: 'Missing party for the new candidate' }, 400);
+  const currentMp = !!body.current_mp;
+
   const grade = normalizeGrade(body.grade);
   if (!grade) return json({ error: 'Invalid grade' }, 400);
 
@@ -41,8 +46,9 @@ export async function onRequest(context) {
   const note    = body.note ? String(body.note).trim().slice(0, 1000) : null;
 
   // Snapshot the live rating (if any) as the "current" side of the diff shown
-  // to the reviewer — see member_submissions.sql.
-  const { data: live } = await supabase
+  // to the reviewer — see member_submissions.sql. A brand-new candidate has
+  // no live row to snapshot.
+  const { data: live } = isNewCandidate ? { data: null } : await supabase
     .from('mp_ratings')
     .select('grade, bullets, sources')
     .eq('constituency', constituency)
@@ -50,18 +56,21 @@ export async function onRequest(context) {
 
   const record = {
     constituency,
-    mp_name:        mpName,
-    member_id:      member.id,
-    member_email:   member.email,
-    member_name:    member.first_name,
-    proposed_grade: grade,
+    mp_name:          mpName,
+    member_id:        member.id,
+    member_email:     member.email,
+    member_name:      member.first_name,
+    proposed_grade:   grade,
     bullets,
     sources,
     note,
-    base_grade:     live?.grade ?? null,
-    base_bullets:   live?.bullets ?? [],
-    base_sources:   live?.sources ?? [],
-    status:         'pending',
+    is_new_candidate: isNewCandidate,
+    party:            party || null,
+    current_mp:       currentMp,
+    base_grade:       live?.grade ?? null,
+    base_bullets:     live?.bullets ?? [],
+    base_sources:     live?.sources ?? [],
+    status:           'pending',
   };
 
   const findExisting = () => supabase

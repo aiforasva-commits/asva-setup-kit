@@ -28,14 +28,15 @@
   <link rel="canonical" href="https://aisafetyvoteralliance.co.uk/pledge" />
   <meta name="turbo-cache-control" content="no-cache">
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <link rel="stylesheet" href="app.css?v=20260912b" data-turbo-track="reload">
+  <script>(function(){try{var t=localStorage.getItem('asva-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+  <link rel="stylesheet" href="app.css?v=20260914b" data-turbo-track="reload">
   <script type="module" src="turbo.js"></script>
 </head>
 <body class="page-pledge">
 
 <!-- Site navigation -->
 <nav class="sitenav" id="sitenav" data-turbo-permanent>
-  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" style="height:52px;width:auto;display:block;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
+  <div class="sitenav-brand"><a href="index.html" class="sitenav-logo-link" aria-label="ASVA home"><img src="ASVA_Logo.png" alt="ASVA" class="sitenav-logo-light" style="height:52px;width:auto;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"><img src="ASVA_Logo_FS_Dark.png?v=3" alt="ASVA" class="sitenav-logo-dark" style="height:52px;width:auto;object-fit:contain" onerror="this.parentNode.outerHTML='<span class=\'sitenav-logo-text\'>ASVA</span>'"></a></div>
   <span class="sitenav-current" id="sitenavCurrent" aria-hidden="true"></span>
   <div class="sitenav-links" id="sitenavLinks">
     <a class="sitenav-welcome" href="index.html">Welcome</a>
@@ -79,6 +80,39 @@
       document.addEventListener('DOMContentLoaded', function(){ setActive(); });
       document.addEventListener('turbo:load', function(){ setActive(); closeMenu(); });
       document.addEventListener('turbo:click', function(e){ setActive(e.detail.url); });
+
+      // ── Dark mode toggle ───────────────────────────────────────
+      var THEME_KEY = 'asva-theme';
+      function storedTheme(){ try{ return localStorage.getItem(THEME_KEY); }catch(e){ return null; } }
+      function systemTheme(){ return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'; }
+      function effectiveTheme(){ return storedTheme() || systemTheme(); }
+      function paintToggle(theme){
+        document.querySelectorAll('.theme-toggle').forEach(function(btn){
+          btn.classList.toggle('is-dark', theme === 'dark');
+          btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        });
+      }
+      function bindToggle(){
+        document.querySelectorAll('.theme-toggle').forEach(function(btn){
+          if(btn.dataset.bound) return;
+          btn.dataset.bound = '1';
+          btn.addEventListener('click', function(){
+            var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+            paintToggle(next);
+          });
+        });
+      }
+      function refreshToggle(){ bindToggle(); paintToggle(effectiveTheme()); }
+      refreshToggle();
+      document.addEventListener('DOMContentLoaded', refreshToggle);
+      document.addEventListener('turbo:load', refreshToggle);
+      if(window.matchMedia){
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){
+          if(!storedTheme()) paintToggle(systemTheme());
+        });
+      }
     })();
   </script>
 </nav>
@@ -156,8 +190,8 @@
       <div class="form-section">
         <div class="section-label">Your Constituency</div>
         <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <button type="button" id="modeAddrBtn" style="flex:1;padding:10px 14px;border-radius:14px;border:2px solid var(--accent,#c0392b);background:#fce4e4;color:var(--ink,#1a1a1a);font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;">Enter my address</button>
-          <button type="button" id="modeConstBtn" style="flex:1;padding:10px 14px;border-radius:14px;border:2px solid var(--line,#e0e0e0);background:#fff;color:var(--ink,#1a1a1a);font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;">Select my constituency</button>
+          <button type="button" id="modeAddrBtn" style="flex:1;padding:10px 14px;border-radius:14px;border:2px solid var(--accent,#c0392b);background:var(--mode-active-bg,#fce4e4);color:var(--ink,#1a1a1a);font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;">Enter my address</button>
+          <button type="button" id="modeConstBtn" style="flex:1;padding:10px 14px;border-radius:14px;border:2px solid var(--line,#e0e0e0);background:var(--mode-inactive-bg,#fff);color:var(--ink,#1a1a1a);font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;">Select my constituency</button>
         </div>
 
         <!-- Address panel -->
@@ -194,7 +228,7 @@
             <input type="text" id="constituencyFilter" placeholder="Type to filter…" autocomplete="off"
               style="width:100%;box-sizing:border-box;" />
             <div id="constituencyDropdown"
-              style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;max-height:340px;overflow-y:auto;margin-top:4px;box-shadow:0 4px 16px rgba(0,0,0,.12);">
+              style="display:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;max-height:340px;overflow-y:auto;margin-top:4px;box-shadow:0 4px 16px rgba(0,0,0,.12);">
             </div>
             <div class="field-error" id="err-constituencyFilter">Please select a constituency.</div>
           </div>
@@ -204,7 +238,7 @@
       <!-- Contact preference -->
       <div class="form-section" id="contactSection" style="display:none;">
         <div class="section-label">Contact Preference <span style="color:var(--F);font-weight:700">*</span></div>
-        <p class="contact-intro">As part of signing, you'll receive occasional updates from ASVA to help keep you and your MP accountable to your pledge. You can additionally choose to receive AI safety news.</p>
+        <p class="contact-intro">As part of signing, you'll receive an update from ASVA before an election in your constituency. You can also opt into occasional updates and AI safety news.</p>
         <div class="radio-group">
           <label class="radio-card radio-card--rec">
             <div class="radio-card-main">
@@ -218,7 +252,13 @@
           <label class="radio-card" style="align-items:center;">
             <input type="radio" name="contact" value="urgent_only" />
             <div class="radio-card-text">
-              <div class="radio-card-desc">Send me updates from ASVA only.</div>
+              <div class="radio-card-desc">Send me occasional updates from ASVA.</div>
+            </div>
+          </label>
+          <label class="radio-card" style="align-items:center;">
+            <input type="radio" name="contact" value="election_only" />
+            <div class="radio-card-text">
+              <div class="radio-card-desc">Update me only before an election.</div>
             </div>
           </label>
         </div>
@@ -359,9 +399,9 @@
   const constituencyPanel = document.getElementById('constituencyPanel');
 
   const BASE_BTN    = 'flex:1;padding:10px 14px;border-radius:14px;border:2px solid;font-weight:400;cursor:pointer;font-size:15px;font-family:inherit;transition:border-color .15s,background .15s;color:var(--ink,#1a1a1a);';
-  const ACTIVE_STYLE   = BASE_BTN + 'border-color:var(--accent,#c0392b);background:#fce4e4;';
-  const INACTIVE_STYLE = BASE_BTN + 'border-color:var(--line,#e0e0e0);background:#fff;';
-  const HOVER_STYLE    = BASE_BTN + 'border-color:#e8a0a8;background:#fff5f5;';
+  const ACTIVE_STYLE   = BASE_BTN + 'border-color:var(--accent,#c0392b);background:var(--mode-active-bg,#fce4e4);';
+  const INACTIVE_STYLE = BASE_BTN + 'border-color:var(--line,#e0e0e0);background:var(--mode-inactive-bg,#fff);';
+  const HOVER_STYLE    = BASE_BTN + 'border-color:var(--mode-hover-border,#e8a0a8);background:var(--mode-hover-bg,#fff5f5);';
 
   function applyModeStyles(activeBtn, inactiveBtn) {
     activeBtn.style.cssText   = ACTIVE_STYLE;
@@ -966,7 +1006,11 @@
 
 <!-- Site footer -->
 <footer class="sitefooter">
-  <a href="privacy.html" target="_blank">Data Privacy Notice</a><span class="sep">·</span><a href="mailto:contact@aisafetyvoteralliance.co.uk">contact@aisafetyvoteralliance.co.uk</a>
+  <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false" title="Toggle dark mode">
+    <svg class="theme-toggle-icon theme-toggle-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </button>
+  <div class="sitefooter-links"><a href="privacy.html" target="_blank">Data Privacy Notice</a></div>
 </footer>
 
 </body>

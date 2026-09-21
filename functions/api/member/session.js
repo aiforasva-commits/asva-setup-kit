@@ -29,7 +29,7 @@ export async function onRequest(context) {
     if (supabase) {
       const { data: pending } = await supabase
         .from('member_submissions')
-        .select('id, proposed_grade, bullets, sources, note, created_at')
+        .select('id, mp_name, proposed_grade, bullets, sources, note, is_new_candidate, party, current_mp, created_at')
         .eq('member_id', member.id)
         .eq('constituency', constituency)
         .eq('status', 'pending')

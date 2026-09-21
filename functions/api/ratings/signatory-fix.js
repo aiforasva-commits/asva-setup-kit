@@ -14,7 +14,7 @@
 // clear "signed / not signed" claim that contradicts the roster. It never removes
 // substantive bullets/sources, never rewrites an entangled bullet (those are
 // reported under `flagged` for a human), and reports anything that won't fit the
-// ≤5-bullet / ≤6-source caps under `capped` rather than dropping it. Rows it edits
+// ≤5-bullet / ≤4-source caps under `capped` rather than dropping it. Rows it edits
 // are stamped signatory_fixed_at + updated_by='signatory-fix' so /goldenpath.html
 // can filter to them. A row that needs no change is left completely untouched.
 //

@@ -6,8 +6,8 @@
     "fetch-data": "node scripts/fetch-data.js",
     "missing-mps": "node scripts/missing-mps.js",
     "import-ratings": "node scripts/import-ratings.js",
-    "build": "node scripts/fetch-data.js",
-    "dev": "node scripts/fetch-data.js && wrangler pages dev . --compatibility-date=2024-01-01"
+    "build": "node scripts/fetch-data.js && node scripts/build-constituency-pages.js",
+    "dev": "node scripts/fetch-data.js && node scripts/build-constituency-pages.js && wrangler pages dev . --compatibility-date=2024-01-01"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"

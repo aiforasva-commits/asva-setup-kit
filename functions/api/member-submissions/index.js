@@ -25,6 +25,7 @@ export async function onRequest(context) {
     .select(`
       id, constituency, mp_name, member_name, member_email,
       proposed_grade, bullets, sources, note,
+      is_new_candidate, party, current_mp,
       base_grade, base_bullets, base_sources,
       status, confirmed_grade, amended, reject_reason,
       created_at, reviewed_at

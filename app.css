@@ -15,14 +15,36 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
 /* ===================== GLOBAL — identical on every page ===================== */
-:root{ --ink:#222; --muted:#666; --bg:#f6f6f6; --panel:#fff; --line:#e8e8e8; }
+/* Theme tokens. Light values live on :root; dark values apply automatically
+   from the OS (prefers-color-scheme) unless a visitor has picked a side with
+   the nav's theme toggle, in which case data-theme="light"/"dark" on <html>
+   (set from localStorage, see the nav script) wins instead. */
+:root{
+  --ink:#222; --muted:#666; --bg:#f6f6f6; --panel:#fff; --line:#e8e8e8;
+  --panel-2:#f2f2f2; --border:#dcdcdc; --bg-translucent:rgba(246,246,246,.92);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e8e8ec; --muted:#9a9aa8; --bg:#15151d; --panel:#1e1e28; --line:#34343f;
+    --panel-2:#26262f; --border:#3a3a46; --bg-translucent:rgba(21,21,29,.92);
+    --sitenav-share-ink:#e8e8ec;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e8e8ec; --muted:#9a9aa8; --bg:#15151d; --panel:#1e1e28; --line:#34343f;
+  --panel-2:#26262f; --border:#3a3a46; --bg-translucent:rgba(21,21,29,.92);
+  --sitenav-share-ink:#e8e8ec;
+  color-scheme:dark;
+}
 *, *::before, *::after{ box-sizing:border-box; margin:0; padding:0; }
 html{ overflow-y:scroll; }
 body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; }
 
 /* ── Site nav (shared, persistent via data-turbo-permanent) ── */
 .sitenav{
-  background:#fff;
+  background:var(--panel);
   border-bottom:1px solid var(--line);
   padding:10px 24px;
   display:flex;
@@ -54,7 +76,7 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
   white-space:nowrap;
 }
 .sitenav-links a:hover, .sitenav-links a.active{ background:#CC1133; color:#fff !important; }
-.sitenav-sep{ color:#ccc; font-weight:400; }
+.sitenav-sep{ color:var(--border); font-weight:400; }
 .sitenav-welcome{ display:none; }   /* mobile hamburger only (shown in the media query below) */
 /* Share link: a logo-height icon pinned to the far right of the nav, in the
    ASVA logo's dark blue (#0b2e42). Its container (.sitenav-right) mirrors the
@@ -64,9 +86,20 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
 .sitenav-right{ flex:1 1 0; display:flex; align-items:center; justify-content:flex-end; }
 /* No padding, so the hover/active highlight is a square that hugs the icon
    (icon is square: 52×52 desktop, 30×30 mobile) without adding to nav height. */
-.sitenav-share-link{ display:inline-flex; align-items:center; justify-content:center; color:#0b2e42; padding:0; border-radius:10px; text-decoration:none; transition:background .15s, color .15s; }
+.sitenav-share-link{ display:inline-flex; align-items:center; justify-content:center; color:var(--sitenav-share-ink, #0b2e42); padding:0; border-radius:10px; text-decoration:none; transition:background .15s, color .15s; }
 .sitenav-share-link:hover{ background:#CC1133; color:#fff; }
 .sitenav-share-icon{ display:block; width:52px; height:52px; }
+/* Dark-mode toggle base (sized/positioned per context — see .sitefooter
+   below, where it actually lives). Shows a sun (click to go dark) or a moon
+   (click to go light) depending on the theme actually in effect —
+   auto-detected from the OS unless the visitor has picked a side (see the
+   nav script), which is also what the .is-dark class reflects. */
+.theme-toggle{ display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; background:none; border:none; border-radius:10px; cursor:pointer; color:var(--muted); transition:background .15s, color .15s; }
+.theme-toggle:hover{ background:var(--panel-2); color:var(--ink); }
+.theme-toggle-icon{ width:18px; height:18px; display:block; }
+.theme-toggle-icon-moon{ display:none; }
+.theme-toggle.is-dark .theme-toggle-icon-sun{ display:none; }
+.theme-toggle.is-dark .theme-toggle-icon-moon{ display:block; }
 /* Brand, current-page label and hamburger (label + toggle show on mobile only).
    On desktop the brand and an equal-width right container both grow (flex:1), so
    the link group sits at the true page centre — matching the centred content
@@ -76,7 +109,7 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
 .sitenav-toggle{ display:none; flex:0 0 auto; background:none; border:none; cursor:pointer; color:var(--ink); font-size:24px; line-height:1; padding:6px 10px; border-radius:8px; }
 .sitenav-toggle::before{ content:"\2630"; }             /* ☰ */
 .sitenav.open .sitenav-toggle::before{ content:"\2715"; } /* ✕ */
-.sitenav-toggle:hover{ background:#f2f2f2; }
+.sitenav-toggle:hover{ background:var(--panel-2); }
 @media(max-width:700px){
   .sitenav{ flex-wrap:nowrap; gap:10px; padding:8px 14px; }
   .sitenav-brand{ flex:0 0 auto; }
@@ -95,7 +128,7 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
     position:absolute; top:100%; left:0; right:0;
     flex-direction:column; align-items:stretch; justify-content:flex-start;
     gap:2px; padding:8px 12px 14px;
-    background:#fff; border-bottom:1px solid var(--line);
+    background:var(--panel); border-bottom:1px solid var(--line);
     box-shadow:0 10px 20px rgba(0,0,0,.10);
     font-size:16px;
   }
@@ -106,10 +139,12 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
 }
 
 /* ── Site footer (shared) ── */
-.sitefooter{ text-align:center; padding:28px 14px 36px; font-size:13px; color:var(--muted); }
+.sitefooter{ display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; padding:28px 14px 36px; font-size:13px; color:var(--muted); }
 .sitefooter a{ color:var(--muted); text-decoration:underline; }
 .sitefooter a:hover{ color:var(--ink); }
-.sitefooter .sep{ margin:0 10px; color:#ccc; }
+.sitefooter .sep{ margin:0 10px; color:var(--border); }
+/* Dark-mode toggle, on its own line below the footer links. */
+.sitefooter .theme-toggle{ width:32px; height:32px; }
 
 /* Global keyframes (animation names are global scope) */
 @keyframes spin{ to{ transform:rotate(360deg); } }
@@ -198,6 +233,8 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
   border-color:#CC1133; box-shadow:0 0 0 3px rgba(204,17,51,.12);
 }
 .member-edit-hint{ font-size:12px; color:var(--muted); margin-top:6px; }
+.member-edit-checkbox-field label{ display:flex; align-items:center; gap:8px; font-weight:600; cursor:pointer; }
+.member-edit-checkbox-field input[type="checkbox"]{ width:16px; height:16px; }
 .member-edit-guide-link{ display:inline-block; font-size:13px; color:#1a6ef5; font-weight:600; text-decoration:underline; margin-bottom:18px; }
 .member-edit-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
 .member-edit-btn{
@@ -229,6 +266,8 @@ body{ font-family:'DM Sans',system-ui,-apple-system,sans-serif; background:var(-
   cursor:pointer; font-family:inherit; transition:background .15s, color .15s;
 }
 .member-edit-trigger:hover{ background:#CC1133; color:#fff; border-color:#CC1133; }
+.scorecard-member-edit-cta{ text-align:center; padding:20px 0 4px; }
+.member-edit-trigger-global{ font-size:14px; padding:12px 22px; border-radius:12px; }
 
 
 /* ===================== SCORECARD — index.html (body.page-scorecard) ===================== */
@@ -240,7 +279,7 @@ body.page-scorecard{
     position:sticky;
     top:58px;
     z-index:10;
-    background:rgba(246,246,246,.92);
+    background:var(--bg-translucent);
     backdrop-filter:blur(6px);
     padding:32px 14px 14px;
   }
@@ -262,34 +301,34 @@ body.page-scorecard{
   input[type="text"]{
     width:100%;
     padding:8px 30px 8px 10px;
-    border:1px solid #ddd;
+    border:1px solid var(--border);
     border-radius:12px;
     font-size:14px;
     font-family:inherit;
-    background:#fff;
+    background:var(--panel);
     color:var(--ink);
   }
   input[type="text"]:focus{ outline:none; border-color:var(--A); box-shadow:0 0 0 3px rgba(46,204,113,.15); }
   .clear-btn{
     position:absolute; right:8px; top:50%; transform:translateY(-50%);
-    background:#ddd; border:none; border-radius:50%;
+    background:var(--border); border:none; border-radius:50%;
     width:20px; height:20px;
     display:none; align-items:center; justify-content:center;
-    cursor:pointer; font-size:14px; color:#666; padding:0;
+    cursor:pointer; font-size:14px; color:var(--muted); padding:0;
   }
-  .clear-btn:hover{ background:#ccc; }
+  .clear-btn:hover{ background:var(--border); }
   .clear-btn.visible{ display:flex; }
   #constituencyDropdown{
     display:none; position:absolute; top:100%; left:0; right:0;
-    background:#fff; border:1px solid #ddd; border-radius:8px;
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
     max-height:300px; overflow-y:auto; margin-top:4px;
     box-shadow:0 4px 12px rgba(0,0,0,.15); z-index:100;
   }
-  .dropdown-item{ padding:10px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid #f0f0f0; }
-  .dropdown-item:hover{ background:#f8f9fa; }
+  .dropdown-item{ padding:10px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid var(--panel-2); }
+  .dropdown-item:hover{ background:var(--panel-2); }
   .dropdown-item:last-child{ border-bottom:none; }
   .dropdown-item.selected{ background:#e7f3ff; font-weight:600; }
-  .dropdown-group{ padding:7px 12px 5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#99a; background:#fafbfc; border-bottom:1px solid #f0f0f0; position:sticky; top:0; }
+  .dropdown-group{ padding:7px 12px 5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); background:var(--panel-2); border-bottom:1px solid var(--panel-2); position:sticky; top:0; }
   .dropdown-person{ font-size:14px; line-height:1.35; }
   .dropdown-person .dp-name{ color:var(--ink); font-weight:600; }
   .dropdown-person .dp-sub{ color:var(--muted); }
@@ -297,8 +336,8 @@ body.page-scorecard{
   .card.card-highlight{ box-shadow:0 0 0 3px rgba(204,17,51,.55), 0 8px 20px rgba(0,0,0,.12); }
   .badge{
     display:inline-block; padding:5px 10px;
-    border:1px solid #e5e5e5; border-radius:999px;
-    background:#fff; font-weight:650; font-size:12px;
+    border:1px solid var(--border); border-radius:999px;
+    background:var(--panel); font-weight:650; font-size:12px;
     color:var(--muted); white-space:nowrap; margin-left:auto;
   }
 
@@ -312,7 +351,7 @@ body.page-scorecard{
     padding:14px;
     box-shadow:0 6px 18px rgba(0,0,0,.06);
   }
-  .sheet{ background:#fff; border:1px solid #eee; border-radius:14px; padding:18px; }
+  .sheet{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px; }
   .header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; }
   .titleBlock{ display:flex; flex-direction:column; gap:4px; min-width:0; }
   .constituency{ font-size:26px; font-weight:800; text-decoration:underline; line-height:1.05; word-break:break-word; }
@@ -324,19 +363,19 @@ body.page-scorecard{
   .cards{ margin-top:6px; }
   .card{
     border-radius:16px;
-    border:2px solid #d9d9d9;
+    border:2px solid var(--border);
     overflow:hidden;
     margin-bottom:12px;
-    background:#fafafa;
+    background:var(--panel-2);
     cursor:pointer;
     transition:box-shadow .15s;
   }
   .card:hover{ box-shadow:0 4px 14px rgba(0,0,0,.1); }
-  .card.grade-q{ border-style:dashed !important; border-color:#bbb !important; }
+  .card.grade-q{ border-style:dashed !important; border-color:var(--border) !important; }
   .mp-badge-cell{
     width:120px; text-align:center; padding:10px 8px;
-    background:#fff; border-left:1px solid #eee;
-    color:#1a1a2e; font-weight:700; font-size:12px;
+    background:var(--panel); border-left:1px solid var(--border);
+    color:var(--ink); font-weight:700; font-size:12px;
     vertical-align:middle;
   }
   .mp-badge-cell svg{ display:block; margin:0 auto 4px; }
@@ -348,13 +387,13 @@ body.page-scorecard{
     display:inline-flex; align-items:center; justify-content:center;
     font-size:20px; font-weight:900; color:#fff;
   }
-  .middle{ padding:12px 16px; background:#fff; }
+  .middle{ padding:12px 16px; background:var(--panel); }
   .name{ font-size:16px; font-weight:800; margin-bottom:6px; }
   ul{ margin:0; padding-left:18px; font-size:14px; line-height:1.3; }
   li{ margin:0 0 4px 0; }
   .right{
     width:160px; text-align:center; padding:10px 12px;
-    background:#fff; border-left:1px solid #eee; font-weight:700; font-size:14px;
+    background:var(--panel); border-left:1px solid var(--border); font-weight:700; font-size:14px;
   }
   .chevron{ font-size:11px; color:var(--muted); margin-top:6px; display:block; transition:transform .2s; }
   .card.open .chevron{ transform:rotate(180deg); }
@@ -363,8 +402,8 @@ body.page-scorecard{
   .card-expanded{
     display:none;
     padding:16px 20px;
-    background:#fff;
-    border-top:1px solid #eee;
+    background:var(--panel);
+    border-top:1px solid var(--border);
   }
   .card.open .card-expanded{ display:block; }
   .expanded-meta{
@@ -376,13 +415,13 @@ body.page-scorecard{
   .evidence-list a{ color:#1a73e8; text-decoration:underline; }
   .suggest-link{
     display:inline-block; font-size:12px; color:var(--muted);
-    border:1px solid #ddd; border-radius:8px; padding:6px 12px;
+    border:1px solid var(--border); border-radius:8px; padding:6px 12px;
     text-decoration:none; transition:background .15s, color .15s;
   }
   .suggest-link:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
 
   /* ── States ── */
-  .empty{ padding:18px; color:var(--muted); border:1px dashed #ddd; border-radius:12px; background:#fcfcfc; font-size:14px; }
+  .empty{ padding:18px; color:var(--muted); border:1px dashed var(--border); border-radius:12px; background:var(--panel-2); font-size:14px; }
   .empty--prompt{ border:none; background:none; border-radius:0; text-align:center; font-size:25px; }
   .loading{ padding:18px; color:var(--muted); text-align:center; font-size:14px; }
   .error{ padding:18px; color:#e74c3c; border:1px solid #e74c3c; border-radius:12px; background:#fef5f5; font-size:14px; }
@@ -413,6 +452,10 @@ body.page-scorecard{
 body.page-pledge{
   --A:#2D5A3D; --B:#4CAF73; --C:#A8D5B0; --Q:#282120; --D:#F1C40F; --E:#F39C12; --F:#E4352F;
   --accent:#CC1133; --accent-dark:#a50f27;
+  /* Address/constituency mode-toggle button states (also read from JS via
+     getComputedStyle where the buttons' inline cssText is set — see the
+     "Address mode toggle" script below the form). */
+  --mode-active-bg:#fce4e4; --mode-inactive-bg:#fff; --mode-hover-bg:#fff5f5; --mode-hover-border:#e8a0a8;
 
   /* ── Layout ── */
   .app{ max-width:900px; margin:32px auto 60px; padding:0 14px; }
@@ -437,7 +480,7 @@ body.page-pledge{
   .pledge-header-text h2{ font-family:'DM Serif Display',serif; font-size:28px; font-weight:400; }
   .pledge-header-text p{ font-size:22px; opacity:.85; margin-top:2px; }
   .pledge-body{ padding:20px 22px; }
-  .pledge-body > p{ font-size:20px; color:#444; line-height:1.7; margin-bottom:16px; }
+  .pledge-body > p{ font-size:20px; color:var(--ink); line-height:1.7; margin-bottom:16px; }
   .pledge-agree{ display:flex; align-items:flex-start; gap:14px; padding:16px 18px; background:#fff5f5; border:2px solid #f0b8c0; border-radius:14px; cursor:pointer; transition:background .15s; }
   .pledge-agree:has(input:checked){ background:#fce4e4; border-color:var(--accent-dark); }
   .pledge-agree input[type="checkbox"]{ width:22px; height:22px; accent-color:var(--accent-dark); flex-shrink:0; margin-top:2px; cursor:pointer; }
@@ -457,8 +500,8 @@ body.page-pledge{
   .field label .req{ color:var(--F); margin-left:2px; }
   .field label .hint{ font-weight:400; color:var(--muted); font-size:12px; margin-left:4px; }
   .field input[type="text"], .field input[type="email"]{
-    width:100%; padding:10px 14px; border:1px solid #ddd; border-radius:12px;
-    font-size:15px; font-family:inherit; background:#fff; color:var(--ink);
+    width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:12px;
+    font-size:15px; font-family:inherit; background:var(--panel); color:var(--ink);
     transition:border-color .15s, box-shadow .15s; outline:none;
   }
   .field input:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(46,204,113,.15); }
@@ -483,7 +526,7 @@ body.page-pledge{
   .radio-card-text{ flex:1; min-width:0; }
   .radio-card-title{ font-size:16px; font-weight:700; margin-bottom:4px; }
   .radio-card-desc{ font-size:20px; color:var(--muted); line-height:1.6; }
-  .contact-intro{ font-size:20px; color:#444; line-height:1.7; margin:0 0 28px; }
+  .contact-intro{ font-size:20px; color:var(--ink); line-height:1.7; margin:0 0 28px; text-align:center; }
   .radio-card-badge{ font-size:15px; font-weight:700; padding:3px 8px; border-radius:999px; background:var(--accent); color:#fff; flex-shrink:0; }
   .radio-card--rec{ align-items:center; }
   .radio-card-main{ display:flex; align-items:center; gap:12px; flex:0 0 auto; }
@@ -561,7 +604,7 @@ body.page-pledge{
   }
   .modal-overlay.show{ display:flex; align-items:flex-start; justify-content:center; }
   .modal-box{
-    background:#fff; border-radius:16px;
+    background:var(--panel); border-radius:16px;
     max-width:660px; width:100%; margin:auto;
     padding:36px 40px; position:relative;
     box-shadow:0 12px 40px rgba(0,0,0,.2);
@@ -575,8 +618,8 @@ body.page-pledge{
   .modal-box h1{ font-family:'DM Serif Display',serif; font-size:24px; font-weight:400; margin-bottom:4px; }
   .modal-box .updated{ font-size:13px; color:var(--muted); margin-bottom:24px; display:block; }
   .modal-box h2{ font-size:14px; font-weight:700; margin:18px 0 6px; }
-  .modal-box p{ font-size:13px; line-height:1.7; color:#333; margin-bottom:8px; }
-  .modal-box ul{ font-size:13px; line-height:1.7; color:#333; padding-left:18px; margin-bottom:8px; }
+  .modal-box p{ font-size:13px; line-height:1.7; color:var(--ink); margin-bottom:8px; }
+  .modal-box ul{ font-size:13px; line-height:1.7; color:var(--ink); padding-left:18px; margin-bottom:8px; }
   .modal-box li{ margin-bottom:3px; }
   .modal-accept-bar{
     margin-top:28px; padding-top:20px; border-top:1px solid var(--line);
@@ -651,17 +694,17 @@ body.page-map{
   }
   .toggle-group{
     display:flex;
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     border-radius:6px;
     overflow:hidden;
   }
   .toggle-group button{
     border:none;
-    background:#fff;
+    background:var(--panel);
     padding:7px 16px;
     font-size:0.85rem;
     cursor:pointer;
-    color:#444;
+    color:var(--ink);
     transition:background .15s, color .15s;
   }
   .toggle-group button.active{
@@ -669,13 +712,13 @@ body.page-map{
     color:#fff;
   }
   .toggle-group button:not(:last-child){
-    border-right:1px solid #ccc;
+    border-right:1px solid var(--border);
   }
   #search-box{
     flex:1;
     min-width:180px;
     padding:7px 12px;
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     border-radius:6px;
     font-size:0.85rem;
   }
@@ -686,16 +729,16 @@ body.page-map{
   .map-search-wrapper #search-box{ width:100%; min-width:0; }
   #map-search-dropdown{
     display:none; position:absolute; top:100%; left:0; right:0;
-    background:#fff; border:1px solid #ddd; border-radius:8px;
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
     max-height:300px; overflow-y:auto; margin-top:4px;
     box-shadow:0 4px 12px rgba(0,0,0,.15); z-index:500;
     text-align:left;
   }
-  .dropdown-item{ padding:10px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid #f0f0f0; color:var(--ink); }
-  .dropdown-item:hover{ background:#f8f9fa; }
+  .dropdown-item{ padding:10px 12px; cursor:pointer; font-size:14px; border-bottom:1px solid var(--panel-2); color:var(--ink); }
+  .dropdown-item:hover{ background:var(--panel-2); }
   .dropdown-item:last-child{ border-bottom:none; }
   .dropdown-item.selected{ background:#e7f3ff; font-weight:600; }
-  .dropdown-group{ padding:7px 12px 5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#99a; background:#fafbfc; border-bottom:1px solid #f0f0f0; position:sticky; top:0; }
+  .dropdown-group{ padding:7px 12px 5px; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); background:var(--panel-2); border-bottom:1px solid var(--panel-2); position:sticky; top:0; }
   .dropdown-person{ font-size:14px; line-height:1.35; }
   .dropdown-person .dp-name{ color:var(--ink); font-weight:600; }
   .dropdown-person .dp-sub{ color:var(--muted); }
@@ -718,13 +761,13 @@ body.page-map{
     align-items:center;
   }
   .cb-toggle{
-    border:1px solid #ccc;
+    border:1px solid var(--border);
     border-radius:6px;
-    background:#eef0f3;
+    background:var(--panel-2);
     padding:7px 16px;
     font-size:0.85rem;
     cursor:pointer;
-    color:#444;
+    color:var(--ink);
     display:inline-flex;
     align-items:center;
     gap:8px;
@@ -770,7 +813,7 @@ body.page-map{
     background:transparent;
     flex-shrink:0;
   }
-  .cb-toggle:hover{ background:#e4e7eb; }
+  .cb-toggle:hover{ background:var(--panel-2); }
   .cb-toggle.active{ background:#2f6fd0; color:#fff; border-color:#2f6fd0; }
   .cb-toggle.active:hover{ background:#2861bd; }
   .cb-toggle.active::before{ background:currentColor; }
@@ -854,13 +897,13 @@ body.page-map{
   .map-zoom button{
     width:38px; height:38px; padding:0;
     display:flex; align-items:center; justify-content:center;
-    background:#fff; border:1px solid var(--line); border-radius:9px;
+    background:var(--panel); border:1px solid var(--line); border-radius:9px;
     box-shadow:0 2px 6px rgba(0,0,0,.12);
-    font-size:22px; line-height:1; font-weight:600; color:#1a1a2e;
+    font-size:22px; line-height:1; font-weight:600; color:var(--ink);
     cursor:pointer; -webkit-user-select:none; user-select:none;
     transition:background .12s, box-shadow .12s;
   }
-  .map-zoom button:hover{ background:#f2f2f2; }
+  .map-zoom button:hover{ background:var(--panel-2); }
   .map-zoom button:active{ box-shadow:0 1px 3px rgba(0,0,0,.12); }
   .map-zoom button:disabled{ opacity:.4; cursor:default; box-shadow:none; }
   #zoom-reset{ font-size:18px; }
@@ -879,7 +922,7 @@ body.page-map{
     min-height:200px;
   }
   .info-card .placeholder{
-    color:#999;
+    color:var(--muted);
     font-size:0.9rem;
     text-align:center;
     padding-top:40px;
@@ -888,7 +931,7 @@ body.page-map{
     font-size:1.15rem;
     font-weight:700;
     margin-bottom:14px;
-    color:#1a1a2e;
+    color:var(--ink);
     line-height:1.3;
   }
   .info-row{
@@ -899,7 +942,7 @@ body.page-map{
     font-size:1rem;
     gap:8px;
   }
-  .info-label{ color:#444; flex-shrink:0; font-weight:600; }
+  .info-label{ color:var(--ink); flex-shrink:0; font-weight:600; }
   .info-value{ font-weight:700; text-align:right; }
   .party-dot{
     display:inline-block;
@@ -948,7 +991,7 @@ body.page-map{
     font-size:1.15rem;
     font-weight:700;
     margin-bottom:14px;
-    color:#1a1a2e;
+    color:var(--ink);
     line-height:1.3;
   }
 
@@ -963,12 +1006,12 @@ body.page-map{
     font-size:0.78rem;
     color:#555;
   }
-  .legend-title{ font-weight:700; margin-bottom:3px; color:#1a1a2e; font-size:1.05rem; text-align:center; }
+  .legend-title{ font-weight:700; margin-bottom:3px; color:var(--ink); font-size:1.05rem; text-align:center; }
   .legend-subtitle{ font-size:0.78rem; color:#cc6600; font-style:italic; margin-bottom:12px; text-align:center; }
   .legend-subtitle-muted{ color:var(--muted); }
   .legend-items{ display:flex; flex-direction:column; gap:10px; }
-  .legend-item{ display:flex; align-items:center; gap:10px; font-size:0.95rem; font-weight:600; color:#222; }
-  .legend-separator{ border:none; border-top:1px solid #ccc; margin:2px 0; }
+  .legend-item{ display:flex; align-items:center; gap:10px; font-size:0.95rem; font-weight:600; color:var(--ink); }
+  .legend-separator{ border:none; border-top:1px solid var(--border); margin:2px 0; }
   /* "Newest member" key chevron — pulses in step with the map marker (1.8s)
      so the legend entry and the tile on the map read as the same thing. */
   .legend-chevron-mark{ animation:asvaChevronFade 1.8s ease-in-out infinite; }
@@ -1013,7 +1056,7 @@ body.page-map{
   /* ── Loading / error ── */
   .status-msg{
     text-align:center;
-    color:#666;
+    color:var(--muted);
     padding:60px 20px;
     font-size:0.9rem;
   }
@@ -1054,6 +1097,12 @@ body.page-founding{
   .fs-hero{ text-align:center; margin-bottom:48px; }
   .fs-hero-logo{ height:150px; width:auto; display:block; margin:40px auto 0; }
   .fs-hero-logo-fallback{ font-weight:900; font-size:48px; }
+  /* Dark mode now has its own recoloured, transparent logo art (see the
+     dark-mode overrides section below) instead of pinning this card to a
+     white background — the light-mode logo (on the white .charter panel)
+     is untouched. The nav logo's own light/dark swap is shared site-wide
+     (see the global logo-link section further down). */
+  .fs-hero-logo-dark{ display:none; }
   .fs-hero h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:8px; }
   .fs-hero .org{ font-size:20px; font-weight:600; color:var(--muted); }
 
@@ -1079,7 +1128,7 @@ body.page-founding{
   .charter p{
     font-size:15px;
     line-height:1.75;
-    color:#333;
+    color:var(--ink);
     margin-bottom:14px;
   }
 
@@ -1090,7 +1139,7 @@ body.page-founding{
   .charter ul li{
     font-size:15px;
     line-height:1.7;
-    color:#333;
+    color:var(--ink);
     margin-bottom:6px;
   }
 
@@ -1117,7 +1166,7 @@ body.page-founding{
   .charter .grade-guide td{
     font-size:15px;
     line-height:1.65;
-    color:#333;
+    color:var(--ink);
   }
   .charter .grade-guide tr + tr th,
   .charter .grade-guide tr + tr td{
@@ -1137,14 +1186,14 @@ body.page-founding{
   }
 
   .closing-quote{
-    background:#f8f8f8;
+    background:var(--panel-2);
     border-left:4px solid #1a1a2e;
     border-radius:0 8px 8px 0;
     padding:20px 24px;
     margin:24px 0;
     font-size:15px;
     line-height:1.75;
-    color:#333;
+    color:var(--ink);
     font-style:italic;
   }
 
@@ -1159,13 +1208,13 @@ body.page-founding{
     font-size:14px;
     font-weight:700;
     margin-bottom:8px;
-    color:#1a1a2e;
+    color:var(--ink);
   }
   .pledge-block p{
     font-size:14px;
     line-height:1.7;
     font-style:italic;
-    color:#333;
+    color:var(--ink);
     margin:0 0 8px;
   }
   .pledge-block p:last-child{ margin-bottom:0; }
@@ -1174,7 +1223,7 @@ body.page-founding{
     display:block;
     text-align:center;
     margin-top:40px;
-    color:#1a1a2e;
+    color:var(--ink);
     font-size:14px;
     font-weight:600;
     text-decoration:none;
@@ -1227,14 +1276,14 @@ body.page-concern{
 
   /* ── Expandable pathways (two audience routes) ── */
   .pathways{ display:flex; flex-direction:column; gap:16px; }
-  .pathway{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff; transition:box-shadow .18s, border-color .18s; }
+  .pathway{ border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--panel); transition:box-shadow .18s, border-color .18s; }
   .pathway.open{ border-color:var(--accent); box-shadow:0 8px 24px rgba(204,17,51,.10); }
 
   .pathway-head{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:16px;
     background:none; border:0; cursor:pointer; text-align:left; padding:24px 26px; font-family:inherit; color:var(--ink); transition:background .15s; }
   .pathway-head:hover{ background:var(--accent-tint); }
   /* Expanded box stays white; the red border + shadow already mark it as open. */
-  .pathway.open .pathway-head{ background:#fff; }
+  .pathway.open .pathway-head{ background:var(--panel); }
   .pathway-head-label{ font-family:'DM Serif Display',serif; font-size:25px; line-height:1.25; }
   .pathway-chevron{ flex:0 0 auto; width:14px; height:14px; border-right:2.5px solid var(--accent); border-bottom:2.5px solid var(--accent);
     transform:rotate(45deg); transition:transform .25s ease; margin-right:4px; }
@@ -1253,7 +1302,7 @@ body.page-concern{
      to the TALLEST step, so the nav row below never shifts as you move through,
      and overflow:hidden clips the off-screen slides. touch-action:pan-y lets a
      vertical drag scroll the page while a horizontal drag is ours to flick. */
-  .path-stage{ position:relative; overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:12px; min-height:170px; touch-action:pan-y; }
+  .path-stage{ position:relative; overflow:hidden; background:var(--panel); border:1px solid var(--line); border-radius:12px; min-height:170px; touch-action:pan-y; }
   .path-stage:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .path-track{ display:flex; align-items:stretch; }
   .path-track.animate{ transition:transform .42s cubic-bezier(.22,.61,.36,1); }
@@ -1273,7 +1322,7 @@ body.page-concern{
   .path-cta-row a.btn-blue:hover{ background:#0d3a54; }
 
   /* Quick-actions rectangle under the pathways: three equal-width buttons. */
-  .action-rect{ border:1px solid var(--line); border-radius:14px; background:#fff; padding:20px 22px;
+  .action-rect{ border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:20px 22px;
     display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
   .action-rect a.btn-tri{ display:inline-flex; align-items:center; justify-content:center; text-align:center; padding:16px 14px;
     border-radius:12px; color:#fff !important; font-weight:700; font-size:15px; line-height:1.25; text-decoration:none;
@@ -1362,7 +1411,7 @@ body.page-confirmed{
   .share-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; max-width:660px; margin:0 auto; }
   .share-btn{
     display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 16px;
-    border:2px solid var(--line); border-radius:14px; background:#fff;
+    border:2px solid var(--line); border-radius:14px; background:var(--panel);
     color:var(--ink); font-size:16px; font-weight:600; font-family:inherit;
     text-decoration:none; cursor:pointer; width:100%;
     transition:border-color .15s, background .15s, transform .1s;
@@ -1372,8 +1421,8 @@ body.page-confirmed{
   .share-btn .share-btn-ico svg{ width:24px; height:24px; }
 
   .share-message{
-    background:#fafafa; border:1px solid var(--line); border-radius:14px;
-    padding:18px 20px; font-size:17px; line-height:1.6; color:#333;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px; font-size:17px; line-height:1.6; color:var(--ink);
     white-space:pre-wrap; text-align:left; max-width:660px; margin:0 auto 16px;
   }
   .share-actions{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
@@ -1390,14 +1439,14 @@ body.page-confirmed{
   /* QR-code modal */
   .qr-modal{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); padding:20px; }
   .qr-modal.open{ display:flex; }
-  .qr-box{ position:relative; background:#fff; border-radius:22px; padding:34px 36px 30px; max-width:440px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.3); }
-  .qr-canvas{ position:relative; margin:0 auto 18px; width:320px; max-width:100%; aspect-ratio:1/1; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+  .qr-box{ position:relative; background:var(--panel); border-radius:22px; padding:34px 36px 30px; max-width:440px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.3); }
+  .qr-canvas{ position:relative; margin:0 auto 18px; width:320px; max-width:100%; aspect-ratio:1/1; padding:12px; background:var(--panel); border:1px solid var(--line); border-radius:16px; }
   .qr-canvas svg{ width:100%; height:100%; display:block; }
   .qr-logo{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:24%; height:24%; padding:5px; background:none; display:flex; align-items:center; justify-content:center; }
   .qr-logo img{ width:100%; height:100%; display:block; }
   .qr-url{ font-size:13px; color:var(--muted); word-break:break-all; margin:0; }
   .qr-close{ position:absolute; top:12px; right:14px; background:none; border:none; font-size:28px; line-height:1; color:var(--muted); cursor:pointer; padding:2px 10px; border-radius:8px; }
-  .qr-close:hover{ background:#f2f2f2; color:var(--ink); }
+  .qr-close:hover{ background:var(--panel-2); color:var(--ink); }
 
   @media(max-width:600px){
     .confirm-share h2{ font-size:22px; }
@@ -1413,8 +1462,8 @@ body.page-privacy{
   h1{ font-family:'DM Serif Display',serif; font-size:68px; font-weight:400; line-height:1.1; margin-bottom:20px; }
   .updated{ font-size:13px; color:var(--muted); margin-bottom:28px; }
   h2{ font-size:15px; font-weight:700; margin:22px 0 8px; }
-  p{ font-size:14px; line-height:1.7; color:#333; margin-bottom:10px; }
-  ul{ font-size:14px; line-height:1.7; color:#333; padding-left:20px; margin-bottom:10px; }
+  p{ font-size:14px; line-height:1.7; color:var(--ink); margin-bottom:10px; }
+  ul{ font-size:14px; line-height:1.7; color:var(--ink); padding-left:20px; margin-bottom:10px; }
   li{ margin-bottom:4px; }
   @media(max-width:600px){ h1{ font-size:28px; } }
   @media(max-width:540px){ .card{ padding:24px 20px; } }
@@ -1468,7 +1517,7 @@ body.page-share{
   .share-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; max-width:660px; margin:0 auto; }
   .share-btn{
     display:flex; align-items:center; justify-content:center; gap:10px; padding:14px 16px;
-    border:2px solid var(--line); border-radius:14px; background:#fff;
+    border:2px solid var(--line); border-radius:14px; background:var(--panel);
     color:var(--ink); font-size:16px; font-weight:600; font-family:inherit;
     text-decoration:none; cursor:pointer; width:100%;
     transition:border-color .15s, background .15s, transform .1s;
@@ -1479,8 +1528,8 @@ body.page-share{
 
   /* Copyable message */
   .share-message{
-    background:#fafafa; border:1px solid var(--line); border-radius:14px;
-    padding:18px 20px; font-size:17px; line-height:1.6; color:#333;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px; font-size:17px; line-height:1.6; color:var(--ink);
     white-space:pre-wrap; text-align:left; max-width:660px; margin:0 auto 16px;
   }
   .share-actions{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
@@ -1500,9 +1549,9 @@ body.page-share{
   /* QR-code modal */
   .qr-modal{ position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); padding:20px; }
   .qr-modal.open{ display:flex; }
-  .qr-box{ position:relative; background:#fff; border-radius:22px; padding:34px 36px 30px; max-width:440px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.3); }
+  .qr-box{ position:relative; background:var(--panel); border-radius:22px; padding:34px 36px 30px; max-width:440px; width:100%; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.3); }
   .qr-box h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:28px; margin-bottom:22px; }
-  .qr-canvas{ position:relative; margin:0 auto 18px; width:320px; max-width:100%; aspect-ratio:1/1; padding:12px; background:#fff; border:1px solid var(--line); border-radius:16px; }
+  .qr-canvas{ position:relative; margin:0 auto 18px; width:320px; max-width:100%; aspect-ratio:1/1; padding:12px; background:var(--panel); border:1px solid var(--line); border-radius:16px; }
   .qr-canvas svg{ width:100%; height:100%; display:block; }
   /* ASVA shield + tick set into the middle of the code. Error-correction level
      'H' lets the centre be covered while the code still scans; the white pad
@@ -1513,7 +1562,7 @@ body.page-share{
   .qr-logo img{ width:100%; height:100%; display:block; }
   .qr-url{ font-size:13px; color:var(--muted); word-break:break-all; margin:0; }
   .qr-close{ position:absolute; top:12px; right:14px; background:none; border:none; font-size:28px; line-height:1; color:var(--muted); cursor:pointer; padding:2px 10px; border-radius:8px; }
-  .qr-close:hover{ background:#f2f2f2; color:var(--ink); }
+  .qr-close:hover{ background:var(--panel-2); color:var(--ink); }
 
   @media(max-width:600px){
     .share-content{ padding:28px 24px 40px; }
@@ -1530,9 +1579,22 @@ body.page-share{
    the centred link group aligned to the page centre; the anchor hugs the img. */
 .sitenav-logo-link{ display:inline-block; line-height:0; }
 
+/* Nav logo, light/dark (shared across every page that carries both <img>
+   tags): the dark variant is recoloured, transparent art (see the dark-mode
+   overrides section below), swapped in the same way as the Founding
+   Statement hero logo. */
+.sitenav-logo-light{ display:block; }
+.sitenav-logo-dark{ display:none; }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .sitenav-logo-light{ display:none; }
+  :root:not([data-theme="light"]) .sitenav-logo-dark{ display:block; }
+}
+:root[data-theme="dark"] .sitenav-logo-light{ display:none; }
+:root[data-theme="dark"] .sitenav-logo-dark{ display:block; }
+
 
 /* ===================== HOME — index.html (body.page-home) ===================== */
-body.page-home{ --navy:#0d2c40; --red:#cc1133; --hmuted:#5a6b78; --hline:#e6eaee; background:#f6f7f8; }
+body.page-home{ --navy:#0d2c40; --red:#cc1133; --hmuted:#5a6b78; --hline:#e6eaee; background:var(--bg); }
 
 /* Hero */
 body.page-home .home-hero{ background:#0b2e42; color:#fff; padding:70px 0 82px; position:relative; overflow:hidden; }
@@ -1560,7 +1622,7 @@ body.page-home .home-gcard-wrap:hover .gc-nav{ opacity:1; }
 body.page-home .gc-nav:hover{ background:#123f5a; }
 body.page-home .gc-prev{ left:-46px; }
 body.page-home .gc-next{ right:-46px; }
-body.page-home .home-gcard{ width:100%; background:#fff; color:#12242f; border-radius:18px; padding:24px; box-shadow:0 30px 60px rgba(0,0,0,.34); }
+body.page-home .home-gcard{ width:100%; background:var(--panel); color:var(--ink); border-radius:18px; padding:24px; box-shadow:0 30px 60px rgba(0,0,0,.34); }
 /* Only the contents crossfade on auto-advance; the white box stays put. */
 body.page-home .gc-fade{ transition:opacity .5s ease; }
 body.page-home .gc-fade.is-fading{ opacity:0; }
@@ -1575,7 +1637,7 @@ body.page-home .home-gcard .gc-bullets{ margin:16px 0 0; padding:0; list-style:n
    third line is shrunk by fitToTwoLines in JS until it fits two, so nothing is
    ever cut off. The list height is pinned per card in JS (equalizeBulletHeight)
    so a two-line bullet never makes one card taller than the rest. */
-body.page-home .home-gcard .gc-bullets li{ position:relative; flex-shrink:0; padding-left:16px; font-size:13.5px; line-height:18px; max-height:36px; color:#3a4a56; overflow:hidden; }
+body.page-home .home-gcard .gc-bullets li{ position:relative; flex-shrink:0; padding-left:16px; font-size:13.5px; line-height:18px; max-height:36px; color:var(--ink); overflow:hidden; }
 body.page-home .home-gcard .gc-bullets li::before{ content:"\2022"; position:absolute; left:2px; top:0; }
 body.page-home .home-gcard .gc-link{ display:block; text-align:center; margin-top:18px; font-size:14px; font-weight:700; color:#1a6ef5; text-decoration:underline; }
 body.page-home .home-gcard .gc-link:hover{ color:#0f57cc; }
@@ -1586,7 +1648,7 @@ body.page-home .home-main{ flex:1 1 auto; min-width:0; display:flex; flex-direct
 body.page-home .home-hiw{ margin-bottom:4px; }
 body.page-home .home-hiw h2{ font-family:'DM Serif Display',serif; font-weight:400; font-size:30px; letter-spacing:-.01em; }
 body.page-home .home-hiw p{ color:var(--hmuted); margin-top:8px; font-size:15.5px; }
-body.page-home .home-step{ display:flex; align-items:center; gap:18px; background:#fff; border:1px solid var(--hline); border-radius:16px; padding:22px 24px; }
+body.page-home .home-step{ display:flex; align-items:center; gap:18px; background:var(--panel); border:1px solid var(--hline); border-radius:16px; padding:22px 24px; }
 body.page-home .home-step .st-num{ flex:0 0 auto; font-family:'DM Serif Display',serif; font-size:16px; color:#fff; background:var(--navy); width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
 body.page-home .home-step h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:19px; margin-bottom:6px; letter-spacing:-.01em; }
 body.page-home .home-step p{ color:var(--hmuted); font-size:14.5px; }
@@ -1600,7 +1662,7 @@ body.page-home .home-scale-row .g small{ display:block; margin-top:7px; font-siz
 
 /* Constituency-map ("National Overview") sidebar */
 body.page-home .home-aside{ flex:0 0 320px; position:sticky; top:88px; }
-body.page-home .home-mapmod{ background:#fff; border:1px solid var(--hline); border-radius:18px; overflow:hidden; box-shadow:0 20px 44px rgba(13,44,64,.12); }
+body.page-home .home-mapmod{ background:var(--panel); border:1px solid var(--hline); border-radius:18px; overflow:hidden; box-shadow:0 20px 44px rgba(13,44,64,.12); }
 body.page-home .home-mapmod .mm-h{ padding:20px 20px 4px; text-align:center; }
 body.page-home .home-mapmod .mm-eye{ font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--red); }
 body.page-home .home-mapmod h3{ font-family:'DM Serif Display',serif; font-weight:400; font-size:21px; margin-top:9px; letter-spacing:-.015em; line-height:1.12; }
@@ -1638,3 +1700,57 @@ body.page-home .home-close-band .home-btn-white:hover{ background:#ffe9ee; }
 @media (max-width:700px){
   body.page-home .gc-nav{ display:none; }
 }
+
+
+/* ===================== DARK MODE — remaining page-scoped overrides =====
+   The shared tokens near the top of this file (--ink/--muted/--bg/--panel/
+   --panel-2/--border/--bg-translucent) already flip everywhere they're used.
+   What's left are a handful of page-scoped custom properties and literal
+   brand-tint colours (pale pink/blue highlight states) that were never
+   wired to those shared tokens, so they need their own dark equivalents.
+   Written twice — once for the OS preference, once for the explicit toggle —
+   for the same reason the tokens above are. */
+@media (prefers-color-scheme: dark){
+  html:not([data-theme="light"]) body.page-home{ --hmuted:#9aa7b3; --hline:#33333f; }
+  html:not([data-theme="light"]) body.page-concern{ --accent-tint:rgba(204,17,51,.14); }
+  html:not([data-theme="light"]) body.page-pledge{
+    --mode-active-bg:rgba(204,17,51,.18); --mode-inactive-bg:#1e1e28;
+    --mode-hover-bg:rgba(204,17,51,.10); --mode-hover-border:rgba(204,17,51,.5);
+  }
+  html:not([data-theme="light"]) body.page-pledge .pledge-agree{ background:rgba(204,17,51,.10); border-color:rgba(204,17,51,.4); }
+  html:not([data-theme="light"]) body.page-pledge .pledge-agree:has(input:checked){ background:rgba(204,17,51,.18); }
+  html:not([data-theme="light"]) body.page-pledge .radio-card:hover{ background:rgba(204,17,51,.10); border-color:rgba(204,17,51,.5); }
+  html:not([data-theme="light"]) body.page-pledge .radio-card:has(input:checked){ background:rgba(204,17,51,.18); }
+  html:not([data-theme="light"]) body.page-pledge .privacy-label:has(input:checked){ background:rgba(204,17,51,.10); }
+  html:not([data-theme="light"]) body.page-pledge .constituency-detected{ background:rgba(204,17,51,.10); border-color:rgba(204,17,51,.4); color:#ff8fa3; }
+  html:not([data-theme="light"]) body.page-founding .pledge-block{ background:rgba(90,140,255,.08); border-color:rgba(90,140,255,.35); }
+  html:not([data-theme="light"]) body.page-founding .fs-hero-logo-light{ display:none; }
+  html:not([data-theme="light"]) body.page-founding .fs-hero-logo-dark{ display:block; }
+  /* Hex map: the white stroke between tiles (there to separate adjacent
+     fills) needs to be dark instead, or it reads as a bright grid line
+     against the dark page. */
+  html:not([data-theme="light"]) body.page-map #hex-svg polygon{ stroke:#000; }
+  html:not([data-theme="light"]) body.page-map #hex-svg polygon:hover{ stroke:#000; }
+  /* The blue–yellow legend swatches' black outline (there to keep pale
+     grades from fading into the light legend background) reads as
+     nothing against a dark one, so it's just noise here. */
+  html:not([data-theme="light"]) body.page-map .legend-swatch-outline{ stroke:none; }
+}
+html[data-theme="dark"] body.page-home{ --hmuted:#9aa7b3; --hline:#33333f; }
+html[data-theme="dark"] body.page-concern{ --accent-tint:rgba(204,17,51,.14); }
+html[data-theme="dark"] body.page-pledge{
+  --mode-active-bg:rgba(204,17,51,.18); --mode-inactive-bg:#1e1e28;
+  --mode-hover-bg:rgba(204,17,51,.10); --mode-hover-border:rgba(204,17,51,.5);
+}
+html[data-theme="dark"] body.page-pledge .pledge-agree{ background:rgba(204,17,51,.10); border-color:rgba(204,17,51,.4); }
+html[data-theme="dark"] body.page-pledge .pledge-agree:has(input:checked){ background:rgba(204,17,51,.18); }
+html[data-theme="dark"] body.page-pledge .radio-card:hover{ background:rgba(204,17,51,.10); border-color:rgba(204,17,51,.5); }
+html[data-theme="dark"] body.page-pledge .radio-card:has(input:checked){ background:rgba(204,17,51,.18); }
+html[data-theme="dark"] body.page-pledge .privacy-label:has(input:checked){ background:rgba(204,17,51,.10); }
+html[data-theme="dark"] body.page-pledge .constituency-detected{ background:rgba(204,17,51,.10); border-color:rgba(204,17,51,.4); color:#ff8fa3; }
+html[data-theme="dark"] body.page-founding .pledge-block{ background:rgba(90,140,255,.08); border-color:rgba(90,140,255,.35); }
+html[data-theme="dark"] body.page-founding .fs-hero-logo-light{ display:none; }
+html[data-theme="dark"] body.page-founding .fs-hero-logo-dark{ display:block; }
+html[data-theme="dark"] body.page-map #hex-svg polygon{ stroke:#000; }
+html[data-theme="dark"] body.page-map #hex-svg polygon:hover{ stroke:#000; }
+html[data-theme="dark"] body.page-map .legend-swatch-outline{ stroke:none; }
