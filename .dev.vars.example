@@ -28,7 +28,9 @@ AGENT_INGEST_SECRET=
 # authorised by AGENT_INGEST_SECRET above (the scheduled job) or an admin
 # session (a manual run from /goldenpath.html). If unset, the export reports that
 # no recipients are configured and sends nothing. Run supabase/partner_export.sql
-# once before enabling.
+# once before enabling. To run on a schedule, also set SITE_BASE_URL (variable)
+# and AGENT_INGEST_SECRET (secret) in GitHub Actions; the job is skipped until
+# SITE_BASE_URL is set.
 PARTNER_EXPORT_EMAILS=
 
 # Address the /goldenpath.html magic-link login is emailed to. Defaults to

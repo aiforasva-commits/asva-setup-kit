@@ -189,7 +189,7 @@ it) and fill it in; set the **same** variables in Cloudflare Pages
 | `AGENT_INGEST_SECRET` | Yes, if using the research skill (step 8) | Generate any long random string; set the **same** value here and as `ASVA_AGENT_SECRET` in the Claude Code environment that runs the research skill |
 | `ADMIN_EMAIL` | Recommended | Your own contact address — see step 4 |
 | `GMAIL_USER`, `GMAIL_APP_PASSWORD` | Yes, for email | See `docs/gmail-confirmation-setup.md` — the simplest working option |
-| `PARTNER_EXPORT_EMAILS` | Only if using partner export | Leave unset to disable the feature entirely |
+| `PARTNER_EXPORT_EMAILS` | Only if using partner export | Leave unset to disable the feature entirely. The monthly job also needs a GitHub Actions variable `SITE_BASE_URL` (your site's address) and a GitHub Actions secret `AGENT_INGEST_SECRET` (same value as here); until `SITE_BASE_URL` is set, the job is skipped |
 | `CF_DEPLOY_HOOK_URL` | Optional | Powers the "Redeploy site" button on the admin page |
 
 `GOOGLE_SHEET_CANDIDATES_URL` / `GOOGLE_SHEET_CONSTITUENCIES_URL` are
